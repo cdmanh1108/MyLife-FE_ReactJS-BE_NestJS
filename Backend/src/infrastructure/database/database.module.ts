@@ -1,0 +1,17 @@
+import { Module } from '@nestjs/common';
+import { ConfigModule, ConfigService } from '@nestjs/config';
+import { MongooseModule } from '@nestjs/mongoose';
+
+@Module({
+  imports: [
+    MongooseModule.forRootAsync({
+      imports: [ConfigModule],
+      inject: [ConfigService],
+      useFactory: (config: ConfigService) => ({
+        uri: config.get<string>('MONGODB_URI') ?? config.get<string>('mongodbUri'),
+        autoIndex: config.get<string>('NODE_ENV') !== 'production',
+      }),
+    }),
+  ],
+})
+export class DatabaseModule {}
