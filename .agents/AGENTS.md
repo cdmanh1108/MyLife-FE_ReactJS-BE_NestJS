@@ -6,6 +6,7 @@ This file defines the project-scoped rules and behavioral constraints for pair p
 - Always format code using the workspace `.prettierrc` configuration (tabWidth: 2, printWidth: 120, bracketSpacing: true, semi: true).
 - Do not add mock data; always wire features to the backend controllers using generated client hooks.
 - Cross-reference Mongoose models and DTO schema requirements when updating APIs.
+- **Multi-Language (i18n) Support:** Do not hardcode user-facing texts. Always define matching keys in the three locale translation files: `vi.json` (Vietnamese), `en.json` (English), and `ko.json` (Korean) under `src/shared/i18n/locales/` and translate them using `t()` from `useTranslation()`.
 
 ## 🖥️ Frontend Architecture (React + Vite + TS)
 - **API Requests:** Use the Orval-generated hooks under `src/shared/api/generated/mylife.ts` or their custom feature wrappers.
