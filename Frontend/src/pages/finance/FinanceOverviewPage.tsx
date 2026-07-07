@@ -16,7 +16,7 @@ import { PieChart, Pie, Cell, Tooltip, ResponsiveContainer } from 'recharts';
 import { useTransactions } from '@/features/finance/api/useTransactions';
 import { useCategories } from '@/features/finance/api/useCategories';
 
-const COLOR_PALETTE = ['#38bdf8', '#0ea5e9', '#06b6d4', '#22d3ee', '#10b981', '#f59e0b', '#ef4444', '#ec4899', '#8b5cf6'];
+const COLOR_PALETTE = ['#38bdf8', '#10b981', '#f59e0b', '#ef4444', '#8b5cf6', '#ec4899', '#06b6d4', '#14b8a6', '#f43f5e'];
 
 export default function FinanceOverviewPage() {
   const { t } = useTranslation();
@@ -97,7 +97,17 @@ export default function FinanceOverviewPage() {
                         <Cell key={i} fill={entry.color} />
                       ))}
                     </Pie>
-                    <Tooltip formatter={(v: number) => formatCompactMoney(v, 'VND')} contentStyle={{ backgroundColor: '#0d1526', border: '1px solid rgba(56,189,248,0.1)', borderRadius: '8px', fontSize: '11px' }} />
+                    <Tooltip
+                      formatter={(v: number) => [formatCompactMoney(v, 'VND'), '']}
+                      contentStyle={{
+                        backgroundColor: '#0d1526',
+                        border: '1px solid rgba(56,189,248,0.1)',
+                        borderRadius: '8px',
+                        fontSize: '11px',
+                      }}
+                      itemStyle={{ color: '#e2e8f0' }}
+                      labelStyle={{ color: '#f8fafc', fontWeight: '600' }}
+                    />
                   </PieChart>
                 </ResponsiveContainer>
                 <div className="flex-1 w-full space-y-2.5">

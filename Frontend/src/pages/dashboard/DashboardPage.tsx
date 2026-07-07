@@ -200,6 +200,8 @@ export default function DashboardPage() {
                   tickFormatter={(v) => `${(v / 1_000_000).toFixed(0)}M`} />
                 <Tooltip
                   contentStyle={{ backgroundColor: '#0d1526', border: '1px solid rgba(56,189,248,0.1)', borderRadius: '8px', fontSize: '12px' }}
+                  itemStyle={{ color: '#cbd5e1' }}
+                  labelStyle={{ color: '#f8fafc', fontWeight: '600' }}
                   formatter={(v: number) => [formatCompactMoney(v, 'VND'), '']}
                 />
                 <Area type="monotone" dataKey="income" stroke="#38bdf8" fill="url(#incomeGrad)" strokeWidth={2} dot={false} name={t('finance.income')} />

@@ -137,8 +137,12 @@ export default function LearningDashboardPage() {
             <BarChart data={chartData} margin={{ top: 0, right: 0, left: -20, bottom: 0 }}>
               <XAxis dataKey="label" tick={{ fill: '#64748b', fontSize: 11 }} axisLine={false} tickLine={false} />
               <YAxis tick={{ fill: '#64748b', fontSize: 10 }} axisLine={false} tickLine={false} />
-              <Tooltip contentStyle={{ backgroundColor: '#0d1526', border: '1px solid rgba(56,189,248,0.1)', borderRadius: '8px', fontSize: '12px' }}
-                formatter={(v) => [`${v} phút`, 'Học tập']} />
+              <Tooltip
+                contentStyle={{ backgroundColor: '#0d1526', border: '1px solid rgba(56,189,248,0.1)', borderRadius: '8px', fontSize: '12px' }}
+                itemStyle={{ color: '#cbd5e1' }}
+                labelStyle={{ color: '#f8fafc', fontWeight: '600' }}
+                formatter={(v) => [`${v} phút`, 'Thời gian học']}
+              />
               <Bar dataKey="minutes" fill="#38bdf8" radius={[4, 4, 0, 0]} opacity={0.8} />
             </BarChart>
           </ResponsiveContainer>
