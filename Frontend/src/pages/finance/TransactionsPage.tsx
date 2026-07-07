@@ -15,7 +15,7 @@ import { formatDate } from '@/shared/lib/date';
 import { cn } from '@/shared/lib/cn';
 import { LoadingState } from '@/shared/ui/LoadingState';
 import { ErrorState } from '@/shared/ui/ErrorState';
-import { useTransactions, useDeleteTransaction } from '@/features/finance/api/useTransactions';
+import { useTransactions, useDeleteTransaction, useUpdateTransaction } from '@/features/finance/api/useTransactions';
 import { useCreateTransaction } from '@/features/finance/api/useCreateTransaction';
 import { useCategories, useCreateCategory } from '@/features/finance/api/useCategories';
 import { toast } from 'sonner';
@@ -27,6 +27,7 @@ export default function TransactionsPage() {
   const [typeFilter, setTypeFilter] = useState<'all' | 'INCOME' | 'EXPENSE'>('all');
 
   // Form State
+  const [editingTx, setEditingTx] = useState<any>(null);
   const [formType, setFormType] = useState<'INCOME' | 'EXPENSE'>('EXPENSE');
   const [formAmount, setFormAmount] = useState('');
   const [formCategoryName, setFormCategoryName] = useState('');
@@ -34,16 +35,30 @@ export default function TransactionsPage() {
   const [formNote, setFormNote] = useState('');
   const [formDate, setFormDate] = useState(new Date().toISOString().split('T')[0]);
 
+  // Pagination State
+  const [currentPage, setCurrentPage] = useState(1);
+  const itemsPerPage = 10;
+
   // Queries & Mutations
   const { data: categories = [], isLoading: loadingCats } = useCategories();
   const { data: transactions = [], isLoading, isError, refetch } = useTransactions({
-    type: typeFilter === 'all' ? undefined : typeFilter,
-    keyword: search || undefined,
+    limit: 100, // Fetch up to 100 transactions for client-side pagination & filtering
   });
 
   const createTxMutation = useCreateTransaction();
+  const updateTxMutation = useUpdateTransaction();
   const createCatMutation = useCreateCategory();
   const deleteTxMutation = useDeleteTransaction();
+
+  const handleSearchChange = (value: string) => {
+    setSearch(value);
+    setCurrentPage(1);
+  };
+
+  const handleTypeFilterChange = (value: 'all' | 'INCOME' | 'EXPENSE') => {
+    setTypeFilter(value);
+    setCurrentPage(1);
+  };
 
   const handleDelete = (id: string) => {
     if (confirm('Bạn có chắc chắn muốn xóa giao dịch này?')) {
@@ -52,6 +67,27 @@ export default function TransactionsPage() {
         onError: () => toast.error('Lỗi khi xóa giao dịch'),
       });
     }
+  };
+
+  const handleEdit = (tx: any) => {
+    setEditingTx(tx);
+    setFormType(tx.type);
+    setFormAmount(tx.amount.toString());
+    setFormCategoryId(tx.categoryId || '');
+    setFormCategoryName('');
+    setFormNote(tx.note || '');
+    setFormDate(tx.occurredAt.split('T')[0]);
+    modal.open();
+  };
+
+  const handleCloseModal = () => {
+    modal.close();
+    setEditingTx(null);
+    setFormAmount('');
+    setFormCategoryId('');
+    setFormCategoryName('');
+    setFormNote('');
+    setFormDate(new Date().toISOString().split('T')[0]);
   };
 
   const handleSave = async () => {
@@ -76,34 +112,69 @@ export default function TransactionsPage() {
       }
     }
 
-    createTxMutation.mutate(
-      {
-        type: formType,
-        amount: Number(formAmount),
-        currency: 'VND',
-        categoryId: finalCategoryId || undefined,
-        note: formNote || undefined,
-        occurredAt: new Date(formDate).toISOString(),
-      },
-      {
-        onSuccess: () => {
-          toast.success('Thêm giao dịch thành công');
-          modal.close();
-          // Reset form
-          setFormAmount('');
-          setFormCategoryId('');
-          setFormCategoryName('');
-          setFormNote('');
-          setFormDate(new Date().toISOString().split('T')[0]);
-        },
-        onError: () => {
-          toast.error('Lỗi khi thêm giao dịch');
-        },
-      }
-    );
+    const payload = {
+      type: formType,
+      amount: Number(formAmount),
+      currency: 'VND',
+      categoryId: finalCategoryId || undefined,
+      note: formNote || undefined,
+      occurredAt: new Date(formDate).toISOString(),
+    };
+
+    if (editingTx) {
+      updateTxMutation.mutate(
+        { id: editingTx.id, dto: payload },
+        {
+          onSuccess: () => {
+            toast.success('Cập nhật giao dịch thành công');
+            handleCloseModal();
+          },
+          onError: () => {
+            toast.error('Lỗi khi cập nhật giao dịch');
+          },
+        }
+      );
+    } else {
+      createTxMutation.mutate(
+        payload,
+        {
+          onSuccess: () => {
+            toast.success('Thêm giao dịch thành công');
+            handleCloseModal();
+          },
+          onError: () => {
+            toast.error('Lỗi khi thêm giao dịch');
+          },
+        }
+      );
+    }
   };
 
   const catMap = new Map(categories.map((c) => [c.id, c]));
+
+  // Client-side filtering
+  const filteredTransactions = transactions.filter((tx) => {
+    // 1. Filter by type
+    if (typeFilter !== 'all' && tx.type !== typeFilter) return false;
+
+    // 2. Filter by search keyword
+    if (search.trim()) {
+      const keyword = search.toLowerCase();
+      const noteMatch = tx.note?.toLowerCase().includes(keyword);
+      const category = tx.categoryId ? catMap.get(tx.categoryId) : null;
+      const categoryMatch = category?.name.toLowerCase().includes(keyword);
+      if (!noteMatch && !categoryMatch) return false;
+    }
+    return true;
+  });
+
+  // Calculate pagination slice
+  const totalItems = filteredTransactions.length;
+  const totalPages = Math.ceil(totalItems / itemsPerPage) || 1;
+  const paginatedTransactions = filteredTransactions.slice(
+    (currentPage - 1) * itemsPerPage,
+    currentPage * itemsPerPage
+  );
 
   if (isLoading || loadingCats) return <LoadingState />;
   if (isError) return <ErrorState message="Lỗi khi tải danh sách giao dịch" onRetry={refetch} />;
@@ -120,7 +191,7 @@ export default function TransactionsPage() {
           <Search size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground" />
           <input
             value={search}
-            onChange={(e) => setSearch(e.target.value)}
+            onChange={(e) => handleSearchChange(e.target.value)}
             placeholder={t('common.search')}
             className="h-9 w-full rounded-md border border-border bg-input-background pl-9 pr-3 text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring"
           />
@@ -132,54 +203,95 @@ export default function TransactionsPage() {
             { value: 'EXPENSE', label: t('finance.expense') },
           ]}
           value={typeFilter}
-          onChange={(e) => setTypeFilter(e.target.value as any)}
+          onChange={(e) => handleTypeFilterChange(e.target.value as any)}
           className="w-full sm:w-36"
         />
       </div>
 
-      {transactions.length === 0 ? (
+      {totalItems === 0 ? (
         <EmptyState
           icon={<ArrowUpRight size={24} />}
           title={t('finance.noTransactions')}
           action={<Button size="sm" onClick={modal.open}><Plus size={14} />Thêm giao dịch đầu tiên</Button>}
         />
       ) : (
-        <div className="space-y-2">
-          {transactions.map((tx) => {
-            const category = tx.categoryId ? catMap.get(tx.categoryId) : null;
-            return (
-              <Card key={tx.id} className="flex items-center gap-4 p-3 card-glow group relative bg-card">
-                <div className={cn('flex size-9 flex-shrink-0 items-center justify-center rounded-lg',
-                  tx.type === 'INCOME' ? 'bg-green-500/10 text-green-400' : 'bg-red-500/10 text-red-400')}>
-                  {tx.type === 'INCOME' ? <ArrowUpRight size={16} /> : <ArrowDownRight size={16} />}
-                </div>
-                <div className="flex-1 min-w-0">
-                  <div className="flex items-center gap-2">
-                    <p className="text-sm font-medium text-foreground">{category?.name || 'Giao dịch'}</p>
-                    <Badge variant="muted">Ví chính</Badge>
+        <div className="space-y-4">
+          <div className="space-y-2">
+            {paginatedTransactions.map((tx) => {
+              const category = tx.categoryId ? catMap.get(tx.categoryId) : null;
+              return (
+                <Card key={tx.id} className="flex items-center gap-4 p-3 card-glow group relative bg-card">
+                  <div className={cn('flex size-9 flex-shrink-0 items-center justify-center rounded-lg',
+                    tx.type === 'INCOME' ? 'bg-green-500/10 text-green-400' : 'bg-red-500/10 text-red-400')}>
+                    {tx.type === 'INCOME' ? <ArrowUpRight size={16} /> : <ArrowDownRight size={16} />}
                   </div>
-                  <p className="text-xs text-muted-foreground mt-0.5">{tx.note || '—'} · {formatDate(tx.occurredAt)}</p>
-                </div>
-                <div className="text-right flex items-center gap-3">
-                  <p className={cn('font-mono font-semibold text-sm flex-shrink-0',
-                    tx.type === 'INCOME' ? 'text-green-400' : 'text-red-400')}>
-                    {tx.type === 'INCOME' ? '+' : '-'}{formatMoney(tx.amount, tx.currency)}
-                  </p>
-                  <button
-                    onClick={() => handleDelete(tx.id)}
-                    className="p-1.5 text-muted-foreground hover:text-destructive hover:bg-secondary/40 rounded-md opacity-0 group-hover:opacity-100 transition-opacity"
-                    title="Xóa giao dịch"
-                  >
-                    <Trash2 size={14} />
-                  </button>
-                </div>
-              </Card>
-            );
-          })}
+                  <div className="flex-1 min-w-0">
+                    <div className="flex items-center gap-2">
+                      <p className="text-sm font-medium text-foreground">{category?.name || 'Giao dịch'}</p>
+                      <Badge variant="muted">Ví chính</Badge>
+                    </div>
+                    <p className="text-xs text-muted-foreground mt-0.5">{tx.note || '—'} · {formatDate(tx.occurredAt)}</p>
+                  </div>
+                  <div className="text-right flex items-center gap-3">
+                    <p className={cn('font-mono font-semibold text-sm flex-shrink-0',
+                      tx.type === 'INCOME' ? 'text-green-400' : 'text-red-400')}>
+                      {tx.type === 'INCOME' ? '+' : '-'}{formatMoney(tx.amount, tx.currency)}
+                    </p>
+                    <div className="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
+                      <button
+                        onClick={() => handleEdit(tx)}
+                        className="p-1.5 text-muted-foreground hover:text-primary hover:bg-secondary/40 rounded-md"
+                        title="Sửa giao dịch"
+                      >
+                        <Edit2 size={14} />
+                      </button>
+                      <button
+                        onClick={() => handleDelete(tx.id)}
+                        className="p-1.5 text-muted-foreground hover:text-destructive hover:bg-secondary/40 rounded-md"
+                        title="Xóa giao dịch"
+                      >
+                        <Trash2 size={14} />
+                      </button>
+                    </div>
+                  </div>
+                </Card>
+              );
+            })}
+          </div>
+
+          {/* Pagination controls */}
+          {totalPages > 1 && (
+            <div className="flex items-center justify-between pt-4 border-t border-border/20">
+              <p className="text-xs text-muted-foreground">
+                Hiển thị {(currentPage - 1) * itemsPerPage + 1} - {Math.min(currentPage * itemsPerPage, totalItems)} trong số {totalItems} giao dịch
+              </p>
+              <div className="flex items-center gap-2">
+                <Button
+                  variant="outline"
+                  size="sm"
+                  disabled={currentPage === 1}
+                  onClick={() => setCurrentPage((p) => p - 1)}
+                >
+                  Trước
+                </Button>
+                <span className="text-xs font-mono font-medium text-foreground px-2">
+                  {currentPage} / {totalPages}
+                </span>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  disabled={currentPage === totalPages}
+                  onClick={() => setCurrentPage((p) => p + 1)}
+                >
+                  Sau
+                </Button>
+              </div>
+            </div>
+          )}
         </div>
       )}
 
-      <Modal open={modal.isOpen} onClose={modal.close} title={t('finance.addTransaction')} size="md">
+      <Modal open={modal.isOpen} onClose={handleCloseModal} title={editingTx ? 'Sửa giao dịch' : t('finance.addTransaction')} size="md">
         <div className="space-y-4">
           <Select
             label={t('finance.type')}
@@ -238,8 +350,8 @@ export default function TransactionsPage() {
             onChange={(e) => setFormDate(e.target.value)}
           />
           <div className="flex gap-2 pt-2">
-            <Button variant="ghost" onClick={modal.close} fullWidth>{t('common.cancel')}</Button>
-            <Button fullWidth onClick={handleSave} loading={createTxMutation.isPending || createCatMutation.isPending}>
+            <Button variant="ghost" onClick={handleCloseModal} fullWidth>{t('common.cancel')}</Button>
+            <Button fullWidth onClick={handleSave} loading={createTxMutation.isPending || updateTxMutation.isPending || createCatMutation.isPending}>
               {t('common.save')}
             </Button>
           </div>
