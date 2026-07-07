@@ -12,20 +12,6 @@ import { ROUTES } from '@/shared/constants/routes';
 import { useCreateJournalEntry } from '@/features/journal/api/useJournalEntries';
 import { toast } from 'sonner';
 
-// Backend mood enum: HAPPY | SAD | ANGRY | TIRED | PEACEFUL | LONELY | MOTIVATED | EMPTY | OTHER
-const MOODS = [
-  { value: '', label: '— Không có —' },
-  { value: 'HAPPY', label: '😊 Vui vẻ' },
-  { value: 'PEACEFUL', label: '😌 Yên bình' },
-  { value: 'MOTIVATED', label: '🤩 Động lực' },
-  { value: 'TIRED', label: '😫 Mệt mỏi' },
-  { value: 'SAD', label: '😔 Buồn' },
-  { value: 'LONELY', label: '🥺 Cô đơn' },
-  { value: 'ANGRY', label: '😡 Tức giận' },
-  { value: 'EMPTY', label: '😐 Trống rỗng' },
-  { value: 'OTHER', label: '🤔 Khác' },
-];
-
 export default function JournalEditorPage() {
   const { t } = useTranslation();
   const navigate = useNavigate();
@@ -38,6 +24,19 @@ export default function JournalEditorPage() {
 
   const createEntry = useCreateJournalEntry();
 
+  const moodOptions = [
+    { value: '', label: t('journal.noMoodSelected') },
+    { value: 'HAPPY', label: `😊 ${t('moods.happy')}` },
+    { value: 'PEACEFUL', label: `😌 ${t('moods.peaceful')}` },
+    { value: 'MOTIVATED', label: `🤩 ${t('moods.motivated')}` },
+    { value: 'TIRED', label: `😫 ${t('moods.tired')}` },
+    { value: 'SAD', label: `😔 ${t('moods.sad')}` },
+    { value: 'LONELY', label: `🥺 ${t('moods.lonely')}` },
+    { value: 'ANGRY', label: `😡 ${t('moods.angry')}` },
+    { value: 'EMPTY', label: `😐 ${t('moods.empty')}` },
+    { value: 'OTHER', label: `🤔 ${t('moods.other')}` },
+  ];
+
   const addTag = (e: React.KeyboardEvent<HTMLInputElement>) => {
     if (e.key === 'Enter' && tagInput.trim()) {
       setTags((prev) => [...new Set([...prev, tagInput.trim()])]);
@@ -46,15 +45,15 @@ export default function JournalEditorPage() {
   };
 
   const handleSave = () => {
-    if (!content.trim()) { toast.error('Vui lòng nhập nội dung'); return; }
+    if (!content.trim()) { toast.error(t('journal.toastEnterContent')); return; }
     createEntry.mutate(
       { title: title || undefined, content, mood: mood || undefined, tags, isPrivate },
       {
         onSuccess: () => {
-          toast.success('Đã lưu nhật ký');
+          toast.success(t('journal.toastCreateSuccess'));
           navigate(ROUTES.JOURNAL);
         },
-        onError: () => toast.error('Lỗi khi lưu nhật ký'),
+        onError: () => toast.error(t('journal.toastCreateError')),
       }
     );
   };
@@ -77,22 +76,22 @@ export default function JournalEditorPage() {
 
       <div className="rounded-xl border border-border bg-card p-6 space-y-5">
         <Input
-          label="Tiêu đề (tùy chọn)"
-          placeholder="Ngày hôm nay..."
+          label={t('journal.entryTitle')}
+          placeholder={t('journal.entryTitlePlaceholder')}
           value={title}
           onChange={(e) => setTitle(e.target.value)}
         />
 
         <Select
           label={t('journal.mood')}
-          options={MOODS}
+          options={moodOptions}
           value={mood}
           onChange={(e) => setMood(e.target.value)}
         />
 
         <Textarea
-          label="Nội dung"
-          placeholder="Hôm nay tôi cảm thấy..."
+          label={t('journal.entryContent')}
+          placeholder={t('journal.entryContentPlaceholder')}
           rows={12}
           className="font-light leading-relaxed text-foreground"
           value={content}
@@ -112,7 +111,7 @@ export default function JournalEditorPage() {
             value={tagInput}
             onChange={(e) => setTagInput(e.target.value)}
             onKeyDown={addTag}
-            placeholder="Nhập tag và nhấn Enter..."
+            placeholder={t('journal.tagPlaceholder')}
             className="h-8 w-full rounded-md border border-border bg-input-background px-3 text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring"
           />
         </div>
@@ -122,7 +121,7 @@ export default function JournalEditorPage() {
           className="flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground transition-colors"
         >
           {isPrivate ? <Lock size={14} className="text-primary" /> : <Unlock size={14} />}
-          {isPrivate ? 'Bài viết riêng tư' : 'Bài viết công khai'}
+          {isPrivate ? t('journal.privateLabel') : t('journal.publicLabel')}
         </button>
       </div>
     </div>

@@ -18,24 +18,24 @@ import { AreaChart, Area, XAxis, YAxis, Tooltip, ResponsiveContainer } from 'rec
 import { useDashboardSummary } from '@/features/dashboard/api/useDashboardSummary';
 import { useTransactions } from '@/features/finance/api/useTransactions';
 
-const MOOD_MAP: Record<string, { emoji: string; label: string; color: string }> = {
-  HAPPY: { emoji: '😊', label: 'Vui vẻ', color: 'text-yellow-400' },
-  SAD: { emoji: '😔', label: 'Buồn', color: 'text-purple-400' },
-  ANGRY: { emoji: '😡', label: 'Tức giận', color: 'text-red-400' },
-  TIRED: { emoji: '😫', label: 'Mệt mỏi', color: 'text-blue-400' },
-  PEACEFUL: { emoji: '😌', label: 'Yên bình', color: 'text-green-400' },
-  LONELY: { emoji: '🥺', label: 'Cô đơn', color: 'text-indigo-400' },
-  MOTIVATED: { emoji: '🤩', label: 'Động lực', color: 'text-orange-400' },
-  EMPTY: { emoji: '😐', label: 'Trống rỗng', color: 'text-slate-400' },
-  OTHER: { emoji: '🤔', label: 'Khác', color: 'text-teal-400' },
-  AMAZING: { emoji: '🤩', label: 'Tuyệt vời', color: 'text-yellow-400' },
-  GOOD: { emoji: '😊', label: 'Tốt', color: 'text-green-400' },
-  NEUTRAL: { emoji: '😐', label: 'Bình thường', color: 'text-blue-400' },
-  TERRIBLE: { emoji: '😞', label: 'Tệ', color: 'text-red-400' },
+const MOOD_MAP: Record<string, { emoji: string; labelKey: string; color: string }> = {
+  HAPPY: { emoji: '😊', labelKey: 'moods.happy', color: 'text-yellow-400' },
+  SAD: { emoji: '😔', labelKey: 'moods.sad', color: 'text-purple-400' },
+  ANGRY: { emoji: '😡', labelKey: 'moods.angry', color: 'text-red-400' },
+  TIRED: { emoji: '😫', labelKey: 'moods.tired', color: 'text-blue-400' },
+  PEACEFUL: { emoji: '😌', labelKey: 'moods.peaceful', color: 'text-green-400' },
+  LONELY: { emoji: '🥺', labelKey: 'moods.lonely', color: 'text-indigo-400' },
+  MOTIVATED: { emoji: '🤩', labelKey: 'moods.motivated', color: 'text-orange-400' },
+  EMPTY: { emoji: '😐', labelKey: 'moods.empty', color: 'text-slate-400' },
+  OTHER: { emoji: '🤔', labelKey: 'moods.other', color: 'text-teal-400' },
+  AMAZING: { emoji: '🤩', labelKey: 'moods.amazing', color: 'text-yellow-400' },
+  GOOD: { emoji: '😊', labelKey: 'moods.good', color: 'text-green-400' },
+  NEUTRAL: { emoji: '😐', labelKey: 'moods.neutral', color: 'text-blue-400' },
+  TERRIBLE: { emoji: '😞', labelKey: 'moods.terrible', color: 'text-red-400' },
 };
 
 export default function DashboardPage() {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const navigate = useNavigate();
 
   // Queries
@@ -117,7 +117,10 @@ export default function DashboardPage() {
     <div className="space-y-6 animate-slide-up">
       <PageHeader
         title={t('dashboard.title')}
-        subtitle={`${new Date().toLocaleDateString('vi-VN', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })}`}
+        subtitle={`${new Date().toLocaleDateString(
+          i18n.language === 'vi' ? 'vi-VN' : i18n.language === 'ko' ? 'ko-KR' : 'en-US',
+          { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' }
+        )}`}
       />
 
       {/* Quick Actions */}
@@ -180,7 +183,7 @@ export default function DashboardPage() {
         {/* Chart */}
         <Card className="lg:col-span-2">
           <CardHeader>
-            <CardTitle>Thu / Chi 6 tháng gần đây</CardTitle>
+            <CardTitle>{t('dashboard.recentSixMonthsChart')}</CardTitle>
           </CardHeader>
           <CardContent>
             <ResponsiveContainer width="100%" height={200}>
@@ -226,7 +229,7 @@ export default function DashboardPage() {
                 />
               </div>
               <p className="text-xs text-muted-foreground mt-2">
-                {summary.todos.todayCount - summary.todos.doneToday} việc còn lại hôm nay
+                {t('dashboard.tasksRemainingToday', { count: summary.todos.todayCount - summary.todos.doneToday })}
               </p>
             </CardContent>
           </Card>
@@ -251,8 +254,8 @@ export default function DashboardPage() {
               <div className="flex items-center gap-3">
                 <span className="text-3xl">{mood.emoji}</span>
                 <div>
-                  <p className={`font-semibold ${mood.color}`}>{mood.label}</p>
-                  <p className="text-xs text-muted-foreground">Hôm nay</p>
+                  <p className={`font-semibold ${mood.color}`}>{t(mood.labelKey)}</p>
+                  <p className="text-xs text-muted-foreground">{t('common.today')}</p>
                 </div>
               </div>
             </CardContent>

@@ -1,3 +1,4 @@
+import { useTranslation } from 'react-i18next';
 import { Modal } from './Modal';
 import { Button } from './Button';
 
@@ -19,25 +20,29 @@ export function ConfirmModal({
   onConfirm,
   title,
   description,
-  confirmText = 'Xác nhận',
-  cancelText = 'Hủy',
+  confirmText,
+  cancelText,
   variant = 'primary',
   loading = false,
 }: ConfirmModalProps) {
+  const { t } = useTranslation();
+  const displayConfirmText = confirmText || t('common.confirm');
+  const displayCancelText = cancelText || t('common.cancel');
+
   return (
     <Modal open={open} onClose={onClose} title={title} size="sm">
       <div className="space-y-4">
         <p className="text-sm text-muted-foreground leading-relaxed">{description}</p>
         <div className="flex gap-2 justify-end pt-2">
           <Button variant="ghost" onClick={onClose} disabled={loading}>
-            {cancelText}
+            {displayCancelText}
           </Button>
           <Button
             variant={variant === 'danger' ? 'danger' : variant === 'warning' ? 'secondary' : 'primary'}
             onClick={onConfirm}
             loading={loading}
           >
-            {confirmText}
+            {displayConfirmText}
           </Button>
         </div>
       </div>

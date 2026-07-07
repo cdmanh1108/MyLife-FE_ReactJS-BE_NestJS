@@ -12,6 +12,7 @@ import { ErrorState } from '@/shared/ui/ErrorState';
 import { useDisclosure } from '@/shared/hooks/useDisclosure';
 import { useAlbums, useCreateAlbum, useDeleteAlbum } from '@/features/media/api/useMediaAssets';
 import { toast } from 'sonner';
+import { ConfirmModal } from '@/shared/ui/ConfirmModal';
 
 export default function AlbumsPage() {
   const { t } = useTranslation();
@@ -19,54 +20,52 @@ export default function AlbumsPage() {
   const [formName, setFormName] = useState('');
   const [formDescription, setFormDescription] = useState('');
 
+  // Delete state
+  const [deleteId, setDeleteId] = useState<string | null>(null);
+
   const { data: albums = [], isLoading, isError, refetch } = useAlbums();
   const createMutation = useCreateAlbum();
   const deleteMutation = useDeleteAlbum();
 
   const handleSave = () => {
     if (!formName.trim()) {
-      toast.error('Vui lòng nhập tên album');
+      toast.error(t('media.toastEnterAlbumName'));
       return;
     }
     createMutation.mutate(
       { name: formName.trim(), description: formDescription.trim() || undefined },
       {
         onSuccess: () => {
-          toast.success('Đã tạo album mới');
+          toast.success(t('media.toastAlbumCreated'));
           modal.close();
           setFormName('');
           setFormDescription('');
         },
-        onError: () => toast.error('Lỗi khi tạo album'),
+        onError: () => toast.error(t('media.toastAlbumCreateError')),
       }
     );
   };
 
   const handleDelete = (id: string, e: React.MouseEvent) => {
     e.stopPropagation();
-    if (confirm('Bạn có chắc muốn xóa album này? Sẽ không xóa các ảnh bên trong.')) {
-      deleteMutation.mutate(id, {
-        onSuccess: () => toast.success('Đã xóa album'),
-        onError: () => toast.error('Lỗi khi xóa album'),
-      });
-    }
+    setDeleteId(id);
   };
 
   if (isLoading) return <LoadingState />;
-  if (isError) return <ErrorState message="Lỗi khi tải danh sách album" onRetry={refetch} />;
+  if (isError) return <ErrorState message={t('media.errorLoadAlbums')} onRetry={refetch} />;
 
   return (
     <div className="space-y-5 animate-slide-up">
       <PageHeader
         title={t('nav.albums')}
-        actions={<Button size="sm" onClick={modal.open}><Plus size={14} />Tạo album</Button>}
+        actions={<Button size="sm" onClick={modal.open}><Plus size={14} />{t('media.createAlbum')}</Button>}
       />
 
       {albums.length === 0 ? (
         <EmptyState
           icon={<FolderOpen size={24} />}
-          title="Chưa có album nào"
-          action={<Button size="sm" onClick={modal.open}><Plus size={14} />Tạo album đầu tiên</Button>}
+          title={t('media.noAlbums')}
+          action={<Button size="sm" onClick={modal.open}><Plus size={14} />{t('media.createFirstAlbum')}</Button>}
         />
       ) : (
         <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
@@ -85,7 +84,7 @@ export default function AlbumsPage() {
                 <button
                   onClick={(e) => handleDelete(album.id, e)}
                   className="absolute top-2 right-2 p-1.5 bg-black/60 rounded-md text-white hover:text-destructive opacity-0 group-hover:opacity-100 transition-opacity"
-                  title="Xóa album"
+                  title={t('media.deleteAlbum')}
                 >
                   <Trash2 size={13} />
                 </button>
@@ -99,16 +98,37 @@ export default function AlbumsPage() {
         </div>
       )}
 
-      <Modal open={modal.isOpen} onClose={modal.close} title="Tạo album mới">
+      <Modal open={modal.isOpen} onClose={modal.close} title={t('media.createAlbumTitle')}>
         <div className="space-y-4">
-          <Input label="Tên album" placeholder="Nhập tên album..." value={formName} onChange={(e) => setFormName(e.target.value)} />
-          <Input label="Mô tả" placeholder="Nhập mô tả album..." value={formDescription} onChange={(e) => setFormDescription(e.target.value)} />
+          <Input label={t('media.albumName')} placeholder={t('media.albumNamePlaceholder')} value={formName} onChange={(e) => setFormName(e.target.value)} />
+          <Input label={t('media.albumDescription')} placeholder={t('media.albumDescriptionPlaceholder')} value={formDescription} onChange={(e) => setFormDescription(e.target.value)} />
           <div className="flex gap-2 pt-2">
             <Button variant="ghost" onClick={modal.close} fullWidth>{t('common.cancel')}</Button>
             <Button fullWidth onClick={handleSave} loading={createMutation.isPending}>{t('common.save')}</Button>
           </div>
         </div>
       </Modal>
+
+      <ConfirmModal
+        open={!!deleteId}
+        onClose={() => setDeleteId(null)}
+        onConfirm={() => {
+          if (deleteId) {
+            deleteMutation.mutate(deleteId, {
+              onSuccess: () => {
+                toast.success(t('media.toastAlbumDeleted'));
+                setDeleteId(null);
+              },
+              onError: () => toast.error(t('media.toastAlbumDeleteError')),
+            });
+          }
+        }}
+        title={t('media.deleteAlbumTitle')}
+        description={t('confirmations.deleteAlbum')}
+        variant="danger"
+        confirmText={t('common.delete')}
+        loading={deleteMutation.isPending}
+      />
     </div>
   );
 }

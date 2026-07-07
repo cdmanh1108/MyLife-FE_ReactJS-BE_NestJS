@@ -13,32 +13,33 @@ import { ErrorState } from '@/shared/ui/ErrorState';
 import { useDisclosure } from '@/shared/hooks/useDisclosure';
 import { useInterests, useCreateInterest, useDeleteInterest } from '@/features/interests/api/useInterests';
 import { toast } from 'sonner';
+import { ConfirmModal } from '@/shared/ui/ConfirmModal';
 
 type InterestType = 'MUSIC_GROUP' | 'SONG' | 'MOVIE' | 'ACTOR' | 'GAME' | 'BOOK' | 'QUOTE' | 'ANIME' | 'OTHER';
 
-const CATEGORY_MAP: Record<string, { label: string; icon: React.ReactNode; types: InterestType[] }> = {
+const CATEGORY_MAP: Record<string, { labelKey: string; icon: React.ReactNode; types: InterestType[] }> = {
   music: {
-    label: 'Âm nhạc',
+    labelKey: 'interests.categoryMusic',
     icon: <Music size={16} />,
     types: ['MUSIC_GROUP', 'SONG'],
   },
   movies: {
-    label: 'Phim & Chương trình',
+    labelKey: 'interests.categoryMovies',
     icon: <Film size={16} />,
     types: ['MOVIE', 'ACTOR', 'ANIME'],
   },
   games: {
-    label: 'Trò chơi',
+    labelKey: 'interests.categoryGames',
     icon: <Gamepad2 size={16} />,
     types: ['GAME'],
   },
   books: {
-    label: 'Sách',
+    labelKey: 'interests.categoryBooks',
     icon: <BookOpen size={16} />,
     types: ['BOOK'],
   },
   other: {
-    label: 'Sở thích khác',
+    labelKey: 'interests.categoryOther',
     icon: <HelpCircle size={16} />,
     types: ['OTHER'],
   },
@@ -47,6 +48,9 @@ const CATEGORY_MAP: Record<string, { label: string; icon: React.ReactNode; types
 export default function InterestsPage() {
   const { t } = useTranslation();
   const modal = useDisclosure();
+
+  // Delete state
+  const [deleteId, setDeleteId] = useState<string | null>(null);
 
   // Form states
   const [formType, setFormType] = useState<InterestType>('MUSIC_GROUP');
@@ -61,7 +65,7 @@ export default function InterestsPage() {
 
   const handleSave = () => {
     if (!formName.trim()) {
-      toast.error('Vui lòng nhập tên sở thích');
+      toast.error(formType === 'QUOTE' ? t('interests.toastEnterQuote') : t('interests.toastEnterName'));
       return;
     }
     const payload = {
@@ -74,28 +78,23 @@ export default function InterestsPage() {
 
     createMutation.mutate(payload, {
       onSuccess: () => {
-        toast.success('Đã thêm sở thích');
+        toast.success(t('interests.toastCreateSuccess'));
         modal.close();
         setFormName('');
         setFormDescription('');
         setFormReason('');
         setFormRating('');
       },
-      onError: () => toast.error('Lỗi khi thêm sở thích'),
+      onError: () => toast.error(t('interests.toastCreateError')),
     });
   };
 
   const handleDelete = (id: string) => {
-    if (confirm('Bạn có chắc muốn xóa sở thích này?')) {
-      deleteMutation.mutate(id, {
-        onSuccess: () => toast.success('Đã xóa thành công'),
-        onError: () => toast.error('Lỗi khi xóa'),
-      });
-    }
+    setDeleteId(id);
   };
 
   if (isLoading) return <LoadingState />;
-  if (isError) return <ErrorState message="Lỗi khi tải danh sách sở thích" onRetry={refetch} />;
+  if (isError) return <ErrorState message={t('interests.errorLoad')} onRetry={refetch} />;
 
   // Filter quotes separately
   const quotesList = interests.filter((i) => i.type === 'QUOTE');
@@ -109,7 +108,7 @@ export default function InterestsPage() {
     <div className="space-y-5 animate-slide-up">
       <PageHeader
         title={t('interests.title')}
-        actions={<Button size="sm" onClick={modal.open}><Plus size={14} />Thêm</Button>}
+        actions={<Button size="sm" onClick={modal.open}><Plus size={14} />{t('common.add')}</Button>}
       />
 
       <div className="grid gap-4 lg:grid-cols-2">
@@ -118,11 +117,11 @@ export default function InterestsPage() {
           return (
             <Card key={key} className="card-glow">
               <CardHeader>
-                <CardTitle className="flex items-center gap-2">{category.icon}{category.label}</CardTitle>
+                <CardTitle className="flex items-center gap-2">{category.icon}{t(category.labelKey)}</CardTitle>
               </CardHeader>
               <CardContent>
                 {items.length === 0 ? (
-                  <p className="text-xs text-muted-foreground italic">Trống</p>
+                  <p className="text-xs text-muted-foreground italic">{t('common.empty')}</p>
                 ) : (
                   <div className="flex flex-wrap gap-2">
                     {items.map((item) => (
@@ -151,11 +150,11 @@ export default function InterestsPage() {
 
       <Card className="card-glow">
         <CardHeader>
-          <CardTitle className="flex items-center gap-2"><Quote size={14} />Quotes yêu thích</CardTitle>
+          <CardTitle className="flex items-center gap-2"><Quote size={14} />{t('interests.favoriteQuotes')}</CardTitle>
         </CardHeader>
         <CardContent className="space-y-4">
           {quotesList.length === 0 ? (
-            <p className="text-xs text-muted-foreground italic">Trống</p>
+            <p className="text-xs text-muted-foreground italic">{t('common.empty')}</p>
           ) : (
             quotesList.map((q) => (
               <blockquote key={q.id} className="relative border-l-2 border-primary/30 pl-3 group flex items-start justify-between">
@@ -166,7 +165,7 @@ export default function InterestsPage() {
                 <button
                   onClick={() => handleDelete(q.id)}
                   className="opacity-0 group-hover:opacity-100 text-muted-foreground hover:text-destructive transition-opacity size-7 flex items-center justify-center rounded-md hover:bg-secondary/40"
-                  title="Xóa quote"
+                  title={t('interests.deleteQuote')}
                 >
                   <Trash2 size={13} />
                 </button>
@@ -176,35 +175,35 @@ export default function InterestsPage() {
         </CardContent>
       </Card>
 
-      <Modal open={modal.isOpen} onClose={modal.close} title="Thêm sở thích / Trích dẫn">
+      <Modal open={modal.isOpen} onClose={modal.close} title={t('interests.addTitle')}>
         <div className="space-y-4">
           <Select
-            label="Loại"
+            label={t('interests.type')}
             options={[
-              { value: 'MUSIC_GROUP', label: 'Nhóm nhạc / Ca sĩ' },
-              { value: 'SONG', label: 'Bài hát' },
-              { value: 'MOVIE', label: 'Phim điện ảnh / Truyền hình' },
-              { value: 'ANIME', label: 'Anime / Phim hoạt hình' },
-              { value: 'ACTOR', label: 'Diễn viên / Người nổi tiếng' },
-              { value: 'GAME', label: 'Trò chơi điện tử' },
-              { value: 'BOOK', label: 'Sách / Tác phẩm' },
-              { value: 'QUOTE', label: 'Quotes / Câu nói hay' },
-              { value: 'OTHER', label: 'Khác' },
+              { value: 'MUSIC_GROUP', label: t('interests.typeMusicGroup') },
+              { value: 'SONG', label: t('interests.typeSong') },
+              { value: 'MOVIE', label: t('interests.typeMovie') },
+              { value: 'ANIME', label: t('interests.typeAnime') },
+              { value: 'ACTOR', label: t('interests.typeActor') },
+              { value: 'GAME', label: t('interests.typeGame') },
+              { value: 'BOOK', label: t('interests.typeBook') },
+              { value: 'QUOTE', label: t('interests.typeQuote') },
+              { value: 'OTHER', label: t('common.other') },
             ]}
             value={formType}
             onChange={(e) => setFormType(e.target.value as InterestType)}
           />
 
           <Input
-            label={formType === 'QUOTE' ? 'Câu trích dẫn' : 'Tên sở thích'}
-            placeholder={formType === 'QUOTE' ? 'Nội dung câu nói...' : 'Tên tác phẩm, nghệ sĩ...'}
+            label={formType === 'QUOTE' ? t('interests.quoteText') : t('interests.interestName')}
+            placeholder={formType === 'QUOTE' ? t('interests.quotePlaceholder') : t('interests.interestNamePlaceholder')}
             value={formName}
             onChange={(e) => setFormName(e.target.value)}
           />
 
           <Input
-            label={formType === 'QUOTE' ? 'Tác giả / Nguồn' : 'Mô tả / Thể loại'}
-            placeholder={formType === 'QUOTE' ? 'Tên tác giả...' : 'Mô tả ngắn gọn...'}
+            label={formType === 'QUOTE' ? t('interests.quoteAuthor') : t('interests.interestDescription')}
+            placeholder={formType === 'QUOTE' ? t('interests.quoteAuthorPlaceholder') : t('interests.interestDescriptionPlaceholder')}
             value={formDescription}
             onChange={(e) => setFormDescription(e.target.value)}
           />
@@ -212,17 +211,17 @@ export default function InterestsPage() {
           {formType !== 'QUOTE' && (
             <>
               <Input
-                label="Lý do yêu thích"
-                placeholder="Tại sao bạn thích sở thích này..."
+                label={t('interests.favoriteReason')}
+                placeholder={t('interests.favoriteReasonPlaceholder')}
                 value={formReason}
                 onChange={(e) => setFormReason(e.target.value)}
               />
               <Input
-                label="Đánh giá (0 - 10)"
+                label={t('interests.ratingLabel')}
                 type="number"
                 min="0"
                 max="10"
-                placeholder="Điểm số đánh giá..."
+                placeholder={t('interests.ratingPlaceholder')}
                 value={formRating}
                 onChange={(e) => setFormRating(e.target.value)}
               />
@@ -235,6 +234,27 @@ export default function InterestsPage() {
           </div>
         </div>
       </Modal>
+
+      <ConfirmModal
+        open={!!deleteId}
+        onClose={() => setDeleteId(null)}
+        onConfirm={() => {
+          if (deleteId) {
+            deleteMutation.mutate(deleteId, {
+              onSuccess: () => {
+                toast.success(t('interests.toastDeleteSuccess'));
+                setDeleteId(null);
+              },
+              onError: () => toast.error(t('interests.toastDeleteError')),
+            });
+          }
+        }}
+        title={t('interests.deleteTitle')}
+        description={t('confirmations.deleteInterest')}
+        variant="danger"
+        confirmText={t('common.delete')}
+        loading={deleteMutation.isPending}
+      />
     </div>
   );
 }

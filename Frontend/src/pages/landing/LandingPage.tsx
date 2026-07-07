@@ -1,9 +1,11 @@
+import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router';
 import { ROUTES } from '@/shared/constants/routes';
 import { Button } from '@/shared/ui/Button';
 import { ArrowRight } from 'lucide-react';
 
 export default function LandingPage() {
+  const { t } = useTranslation();
   const navigate = useNavigate();
   return (
     <div className="min-h-screen bg-background flex flex-col items-center justify-center text-center px-6">
@@ -13,10 +15,10 @@ export default function LandingPage() {
         </div>
         <h1 className="text-4xl font-semibold text-foreground mb-3">MyLife OS</h1>
         <p className="text-muted-foreground max-w-sm mx-auto mb-8">
-          Hệ thống quản lý cuộc sống cá nhân. Tài chính, nhật ký, học tập, mục tiêu — tất cả trong một nơi.
+          {t('landing.description')}
         </p>
         <Button size="lg" onClick={() => navigate(ROUTES.LOGIN)}>
-          Bắt đầu <ArrowRight size={16} />
+          {t('landing.getStarted')} <ArrowRight size={16} />
         </Button>
       </div>
     </div>

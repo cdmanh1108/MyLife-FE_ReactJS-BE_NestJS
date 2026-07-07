@@ -91,7 +91,7 @@ export default function TransactionsPage() {
 
   const handleSave = async () => {
     if (!formAmount || isNaN(Number(formAmount))) {
-      toast.error('Số tiền không hợp lệ');
+      toast.error(t('finance.toastInvalidAmount'));
       return;
     }
 
@@ -106,7 +106,7 @@ export default function TransactionsPage() {
         });
         finalCategoryId = newCat.id;
       } catch (err) {
-        toast.error('Không thể tạo danh mục mới');
+        toast.error(t('finance.toastCreateCategoryError'));
         return;
       }
     }
@@ -125,11 +125,11 @@ export default function TransactionsPage() {
         { id: editingTx.id, dto: payload },
         {
           onSuccess: () => {
-            toast.success('Cập nhật giao dịch thành công');
+            toast.success(t('finance.toastUpdateSuccess'));
             handleCloseModal();
           },
           onError: () => {
-            toast.error('Lỗi khi cập nhật giao dịch');
+            toast.error(t('finance.toastUpdateError'));
           },
         }
       );
@@ -138,11 +138,11 @@ export default function TransactionsPage() {
         payload,
         {
           onSuccess: () => {
-            toast.success('Thêm giao dịch thành công');
+            toast.success(t('finance.toastCreateSuccess'));
             handleCloseModal();
           },
           onError: () => {
-            toast.error('Lỗi khi thêm giao dịch');
+            toast.error(t('finance.toastCreateError'));
           },
         }
       );
@@ -176,7 +176,7 @@ export default function TransactionsPage() {
   );
 
   if (isLoading || loadingCats) return <LoadingState />;
-  if (isError) return <ErrorState message="Lỗi khi tải danh sách giao dịch" onRetry={refetch} />;
+  if (isError) return <ErrorState message={t('common.error')} onRetry={refetch} />;
 
   return (
     <div className="space-y-5 animate-slide-up">
@@ -211,7 +211,7 @@ export default function TransactionsPage() {
         <EmptyState
           icon={<ArrowUpRight size={24} />}
           title={t('finance.noTransactions')}
-          action={<Button size="sm" onClick={modal.open}><Plus size={14} />Thêm giao dịch đầu tiên</Button>}
+          action={<Button size="sm" onClick={modal.open}><Plus size={14} />{t('finance.addTransaction')}</Button>}
         />
       ) : (
         <div className="space-y-4">
@@ -226,8 +226,8 @@ export default function TransactionsPage() {
                   </div>
                   <div className="flex-1 min-w-0">
                     <div className="flex items-center gap-2">
-                      <p className="text-sm font-medium text-foreground">{category?.name || 'Giao dịch'}</p>
-                      <Badge variant="muted">Ví chính</Badge>
+                      <p className="text-sm font-medium text-foreground">{category?.name || t('finance.defaultTransactionName')}</p>
+                      <Badge variant="muted">{t('finance.mainWallet')}</Badge>
                     </div>
                     <p className="text-xs text-muted-foreground mt-0.5">{tx.note || '—'} · {formatDate(tx.occurredAt)}</p>
                   </div>
@@ -240,14 +240,14 @@ export default function TransactionsPage() {
                       <button
                         onClick={() => handleEdit(tx)}
                         className="p-1.5 text-muted-foreground hover:text-primary hover:bg-secondary/40 rounded-md"
-                        title="Sửa giao dịch"
+                        title={t('finance.editTransaction')}
                       >
                         <Edit2 size={14} />
                       </button>
                       <button
                         onClick={() => handleDelete(tx.id)}
                         className="p-1.5 text-muted-foreground hover:text-destructive hover:bg-secondary/40 rounded-md"
-                        title="Xóa giao dịch"
+                        title={t('finance.deleteTransaction')}
                       >
                         <Trash2 size={14} />
                       </button>
@@ -262,7 +262,11 @@ export default function TransactionsPage() {
           {totalPages > 1 && (
             <div className="flex items-center justify-between pt-4 border-t border-border/20">
               <p className="text-xs text-muted-foreground">
-                Hiển thị {(currentPage - 1) * itemsPerPage + 1} - {Math.min(currentPage * itemsPerPage, totalItems)} trong số {totalItems} giao dịch
+                {t('finance.showingTransactions', {
+                  start: (currentPage - 1) * itemsPerPage + 1,
+                  end: Math.min(currentPage * itemsPerPage, totalItems),
+                  total: totalItems
+                })}
               </p>
               <div className="flex items-center gap-2">
                 <Button
@@ -271,7 +275,7 @@ export default function TransactionsPage() {
                   disabled={currentPage === 1}
                   onClick={() => setCurrentPage((p) => p - 1)}
                 >
-                  Trước
+                  {t('finance.prevPage')}
                 </Button>
                 <span className="text-xs font-mono font-medium text-foreground px-2">
                   {currentPage} / {totalPages}
@@ -282,7 +286,7 @@ export default function TransactionsPage() {
                   disabled={currentPage === totalPages}
                   onClick={() => setCurrentPage((p) => p + 1)}
                 >
-                  Sau
+                  {t('finance.nextPage')}
                 </Button>
               </div>
             </div>
@@ -290,7 +294,7 @@ export default function TransactionsPage() {
         </div>
       )}
 
-      <Modal open={modal.isOpen} onClose={handleCloseModal} title={editingTx ? 'Sửa giao dịch' : t('finance.addTransaction')} size="md">
+      <Modal open={modal.isOpen} onClose={handleCloseModal} title={editingTx ? t('finance.editTransaction') : t('finance.addTransaction')} size="md">
         <div className="space-y-4">
           <Select
             label={t('finance.type')}
@@ -307,11 +311,11 @@ export default function TransactionsPage() {
           />
 
           <div className="space-y-1.5">
-            <label className="text-xs font-medium text-muted-foreground">Danh mục</label>
+            <label className="text-xs font-medium text-muted-foreground">{t('finance.category')}</label>
             <div className="flex gap-2">
               <Select
                 options={[
-                  { value: '', label: '-- Chọn danh mục --' },
+                  { value: '', label: t('finance.selectCategoryPlaceholder') },
                   ...categories
                     .filter((c) => c.type === formType)
                     .map((c) => ({ value: c.id, label: c.name })),
@@ -323,9 +327,9 @@ export default function TransactionsPage() {
                 }}
                 className="flex-1"
               />
-              <span className="text-sm text-muted-foreground self-center">hoặc</span>
+              <span className="text-sm text-muted-foreground self-center">{t('finance.or')}</span>
               <Input
-                placeholder="Tạo danh mục mới..."
+                placeholder={t('finance.createCategoryPlaceholder')}
                 value={formCategoryName}
                 onChange={(e) => {
                   setFormCategoryName(e.target.value);
@@ -338,7 +342,7 @@ export default function TransactionsPage() {
 
           <Input
             label={t('finance.note')}
-            placeholder="Ghi chú..."
+            placeholder={`${t('finance.note')}...`}
             value={formNote}
             onChange={(e) => setFormNote(e.target.value)}
           />
@@ -364,17 +368,17 @@ export default function TransactionsPage() {
           if (deleteId) {
             deleteTxMutation.mutate(deleteId, {
               onSuccess: () => {
-                toast.success('Đã xóa giao dịch thành công');
+                toast.success(t('finance.toastDeleteSuccess'));
                 setDeleteId(null);
               },
-              onError: () => toast.error('Lỗi khi xóa giao dịch'),
+              onError: () => toast.error(t('finance.toastDeleteError')),
             });
           }
         }}
-        title="Xóa giao dịch"
-        description="Bạn có chắc chắn muốn xóa giao dịch này?"
+        title={t('finance.deleteTransaction')}
+        description={t('finance.deleteConfirm')}
         variant="danger"
-        confirmText="Xóa"
+        confirmText={t('common.delete')}
         loading={deleteTxMutation.isPending}
       />
     </div>

@@ -1,5 +1,8 @@
-export function getErrorMessage(error: any, defaultMessage = 'Có lỗi xảy ra, vui lòng thử lại'): string {
-  if (!error) return defaultMessage;
+import i18n from '@/shared/i18n';
+
+export function getErrorMessage(error: any, defaultMessage?: string): string {
+  const fallback = defaultMessage || i18n.t('common.errorTryAgain');
+  if (!error) return fallback;
   if (typeof error === 'string') return error;
   if (typeof error.message === 'string') return error.message;
   
@@ -17,5 +20,5 @@ export function getErrorMessage(error: any, defaultMessage = 'Có lỗi xảy ra
     return error.error.message;
   }
 
-  return defaultMessage;
+  return fallback;
 }

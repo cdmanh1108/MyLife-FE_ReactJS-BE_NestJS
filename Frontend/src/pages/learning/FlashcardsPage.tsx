@@ -47,35 +47,35 @@ export default function FlashcardsPage() {
       { id: card.id, status },
       {
         onSuccess: () => {
-          toast.success(status === 'MASTERED' ? 'Đã thuộc!' : 'Sẽ ôn lại sau');
+          toast.success(status === 'MASTERED' ? t('learning.toastMastered') : t('learning.toastReviewLater'));
           next();
         },
-        onError: () => toast.error('Lỗi khi cập nhật tiến trình'),
+        onError: () => toast.error(t('learning.toastUpdateProgressError')),
       }
     );
   };
 
   const handleSave = () => {
     if (!formFront.trim() || !formBack.trim()) {
-      toast.error('Vui lòng điền cả mặt trước và mặt sau');
+      toast.error(t('learning.toastFillFrontAndBack'));
       return;
     }
     createMutation.mutate(
       { language: formLanguage, front: formFront.trim(), back: formBack.trim() },
       {
         onSuccess: () => {
-          toast.success('Đã thêm thẻ ghi nhớ mới');
+          toast.success(t('learning.toastFlashcardAdded'));
           modal.close();
           setFormFront('');
           setFormBack('');
         },
-        onError: () => toast.error('Lỗi khi tạo thẻ ghi nhớ'),
+        onError: () => toast.error(t('learning.toastFlashcardAddError')),
       }
     );
   };
 
   if (isLoading) return <LoadingState />;
-  if (isError) return <ErrorState message="Lỗi khi tải thẻ ghi nhớ" onRetry={refetch} />;
+  if (isError) return <ErrorState message={t('learning.errorLoadFlashcards')} onRetry={refetch} />;
 
   const card = cards[idx];
 
@@ -83,14 +83,14 @@ export default function FlashcardsPage() {
     <div className="space-y-6 animate-slide-up">
       <PageHeader
         title={t('nav.flashcards')}
-        actions={<Button size="sm" onClick={modal.open}><Plus size={14} />Thêm thẻ</Button>}
+        actions={<Button size="sm" onClick={modal.open}><Plus size={14} />{t('learning.addCard')}</Button>}
       />
 
       {cards.length === 0 ? (
         <EmptyState
           icon={<RotateCcw size={24} />}
-          title="Chưa có thẻ ghi nhớ nào"
-          action={<Button size="sm" onClick={modal.open}>Thêm thẻ đầu tiên</Button>}
+          title={t('learning.noFlashcards')}
+          action={<Button size="sm" onClick={modal.open}>{t('learning.addFirstCard')}</Button>}
         />
       ) : (
         <div className="max-w-lg mx-auto">
@@ -111,12 +111,12 @@ export default function FlashcardsPage() {
               {!flipped ? (
                 <>
                   <p className="text-3xl font-semibold text-foreground font-mono">{card.front}</p>
-                  <p className="mt-4 text-xs text-muted-foreground">Nhấn để xem nghĩa</p>
+                  <p className="mt-4 text-xs text-muted-foreground">{t('learning.clickToReveal')}</p>
                 </>
               ) : (
                 <>
                   <p className="text-xl font-medium text-primary">{card.back}</p>
-                  <p className="mt-4 text-xs text-muted-foreground">Nhấn để ẩn</p>
+                  <p className="mt-4 text-xs text-muted-foreground">{t('learning.clickToHide')}</p>
                 </>
               )}
             </div>
@@ -131,13 +131,13 @@ export default function FlashcardsPage() {
             </button>
             <div className="flex gap-3">
               <Button variant="danger" size="sm" onClick={() => handleReview('LEARNING')} loading={reviewMutation.isPending}>
-                <ThumbsDown size={14} />Chưa thuộc
+                <ThumbsDown size={14} />{t('learning.notMastered')}
               </Button>
               <Button variant="secondary" size="sm" onClick={next}>
-                <RotateCcw size={14} />Bỏ qua
+                <RotateCcw size={14} />{t('common.skip')}
               </Button>
               <Button size="sm" onClick={() => handleReview('MASTERED')} loading={reviewMutation.isPending}>
-                <ThumbsUp size={14} />Đã thuộc
+                <ThumbsUp size={14} />{t('learning.mastered')}
               </Button>
             </div>
             <button
@@ -150,16 +150,16 @@ export default function FlashcardsPage() {
         </div>
       )}
 
-      <Modal open={modal.isOpen} onClose={modal.close} title="Thêm thẻ ghi nhớ">
+      <Modal open={modal.isOpen} onClose={modal.close} title={t('learning.addFlashcard')}>
         <div className="space-y-4">
           <Select
-            label="Ngôn ngữ"
+            label={t('learning.studyLanguage')}
             options={[{ value: 'TOPIK', label: 'TOPIK (Korean)' }, { value: 'IELTS', label: 'IELTS (English)' }]}
             value={formLanguage}
             onChange={(e) => setFormLanguage(e.target.value as any)}
           />
-          <Input label="Mặt trước (Từ / Câu hỏi)" placeholder="Từ mới hoặc câu hỏi..." value={formFront} onChange={(e) => setFormFront(e.target.value)} />
-          <Input label="Mặt sau (Nghĩa / Câu trả lời)" placeholder="Nghĩa của từ hoặc câu trả lời..." value={formBack} onChange={(e) => setFormBack(e.target.value)} />
+          <Input label={t('learning.cardFront')} placeholder={t('learning.cardFrontPlaceholder')} value={formFront} onChange={(e) => setFormFront(e.target.value)} />
+          <Input label={t('learning.cardBack')} placeholder={t('learning.cardBackPlaceholder')} value={formBack} onChange={(e) => setFormBack(e.target.value)} />
           
           <div className="flex gap-2 pt-2">
             <Button variant="ghost" onClick={modal.close} fullWidth>{t('common.cancel')}</Button>

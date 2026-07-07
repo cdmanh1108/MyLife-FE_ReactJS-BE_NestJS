@@ -17,15 +17,15 @@ import { useGoals, useCreateGoal, useUpdateMilestone } from '@/features/goals/ap
 import { toast } from 'sonner';
 
 // Backend: NOT_STARTED | IN_PROGRESS | COMPLETED | PAUSED | CANCELLED
-const STATUS_CONFIG: Record<string, { label: string; variant: 'info' | 'success' | 'warning' | 'muted' | 'danger' }> = {
-  NOT_STARTED: { label: 'Chưa bắt đầu', variant: 'muted' },
-  IN_PROGRESS: { label: 'Đang thực hiện', variant: 'info' },
-  COMPLETED: { label: 'Hoàn thành', variant: 'success' },
-  PAUSED: { label: 'Tạm dừng', variant: 'warning' },
-  CANCELLED: { label: 'Đã hủy', variant: 'danger' },
+const STATUS_CONFIG: Record<string, { labelKey: string; variant: 'info' | 'success' | 'warning' | 'muted' | 'danger' }> = {
+  NOT_STARTED: { labelKey: 'goals.statusNotStarted', variant: 'muted' },
+  IN_PROGRESS: { labelKey: 'goals.statusInProgress', variant: 'info' },
+  COMPLETED: { labelKey: 'goals.statusCompleted', variant: 'success' },
+  PAUSED: { labelKey: 'goals.statusPaused', variant: 'warning' },
+  CANCELLED: { labelKey: 'goals.statusCancelled', variant: 'danger' },
   // Legacy fallback
-  ACTIVE: { label: 'Đang thực hiện', variant: 'info' },
-  ABANDONED: { label: 'Đã hủy', variant: 'muted' },
+  ACTIVE: { labelKey: 'goals.statusInProgress', variant: 'info' },
+  ABANDONED: { labelKey: 'goals.statusCancelled', variant: 'muted' },
 };
 
 export default function GoalsPage() {
@@ -40,16 +40,16 @@ export default function GoalsPage() {
   const updateMilestone = useUpdateMilestone();
 
   const handleSave = () => {
-    if (!formTitle.trim()) { toast.error('Vui lòng nhập tiêu đề'); return; }
+    if (!formTitle.trim()) { toast.error(t('goals.toastEnterTitle')); return; }
     createGoal.mutate(
       { title: formTitle, description: formDesc || undefined, targetDate: formTargetDate || undefined },
       {
         onSuccess: () => {
-          toast.success('Đã tạo mục tiêu mới');
+          toast.success(t('goals.toastCreateSuccess'));
           modal.close();
           setFormTitle(''); setFormDesc(''); setFormTargetDate('');
         },
-        onError: () => toast.error('Lỗi khi tạo mục tiêu'),
+        onError: () => toast.error(t('goals.toastCreateError')),
       }
     );
   };
@@ -57,12 +57,12 @@ export default function GoalsPage() {
   const handleToggleMilestone = (goalId: string, milestoneId: string, done: boolean) => {
     updateMilestone.mutate(
       { goalId, milestoneId, dto: { done: !done } },
-      { onError: () => toast.error('Lỗi khi cập nhật milestone') }
+      { onError: () => toast.error(t('goals.toastUpdateMilestoneError')) }
     );
   };
 
   if (isLoading) return <LoadingState />;
-  if (isError) return <ErrorState message="Lỗi khi tải dữ liệu mục tiêu" onRetry={refetch} />;
+  if (isError) return <ErrorState message={t('goals.errorLoad')} onRetry={refetch} />;
 
   return (
     <div className="space-y-5 animate-slide-up">
@@ -74,7 +74,7 @@ export default function GoalsPage() {
         <EmptyState
           icon={<Target size={24} />}
           title={t('goals.noGoals')}
-          action={<Button size="sm" onClick={modal.open}><Plus size={14} />Tạo mục tiêu đầu tiên</Button>}
+          action={<Button size="sm" onClick={modal.open}><Plus size={14} />{t('goals.createFirstGoal')}</Button>}
         />
       ) : (
         <div className="grid gap-4 lg:grid-cols-2">
@@ -87,7 +87,7 @@ export default function GoalsPage() {
                     <h3 className="font-semibold text-foreground">{goal.title}</h3>
                     {goal.description && <p className="text-xs text-muted-foreground mt-0.5">{goal.description}</p>}
                   </div>
-                  <Badge variant={statusCfg.variant}>{statusCfg.label}</Badge>
+                  <Badge variant={statusCfg.variant}>{t(statusCfg.labelKey)}</Badge>
                 </div>
                 <div>
                   <div className="mb-1.5 flex justify-between text-xs">
@@ -114,7 +114,7 @@ export default function GoalsPage() {
                   </div>
                 )}
                 {goal.targetDate && (
-                  <p className="text-[10px] text-muted-foreground">Mục tiêu: {formatDate(goal.targetDate)}</p>
+                  <p className="text-[10px] text-muted-foreground">{t('goals.targetDate')}: {formatDate(goal.targetDate)}</p>
                 )}
               </Card>
             );
@@ -124,9 +124,9 @@ export default function GoalsPage() {
 
       <Modal open={modal.isOpen} onClose={modal.close} title={t('goals.addGoal')}>
         <div className="space-y-4">
-          <Input label="Tiêu đề" placeholder="Tên mục tiêu..." value={formTitle} onChange={(e) => setFormTitle(e.target.value)} />
-          <Input label="Mô tả" placeholder="Chi tiết..." value={formDesc} onChange={(e) => setFormDesc(e.target.value)} />
-          <Input label="Ngày đích" type="date" value={formTargetDate} onChange={(e) => setFormTargetDate(e.target.value)} />
+          <Input label={t('goals.goalTitle')} placeholder={t('goals.goalTitlePlaceholder')} value={formTitle} onChange={(e) => setFormTitle(e.target.value)} />
+          <Input label={t('goals.goalDescription')} placeholder={t('goals.goalDescriptionPlaceholder')} value={formDesc} onChange={(e) => setFormDesc(e.target.value)} />
+          <Input label={t('goals.targetDate')} type="date" value={formTargetDate} onChange={(e) => setFormTargetDate(e.target.value)} />
           <div className="flex gap-2 pt-2">
             <Button variant="ghost" onClick={modal.close} fullWidth>{t('common.cancel')}</Button>
             <Button fullWidth onClick={handleSave} loading={createGoal.isPending}>{t('common.save')}</Button>

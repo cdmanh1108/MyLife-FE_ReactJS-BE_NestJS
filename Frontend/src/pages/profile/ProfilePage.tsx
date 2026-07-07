@@ -30,9 +30,9 @@ export default function ProfilePage() {
   }
 
   const stats = [
-    { label: 'Giao dịch', value: transactions.length },
-    { label: 'Từ vựng', value: vocab.length },
-    { label: 'Nhật ký', value: journal.length },
+    { label: t('nav.transactions'), value: transactions.length },
+    { label: t('nav.vocabulary'), value: vocab.length },
+    { label: t('nav.journal'), value: journal.length },
   ];
 
   return (
@@ -41,7 +41,7 @@ export default function ProfilePage() {
         title={t('profile.title')}
         actions={
           <Button size="sm" variant="outline" onClick={() => navigate(ROUTES.SETTINGS)}>
-            <Edit2 size={14} />Cài đặt
+            <Edit2 size={14} />{t('nav.settings')}
           </Button>
         }
       />
@@ -50,7 +50,7 @@ export default function ProfilePage() {
         <div className="flex items-center gap-5">
           <Avatar name={user.name ?? 'User'} src={user.avatar} size="lg" />
           <div>
-            <h2 className="text-xl font-semibold text-foreground">{user.name ?? 'Người dùng'}</h2>
+            <h2 className="text-xl font-semibold text-foreground">{user.name ?? t('profile.defaultUser')}</h2>
             <p className="text-sm text-muted-foreground mt-0.5">{user.email}</p>
             <div className="flex gap-1.5 mt-2">
               <Badge variant="info">Software Engineer</Badge>
@@ -67,7 +67,7 @@ export default function ProfilePage() {
         </CardHeader>
         <CardContent>
           <p className="text-sm text-muted-foreground leading-relaxed line-clamp-3">
-            {biography?.content ?? 'Chưa có tiểu sử. Nhấn để thêm...'}
+            {biography?.content ?? t('profile.noBiography')}
           </p>
         </CardContent>
       </Card>

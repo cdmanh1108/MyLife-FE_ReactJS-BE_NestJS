@@ -18,11 +18,11 @@ import { useTodos, useCreateTodo, useCompleteTodo, useReopenTodo } from '@/featu
 import { toast } from 'sonner';
 
 // Backend: LOW | MEDIUM | HIGH | URGENT
-const priorityConfig: Record<string, { label: string; variant: 'danger' | 'warning' | 'info' | 'muted'; color: string }> = {
-  URGENT: { label: 'Khẩn cấp', variant: 'danger', color: 'border-l-red-500' },
-  HIGH: { label: 'Cao', variant: 'warning', color: 'border-l-yellow-500' },
-  MEDIUM: { label: 'Bình thường', variant: 'info', color: 'border-l-primary' },
-  LOW: { label: 'Thấp', variant: 'muted', color: 'border-l-border' },
+const priorityConfig: Record<string, { labelKey: string; variant: 'danger' | 'warning' | 'info' | 'muted'; color: string }> = {
+  URGENT: { labelKey: 'todos.urgent', variant: 'danger', color: 'border-l-red-500' },
+  HIGH: { labelKey: 'todos.high', variant: 'warning', color: 'border-l-yellow-500' },
+  MEDIUM: { labelKey: 'todos.normal', variant: 'info', color: 'border-l-primary' },
+  LOW: { labelKey: 'todos.low', variant: 'muted', color: 'border-l-border' },
 };
 
 export default function TodosPage() {
@@ -39,29 +39,29 @@ export default function TodosPage() {
 
   const handleToggle = (id: string, status: string) => {
     if (status === 'DONE') {
-      reopenMutation.mutate(id, { onError: () => toast.error('Lỗi khi mở lại task') });
+      reopenMutation.mutate(id, { onError: () => toast.error(t('todos.toastReopenError')) });
     } else {
-      completeMutation.mutate(id, { onError: () => toast.error('Lỗi khi hoàn thành task') });
+      completeMutation.mutate(id, { onError: () => toast.error(t('todos.toastCompleteError')) });
     }
   };
 
   const handleSave = () => {
-    if (!formTitle.trim()) { toast.error('Vui lòng nhập tiêu đề'); return; }
+    if (!formTitle.trim()) { toast.error(t('todos.toastEnterTitle')); return; }
     createMutation.mutate(
       { title: formTitle, priority: formPriority, dueDate: formDueDate || undefined },
       {
         onSuccess: () => {
-          toast.success('Đã thêm task mới');
+          toast.success(t('todos.toastCreateSuccess'));
           modal.close();
           setFormTitle(''); setFormPriority('MEDIUM'); setFormDueDate('');
         },
-        onError: () => toast.error('Lỗi khi thêm task'),
+        onError: () => toast.error(t('todos.toastCreateError')),
       }
     );
   };
 
   if (isLoading) return <LoadingState />;
-  if (isError) return <ErrorState message="Lỗi khi tải danh sách todo" onRetry={refetch} />;
+  if (isError) return <ErrorState message={t('todos.errorLoad')} onRetry={refetch} />;
 
   const grouped = {
     todo: todos.filter((td) => td.status === 'TODO'),
@@ -78,16 +78,16 @@ export default function TodosPage() {
 
       <div className="grid grid-cols-1 gap-4 lg:grid-cols-3">
         {[
-          { key: 'todo', label: 'Cần làm', items: grouped.todo, color: 'border-t-primary/50' },
-          { key: 'inProgress', label: 'Đang làm', items: grouped.inProgress, color: 'border-t-yellow-500/50' },
-          { key: 'done', label: 'Hoàn thành', items: grouped.done, color: 'border-t-green-500/50' },
+          { key: 'todo', label: t('todos.todo'), items: grouped.todo, color: 'border-t-primary/50' },
+          { key: 'inProgress', label: t('todos.inProgress'), items: grouped.inProgress, color: 'border-t-yellow-500/50' },
+          { key: 'done', label: t('todos.completed'), items: grouped.done, color: 'border-t-green-500/50' },
         ].map((col) => (
           <div key={col.key} className={`rounded-xl border-t-2 border-border bg-card p-3 space-y-2 ${col.color}`}>
             <div className="flex items-center justify-between px-1 pb-1">
               <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">{col.label}</p>
               <Badge variant="muted">{col.items.length}</Badge>
             </div>
-            {col.items.length === 0 && <p className="py-4 text-center text-xs text-muted-foreground">Trống</p>}
+            {col.items.length === 0 && <p className="py-4 text-center text-xs text-muted-foreground">{t('common.empty')}</p>}
             {col.items.map((todo) => {
               const p = priorityConfig[todo.priority] ?? priorityConfig.MEDIUM;
               return (
@@ -108,7 +108,7 @@ export default function TodosPage() {
                       {todo.title}
                     </p>
                     <div className="mt-1.5 flex items-center gap-1.5 flex-wrap">
-                      <Badge variant={p.variant}>{p.label}</Badge>
+                      <Badge variant={p.variant}>{t(p.labelKey)}</Badge>
                       {todo.dueDate && (
                         <span className="flex items-center gap-1 text-[10px] text-muted-foreground">
                           <Clock size={10} />{formatDate(todo.dueDate)}
@@ -125,7 +125,7 @@ export default function TodosPage() {
 
       <Modal open={modal.isOpen} onClose={modal.close} title={t('todos.addTodo')}>
         <div className="space-y-4">
-          <Input label="Tiêu đề" placeholder="Tên công việc..." value={formTitle} onChange={(e) => setFormTitle(e.target.value)} />
+          <Input label={t('todos.taskTitle')} placeholder={t('todos.taskTitlePlaceholder')} value={formTitle} onChange={(e) => setFormTitle(e.target.value)} />
           <Select
             label={t('todos.priority')}
             options={[

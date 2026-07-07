@@ -16,6 +16,7 @@ import { formatDate } from '@/shared/lib/date';
 import { useMockTests, useCreateMockTest, useDeleteMockTest } from '@/features/learning/api/useMockTests';
 import { LineChart, Line, XAxis, YAxis, Tooltip, ResponsiveContainer } from 'recharts';
 import { toast } from 'sonner';
+import { ConfirmModal } from '@/shared/ui/ConfirmModal';
 
 export default function MockTestsPage() {
   const { t } = useTranslation();
@@ -23,6 +24,10 @@ export default function MockTestsPage() {
 
   // Form states
   const [formLanguage, setFormLanguage] = useState<'IELTS' | 'TOPIK'>('TOPIK');
+  
+  // Delete state
+  const [deleteId, setDeleteId] = useState<string | null>(null);
+  
   const [formTestName, setFormTestName] = useState('');
   const [formTestDate, setFormTestDate] = useState(new Date().toISOString().split('T')[0]);
   const [formListeningScore, setFormListeningScore] = useState('');
@@ -38,7 +43,7 @@ export default function MockTestsPage() {
 
   const handleSave = () => {
     if (!formTestName.trim()) {
-      toast.error('Vui lòng nhập tên đề thi');
+      toast.error(t('learning.toastEnterTestName'));
       return;
     }
     const payload = {
@@ -55,7 +60,7 @@ export default function MockTestsPage() {
 
     createMutation.mutate(payload, {
       onSuccess: () => {
-        toast.success('Đã thêm kết quả thi thử');
+        toast.success(t('learning.toastTestAdded'));
         modal.close();
         setFormTestName('');
         setFormListeningScore('');
@@ -65,21 +70,16 @@ export default function MockTestsPage() {
         setFormTotalScore('');
         setFormNote('');
       },
-      onError: () => toast.error('Lỗi khi thêm kết quả thi thử'),
+      onError: () => toast.error(t('learning.toastTestAddError')),
     });
   };
 
   const handleDelete = (id: string) => {
-    if (confirm('Bạn có chắc muốn xóa kết quả thi này?')) {
-      deleteMutation.mutate(id, {
-        onSuccess: () => toast.success('Đã xóa kết quả thi thử'),
-        onError: () => toast.error('Lỗi khi xóa'),
-      });
-    }
+    setDeleteId(id);
   };
 
   if (isLoading) return <LoadingState />;
-  if (isError) return <ErrorState message="Lỗi khi tải danh sách thi thử" onRetry={refetch} />;
+  if (isError) return <ErrorState message={t('learning.errorLoadTests')} onRetry={refetch} />;
 
   const sortedTests = [...tests].sort((a, b) => new Date(b.testDate).getTime() - new Date(a.testDate).getTime());
   const chartData = [...sortedTests].reverse().map((t) => ({
@@ -95,13 +95,13 @@ export default function MockTestsPage() {
     <div className="space-y-5 animate-slide-up">
       <PageHeader
         title={t('nav.mockTests')}
-        actions={<Button size="sm" onClick={modal.open}><Plus size={14} />Thêm kết quả</Button>}
+        actions={<Button size="sm" onClick={modal.open}><Plus size={14} />{t('learning.addResult')}</Button>}
       />
 
       {sortedTests.length > 0 && (
         <Card>
           <CardHeader>
-            <CardTitle className="flex items-center gap-2"><TrendingUp size={14} />Tiến độ điểm số</CardTitle>
+            <CardTitle className="flex items-center gap-2"><TrendingUp size={14} />{t('learning.scoreTrend')}</CardTitle>
           </CardHeader>
           <CardContent>
             <ResponsiveContainer width="100%" height={160}>
@@ -123,8 +123,8 @@ export default function MockTestsPage() {
       {sortedTests.length === 0 ? (
         <EmptyState
           icon={<FileText size={24} />}
-          title="Chưa ghi nhận kết quả thi thử nào"
-          action={<Button size="sm" onClick={modal.open}>Thêm kết quả đầu tiên</Button>}
+          title={t('learning.noTestsRecorded')}
+          action={<Button size="sm" onClick={modal.open}>{t('learning.addFirstResult')}</Button>}
         />
       ) : (
         <div className="space-y-2">
@@ -152,7 +152,7 @@ export default function MockTestsPage() {
                   <button
                     onClick={() => handleDelete(test.id)}
                     className="p-1.5 text-muted-foreground hover:text-destructive hover:bg-secondary/40 rounded-md opacity-0 group-hover:opacity-100 transition-opacity"
-                    title="Xóa kết quả"
+                    title={t('learning.deleteResult')}
                   >
                     <Trash2 size={14} />
                   </button>
@@ -163,37 +163,37 @@ export default function MockTestsPage() {
         </div>
       )}
 
-      <Modal open={modal.isOpen} onClose={modal.close} title="Ghi nhận kết quả thi thử">
+      <Modal open={modal.isOpen} onClose={modal.close} title={t('learning.addTestResult')}>
         <div className="space-y-4">
           <Select
-            label="Ngôn ngữ"
+            label={t('learning.studyLanguage')}
             options={[{ value: 'TOPIK', label: 'TOPIK' }, { value: 'IELTS', label: 'IELTS' }]}
             value={formLanguage}
             onChange={(e) => setFormLanguage(e.target.value as any)}
           />
 
-          <Input label="Tên đề thi / Kỳ thi" placeholder="Ví dụ: TOPIK II Kim Kê #35..." value={formTestName} onChange={(e) => setFormTestName(e.target.value)} />
-          <Input label="Ngày thi thử" type="date" value={formTestDate} onChange={(e) => setFormTestDate(e.target.value)} />
+          <Input label={t('learning.testName')} placeholder={t('learning.testNamePlaceholder')} value={formTestName} onChange={(e) => setFormTestName(e.target.value)} />
+          <Input label={t('learning.testDate')} type="date" value={formTestDate} onChange={(e) => setFormTestDate(e.target.value)} />
 
           <div className="grid grid-cols-2 gap-4">
-            <Input label="Điểm nghe (Listening)" type="number" placeholder="0" value={formListeningScore} onChange={(e) => setFormListeningScore(e.target.value)} />
-            <Input label="Điểm đọc (Reading)" type="number" placeholder="0" value={formReadingScore} onChange={(e) => setFormReadingScore(e.target.value)} />
+            <Input label={t('learning.scoreListening')} type="number" placeholder="0" value={formListeningScore} onChange={(e) => setFormListeningScore(e.target.value)} />
+            <Input label={t('learning.scoreReading')} type="number" placeholder="0" value={formReadingScore} onChange={(e) => setFormReadingScore(e.target.value)} />
           </div>
 
           <div className="grid grid-cols-2 gap-4">
-            <Input label="Điểm viết (Writing)" type="number" placeholder="0" value={formWritingScore} onChange={(e) => setFormWritingScore(e.target.value)} />
-            <Input label="Điểm nói (Speaking)" type="number" placeholder="0" value={formSpeakingScore} onChange={(e) => setFormSpeakingScore(e.target.value)} />
+            <Input label={t('learning.scoreWriting')} type="number" placeholder="0" value={formWritingScore} onChange={(e) => setFormWritingScore(e.target.value)} />
+            <Input label={t('learning.scoreSpeaking')} type="number" placeholder="0" value={formSpeakingScore} onChange={(e) => setFormSpeakingScore(e.target.value)} />
           </div>
 
           <Input
-            label={`Tổng điểm (Tối đa: ${getMaxScoreLimit()})`}
+            label={`${t('learning.scoreTotal')} (${t('learning.maxScoreLimit')}: ${getMaxScoreLimit()})`}
             type="number"
             placeholder="0"
             value={formTotalScore}
             onChange={(e) => setFormTotalScore(e.target.value)}
           />
 
-          <Input label="Ghi chú thêm" placeholder="Ví dụ: Tăng tốc phần đọc..." value={formNote} onChange={(e) => setFormNote(e.target.value)} />
+          <Input label={t('learning.additionalNotes')} placeholder={t('learning.testNotesPlaceholder')} value={formNote} onChange={(e) => setFormNote(e.target.value)} />
 
           <div className="flex gap-2 pt-2">
             <Button variant="ghost" onClick={modal.close} fullWidth>{t('common.cancel')}</Button>
@@ -201,6 +201,27 @@ export default function MockTestsPage() {
           </div>
         </div>
       </Modal>
+
+      <ConfirmModal
+        open={!!deleteId}
+        onClose={() => setDeleteId(null)}
+        onConfirm={() => {
+          if (deleteId) {
+            deleteMutation.mutate(deleteId, {
+              onSuccess: () => {
+                toast.success(t('learning.toastTestDeleted'));
+                setDeleteId(null);
+              },
+              onError: () => toast.error(t('learning.toastDeleteError')),
+            });
+          }
+        }}
+        title={t('learning.deleteTestTitle')}
+        description={t('confirmations.deleteTest')}
+        variant="danger"
+        confirmText={t('common.delete')}
+        loading={deleteMutation.isPending}
+      />
     </div>
   );
 }

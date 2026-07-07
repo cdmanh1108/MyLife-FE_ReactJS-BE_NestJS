@@ -46,7 +46,7 @@ export default function LearningDashboardPage() {
 
   const handleLogSave = () => {
     if (!formMinutes || Number(formMinutes) <= 0) {
-      toast.error('Vui lòng nhập thời lượng học hợp lệ');
+      toast.error(t('learning.toastInvalidDuration'));
       return;
     }
     createLogMutation.mutate(
@@ -59,12 +59,12 @@ export default function LearningDashboardPage() {
       },
       {
         onSuccess: () => {
-          toast.success('Đã ghi nhận giờ học');
+          toast.success(t('learning.toastLogSuccess'));
           modal.close();
           setFormMinutes('30');
           setFormNote('');
         },
-        onError: () => toast.error('Lỗi khi ghi nhận giờ học'),
+        onError: () => toast.error(t('learning.toastLogError')),
       }
     );
   };
@@ -86,7 +86,15 @@ export default function LearningDashboardPage() {
   // Group study logs by last 7 days for the chart
   const getLast7Days = () => {
     const days = [];
-    const weekdays = ['CN', 'T2', 'T3', 'T4', 'T5', 'T6', 'T7'];
+    const weekdays = [
+      t('common.sun'),
+      t('common.mon'),
+      t('common.tue'),
+      t('common.wed'),
+      t('common.thu'),
+      t('common.fri'),
+      t('common.sat')
+    ];
     for (let i = 6; i >= 0; i--) {
       const d = new Date();
       d.setDate(d.getDate() - i);
@@ -110,28 +118,28 @@ export default function LearningDashboardPage() {
   const totalHoursThisWeek = (totalMinutesThisWeek / 60).toFixed(1);
 
   const modules = [
-    { label: 'Từ vựng', icon: <BookText size={16} />, to: ROUTES.LEARNING_VOCABULARY, count: `${totalVocabCount} từ`, badge: 'IELTS / TOPIK' },
-    { label: 'Flashcards', icon: <FlaskConical size={16} />, to: ROUTES.LEARNING_FLASHCARDS, count: `${totalFlashcardsCount} thẻ`, badge: 'Sẵn sàng' },
-    { label: 'Đề thi', icon: <FileText size={16} />, to: ROUTES.LEARNING_MOCK_TESTS, count: `${mockTests.length} lần thi`, badge: mockTestHigh > 0 ? `Max: ${mockTestHigh}đ` : 'Chưa thi' },
-    { label: 'Kế hoạch', icon: <CalendarDays size={16} />, to: ROUTES.LEARNING_STUDY_PLAN, count: `${plans.filter(p => p.status === 'ACTIVE').length} đang chạy`, badge: plans.length > 0 ? 'On track' : 'Chưa có' },
+    { label: t('learning.vocabulary'), icon: <BookText size={16} />, to: ROUTES.LEARNING_VOCABULARY, count: t('learning.vocabCount', { count: totalVocabCount }), badge: 'IELTS / TOPIK' },
+    { label: t('learning.flashcards'), icon: <FlaskConical size={16} />, to: ROUTES.LEARNING_FLASHCARDS, count: t('learning.flashcardCount', { count: totalFlashcardsCount }), badge: t('learning.ready') },
+    { label: t('learning.mockTests'), icon: <FileText size={16} />, to: ROUTES.LEARNING_MOCK_TESTS, count: t('learning.testCount', { count: mockTests.length }), badge: mockTestHigh > 0 ? t('learning.maxScore', { score: mockTestHigh }) : t('learning.noTestsYet') },
+    { label: t('learning.studyPlan'), icon: <CalendarDays size={16} />, to: ROUTES.LEARNING_STUDY_PLAN, count: t('learning.activePlansCount', { count: plans.filter(p => p.status === 'ACTIVE').length }), badge: plans.length > 0 ? 'On track' : t('learning.none') },
   ];
 
   return (
     <div className="space-y-5 animate-slide-up">
       <PageHeader
         title={t('learning.title')}
-        actions={<Button size="sm" onClick={modal.open}><Plus size={14} />Ghi nhận giờ học</Button>}
+        actions={<Button size="sm" onClick={modal.open}><Plus size={14} />{t('learning.logStudyTime')}</Button>}
       />
 
       <div className="grid grid-cols-2 gap-4 lg:grid-cols-4">
         <StatCard label={t('learning.streak')} value={streak.toString()} subValue={`${t('learning.days')}`} icon={<Flame size={18} />} variant="warning" />
-        <StatCard label="Tổng từ vựng" value={totalVocabCount.toString()} subValue="IELTS & TOPIK" icon={<BookText size={18} />} />
-        <StatCard label="Điểm thi cao nhất" value={mockTestHigh > 0 ? mockTestHigh.toString() : '—'} subValue="Thi thử Mock Test" icon={<FileText size={18} />} variant={mockTestHigh > 0 ? 'income' : 'default'} />
-        <StatCard label="Thời lượng tuần này" value={`${totalHoursThisWeek}h`} subValue="7 ngày gần nhất" icon={<Clock size={18} />} variant="default" />
+        <StatCard label={t('learning.totalVocab')} value={totalVocabCount.toString()} subValue="IELTS & TOPIK" icon={<BookText size={18} />} />
+        <StatCard label={t('learning.highestTestScore')} value={mockTestHigh > 0 ? mockTestHigh.toString() : '—'} subValue={t('learning.mockTestSub')} icon={<FileText size={18} />} variant={mockTestHigh > 0 ? 'income' : 'default'} />
+        <StatCard label={t('learning.weeklyDuration')} value={`${totalHoursThisWeek}h`} subValue={t('learning.last7Days')} icon={<Clock size={18} />} variant="default" />
       </div>
 
       <Card>
-        <CardHeader><CardTitle>Thời gian học 7 ngày qua</CardTitle></CardHeader>
+        <CardHeader><CardTitle>{t('learning.studyTimeLast7Days')}</CardTitle></CardHeader>
         <CardContent>
           <ResponsiveContainer width="100%" height={140}>
             <BarChart data={chartData} margin={{ top: 0, right: 0, left: -20, bottom: 0 }}>
@@ -141,7 +149,7 @@ export default function LearningDashboardPage() {
                 contentStyle={{ backgroundColor: '#0d1526', border: '1px solid rgba(56,189,248,0.1)', borderRadius: '8px', fontSize: '12px' }}
                 itemStyle={{ color: '#cbd5e1' }}
                 labelStyle={{ color: '#f8fafc', fontWeight: '600' }}
-                formatter={(v) => [`${v} phút`, 'Thời gian học']}
+                formatter={(v) => [`${v} ${t('learning.minutes')}`, t('learning.studyTime')]}
               />
               <Bar dataKey="minutes" fill="#38bdf8" radius={[4, 4, 0, 0]} opacity={0.8} />
             </BarChart>
@@ -167,32 +175,32 @@ export default function LearningDashboardPage() {
         ))}
       </div>
 
-      <Modal open={modal.isOpen} onClose={modal.close} title="Ghi nhận thời lượng tự học">
+      <Modal open={modal.isOpen} onClose={modal.close} title={t('learning.logStudyTimeTitle')}>
         <div className="space-y-4">
           <Select
-            label="Ngôn ngữ học"
+            label={t('learning.studyLanguage')}
             options={[{ value: 'TOPIK', label: 'TOPIK (Korean)' }, { value: 'IELTS', label: 'IELTS (English)' }]}
             value={formLanguage}
             onChange={(e) => setFormLanguage(e.target.value as any)}
           />
 
           <Select
-            label="Kỹ năng ôn luyện"
+            label={t('learning.studySkill')}
             options={[
-              { value: 'VOCABULARY', label: 'Từ vựng (Vocabulary)' },
-              { value: 'GRAMMAR', label: 'Ngữ pháp (Grammar)' },
-              { value: 'LISTENING', label: 'Luyện nghe (Listening)' },
-              { value: 'READING', label: 'Luyện đọc (Reading)' },
-              { value: 'WRITING', label: 'Luyện viết (Writing)' },
-              { value: 'SPEAKING', label: 'Luyện nói (Speaking)' },
+              { value: 'VOCABULARY', label: t('learning.skillVocabulary') },
+              { value: 'GRAMMAR', label: t('learning.skillGrammar') },
+              { value: 'LISTENING', label: t('learning.skillListening') },
+              { value: 'READING', label: t('learning.skillReading') },
+              { value: 'WRITING', label: t('learning.skillWriting') },
+              { value: 'SPEAKING', label: t('learning.skillSpeaking') },
             ]}
             value={formSkill}
             onChange={(e) => setFormSkill(e.target.value as any)}
           />
 
-          <Input label="Thời gian học (phút)" type="number" value={formMinutes} onChange={(e) => setFormMinutes(e.target.value)} />
-          <Input label="Ngày thực hiện" type="date" value={formDate} onChange={(e) => setFormDate(e.target.value)} />
-          <Input label="Ghi chú thêm" placeholder="Ví dụ: Đọc hết bài viết số 3..." value={formNote} onChange={(e) => setFormNote(e.target.value)} />
+          <Input label={t('learning.studyDurationLabel')} type="number" value={formMinutes} onChange={(e) => setFormMinutes(e.target.value)} />
+          <Input label={t('learning.studyDate')} type="date" value={formDate} onChange={(e) => setFormDate(e.target.value)} />
+          <Input label={t('learning.additionalNotes')} placeholder={t('learning.additionalNotesPlaceholder')} value={formNote} onChange={(e) => setFormNote(e.target.value)} />
 
           <div className="flex gap-2 pt-2">
             <Button variant="ghost" onClick={modal.close} fullWidth>{t('common.cancel')}</Button>

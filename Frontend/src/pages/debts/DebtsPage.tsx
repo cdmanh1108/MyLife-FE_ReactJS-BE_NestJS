@@ -41,7 +41,7 @@ export default function DebtsPage() {
   const settleRecord = useSettleDebtRecord();
 
   const handleSave = async () => {
-    if (!formAmount || isNaN(Number(formAmount))) { toast.error('Số tiền không hợp lệ'); return; }
+    if (!formAmount || isNaN(Number(formAmount))) { toast.error(t('finance.toastInvalidAmount')); return; }
 
     let personId = formPersonId;
     if (!personId && formNewPerson.trim()) {
@@ -49,34 +49,34 @@ export default function DebtsPage() {
         const p = await createPerson.mutateAsync({ name: formNewPerson.trim() });
         personId = p.id;
       } catch {
-        toast.error('Không thể tạo người nợ mới'); return;
+        toast.error(t('debts.toastCreatePersonError')); return;
       }
     }
-    if (!personId) { toast.error('Vui lòng chọn hoặc nhập tên người'); return; }
+    if (!personId) { toast.error(t('debts.toastSelectOrCreatePerson')); return; }
 
     createRecord.mutate(
       { personId, direction: formDirection, amount: Number(formAmount), currency: 'VND', note: formNote || undefined, occurredAt: new Date(formDate).toISOString() },
       {
         onSuccess: () => {
-          toast.success('Đã thêm khoản nợ');
+          toast.success(t('debts.toastDebtAdded'));
           modal.close();
           setFormPersonId(''); setFormNewPerson(''); setFormAmount(''); setFormNote('');
           setFormDate(new Date().toISOString().split('T')[0]);
         },
-        onError: () => toast.error('Lỗi khi thêm khoản nợ'),
+        onError: () => toast.error(t('debts.toastDebtAddError')),
       }
     );
   };
 
   const handleSettle = (id: string) => {
     settleRecord.mutate(id, {
-      onSuccess: () => toast.success('Đã đánh dấu đã trả'),
-      onError: () => toast.error('Lỗi khi cập nhật'),
+      onSuccess: () => toast.success(t('debts.toastMarkedAsPaid')),
+      onError: () => toast.error(t('common.error')),
     });
   };
 
   if (isLoading) return <LoadingState />;
-  if (isError) return <ErrorState message="Lỗi khi tải dữ liệu nợ" onRetry={refetch} />;
+  if (isError) return <ErrorState message={t('debts.errorLoadDebtData')} onRetry={refetch} />;
 
   const totalIOwe = summary?.totalIOwe ?? 0;
   const totalOwedToMe = summary?.totalOwedToMe ?? 0;
@@ -97,14 +97,14 @@ export default function DebtsPage() {
         <EmptyState
           icon={<ArrowDownRight size={24} />}
           title={t('debts.noDebts') || 'Chưa có khoản nợ nào'}
-          action={<Button size="sm" onClick={modal.open}><Plus size={14} />Thêm khoản nợ đầu tiên</Button>}
+          action={<Button size="sm" onClick={modal.open}><Plus size={14} />{t('debts.addFirstDebt')}</Button>}
         />
       ) : (
         <div className="space-y-2">
           {(() => {
             const personMap = new Map(people.map((p) => [p.id, p.name]));
             return records.map((debt) => {
-              const personName = personMap.get(debt.personId) || 'Không xác định';
+              const personName = personMap.get(debt.personId) || t('common.unknown');
               return (
                 <Card key={debt.id} className={cn('flex items-center gap-4 p-3 card-glow group relative bg-card', debt.status === 'SETTLED' && 'opacity-60')}>
                   <div className={cn('flex size-9 flex-shrink-0 items-center justify-center rounded-lg',
@@ -119,7 +119,7 @@ export default function DebtsPage() {
                       </Badge>
                     </div>
                     <p className="text-xs text-muted-foreground mt-0.5">
-                      {debt.direction === 'OWES_ME' ? 'Họ nợ tôi' : 'Tôi nợ họ'} · {debt.note || '—'} · {formatDate(debt.occurredAt)}
+                      {debt.direction === 'OWES_ME' ? t('debts.owesMeLabel') : t('debts.iOweLabel')} · {debt.note || '—'} · {formatDate(debt.occurredAt)}
                     </p>
                   </div>
                   <p className={cn('font-mono font-semibold text-sm flex-shrink-0',
@@ -130,7 +130,7 @@ export default function DebtsPage() {
                     <button
                       onClick={() => handleSettle(debt.id)}
                       className="p-1.5 text-muted-foreground hover:text-green-400 transition-colors"
-                      title="Đánh dấu đã trả"
+                      title={t('debts.markAsPaid')}
                     >
                       <Circle size={14} />
                     </button>
@@ -150,16 +150,16 @@ export default function DebtsPage() {
             <div className="flex gap-2">
               <Select
                 options={[
-                  { value: '', label: '-- Chọn người --' },
+                  { value: '', label: t('debts.selectPersonPlaceholder') },
                   ...people.map((p) => ({ value: p.id, label: p.name })),
                 ]}
                 value={formPersonId}
                 onChange={(e) => { setFormPersonId(e.target.value); if (e.target.value) setFormNewPerson(''); }}
                 className="flex-1"
               />
-              <span className="text-sm text-muted-foreground self-center">hoặc</span>
+              <span className="text-sm text-muted-foreground self-center">{t('common.or')}</span>
               <Input
-                placeholder="Tên mới..."
+                placeholder={t('debts.newPersonPlaceholder')}
                 value={formNewPerson}
                 onChange={(e) => { setFormNewPerson(e.target.value); if (e.target.value) setFormPersonId(''); }}
                 className="w-36"
@@ -173,8 +173,8 @@ export default function DebtsPage() {
             onChange={(e) => setFormDirection(e.target.value as any)}
           />
           <Input label={t('debts.amount')} type="number" placeholder="0" value={formAmount} onChange={(e) => setFormAmount(e.target.value)} />
-          <Input label="Ghi chú" placeholder="Nội dung khoản nợ..." value={formNote} onChange={(e) => setFormNote(e.target.value)} />
-          <Input label="Ngày" type="date" value={formDate} onChange={(e) => setFormDate(e.target.value)} />
+          <Input label={t('debts.note') || 'Ghi chú'} placeholder={t('debts.debtNotePlaceholder')} value={formNote} onChange={(e) => setFormNote(e.target.value)} />
+          <Input label={t('debts.dateLabel')} type="date" value={formDate} onChange={(e) => setFormDate(e.target.value)} />
           <div className="flex gap-2 pt-2">
             <Button variant="ghost" onClick={modal.close} fullWidth>{t('common.cancel')}</Button>
             <Button fullWidth onClick={handleSave} loading={createRecord.isPending || createPerson.isPending}>{t('common.save')}</Button>

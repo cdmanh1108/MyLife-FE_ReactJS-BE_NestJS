@@ -39,33 +39,33 @@ export default function VocabularyPage() {
   const handleToggleMastered = (id: string, mastered: boolean) => {
     updateMutation.mutate(
       { id, dto: { mastered: !mastered } },
-      { onError: () => toast.error('Lỗi khi cập nhật') }
+      { onError: () => toast.error(t('learning.toastUpdateError')) }
     );
   };
 
   const handleSave = () => {
-    if (!formWord.trim() || !formMeaning.trim()) { toast.error('Vui lòng điền từ và nghĩa'); return; }
+    if (!formWord.trim() || !formMeaning.trim()) { toast.error(t('learning.toastFillWordAndMeaning')); return; }
     createMutation.mutate(
       { word: formWord, meaning: formMeaning, example: formExample || undefined, language: formLanguage, skill: formSkill },
       {
         onSuccess: () => {
-          toast.success('Đã thêm từ vựng');
+          toast.success(t('learning.toastVocabAdded'));
           modal.close();
           setFormWord(''); setFormMeaning(''); setFormExample(''); setFormLanguage('TOPIK'); setFormSkill('VOCABULARY');
         },
-        onError: () => toast.error('Lỗi khi thêm từ vựng'),
+        onError: () => toast.error(t('learning.toastVocabAddError')),
       }
     );
   };
 
   if (isLoading) return <LoadingState />;
-  if (isError) return <ErrorState message="Lỗi khi tải từ vựng" onRetry={refetch} />;
+  if (isError) return <ErrorState message={t('learning.errorLoadVocab')} onRetry={refetch} />;
 
   return (
     <div className="space-y-5 animate-slide-up">
       <PageHeader
         title={t('learning.vocabulary')}
-        actions={<Button size="sm" onClick={modal.open}><Plus size={14} />Thêm từ</Button>}
+        actions={<Button size="sm" onClick={modal.open}><Plus size={14} />{t('learning.addWord')}</Button>}
       />
       <div className="flex gap-3">
         <div className="relative flex-1">
@@ -78,7 +78,7 @@ export default function VocabularyPage() {
           />
         </div>
         <Select
-          options={[{ value: 'all', label: 'Tất cả' }, { value: 'TOPIK', label: 'TOPIK' }, { value: 'IELTS', label: 'IELTS' }]}
+          options={[{ value: 'all', label: t('common.all') }, { value: 'TOPIK', label: 'TOPIK' }, { value: 'IELTS', label: 'IELTS' }]}
           value={langFilter}
           onChange={(e) => setLangFilter(e.target.value)}
           className="w-32"
@@ -109,7 +109,7 @@ export default function VocabularyPage() {
                 )}
                 <div className="flex gap-1.5">
                   <Badge variant={v.language === 'TOPIK' ? 'info' : 'success'}>{v.language}</Badge>
-                  {v.mastered && <Badge variant="success">Thuộc</Badge>}
+                  {v.mastered && <Badge variant="success">{t('learning.mastered')}</Badge>}
                 </div>
               </Card>
             );
@@ -117,30 +117,30 @@ export default function VocabularyPage() {
         </div>
       )}
 
-      <Modal open={modal.isOpen} onClose={modal.close} title="Thêm từ vựng">
+      <Modal open={modal.isOpen} onClose={modal.close} title={t('learning.addVocab')}>
         <div className="space-y-4">
           <Select
-            label="Ngôn ngữ"
+            label={t('learning.studyLanguage')}
             options={[{ value: 'TOPIK', label: 'TOPIK (Korean)' }, { value: 'IELTS', label: 'IELTS (English)' }]}
             value={formLanguage}
             onChange={(e) => setFormLanguage(e.target.value as any)}
           />
           <Select
-            label="Kỹ năng"
+            label={t('learning.studySkill')}
             options={[
-              { value: 'VOCABULARY', label: 'Từ vựng' },
-              { value: 'GRAMMAR', label: 'Ngữ pháp' },
-              { value: 'LISTENING', label: 'Nghe' },
-              { value: 'READING', label: 'Đọc' },
-              { value: 'WRITING', label: 'Viết' },
-              { value: 'SPEAKING', label: 'Nói' },
+              { value: 'VOCABULARY', label: t('learning.skillVocabulary') },
+              { value: 'GRAMMAR', label: t('learning.skillGrammar') },
+              { value: 'LISTENING', label: t('learning.skillListening') },
+              { value: 'READING', label: t('learning.skillReading') },
+              { value: 'WRITING', label: t('learning.skillWriting') },
+              { value: 'SPEAKING', label: t('learning.skillSpeaking') },
             ]}
             value={formSkill}
             onChange={(e) => setFormSkill(e.target.value)}
           />
-          <Input label="Từ vựng" placeholder="열심히 / Meticulous..." value={formWord} onChange={(e) => setFormWord(e.target.value)} />
-          <Input label="Nghĩa" placeholder="Chăm chỉ..." value={formMeaning} onChange={(e) => setFormMeaning(e.target.value)} />
-          <Input label="Ví dụ" placeholder="Câu ví dụ..." value={formExample} onChange={(e) => setFormExample(e.target.value)} />
+          <Input label={t('learning.vocabWord')} placeholder={t('learning.vocabWordPlaceholder')} value={formWord} onChange={(e) => setFormWord(e.target.value)} />
+          <Input label={t('learning.vocabMeaning')} placeholder={t('learning.vocabMeaningPlaceholder')} value={formMeaning} onChange={(e) => setFormMeaning(e.target.value)} />
+          <Input label={t('learning.vocabExample')} placeholder={t('learning.vocabExamplePlaceholder')} value={formExample} onChange={(e) => setFormExample(e.target.value)} />
           <div className="flex gap-2 pt-2">
             <Button variant="ghost" onClick={modal.close} fullWidth>{t('common.cancel')}</Button>
             <Button fullWidth onClick={handleSave} loading={createMutation.isPending}>{t('common.save')}</Button>

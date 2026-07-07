@@ -17,6 +17,7 @@ import { useBudgets, useCreateBudget, useDeleteBudget } from '@/features/finance
 import { useTransactions } from '@/features/finance/api/useTransactions';
 import { useCategories } from '@/features/finance/api/useCategories';
 import { toast } from 'sonner';
+import { ConfirmModal } from '@/shared/ui/ConfirmModal';
 
 export default function BudgetsPage() {
   const { t } = useTranslation();
@@ -27,6 +28,9 @@ export default function BudgetsPage() {
   const [formCategoryId, setFormCategoryId] = useState('');
   const [formAmount, setFormAmount] = useState('');
   const [formMonth, setFormMonth] = useState(new Date().toISOString().slice(0, 7)); // YYYY-MM
+
+  // Delete state
+  const [deleteId, setDeleteId] = useState<string | null>(null);
 
   // Queries
   const { data: budgets = [], isLoading: loadingBudgets, isError: isErrorBudgets, refetch: refetchBudgets } = useBudgets();
@@ -39,15 +43,15 @@ export default function BudgetsPage() {
 
   const handleSave = () => {
     if (!formName.trim()) {
-      toast.error('Vui lòng nhập tên ngân sách');
+      toast.error(t('budgets.toastEnterName'));
       return;
     }
     if (!formAmount || isNaN(Number(formAmount)) || Number(formAmount) <= 0) {
-      toast.error('Vui lòng nhập hạn mức hợp lệ');
+      toast.error(t('budgets.toastEnterValidLimit'));
       return;
     }
     if (!formMonth) {
-      toast.error('Vui lòng chọn tháng áp dụng');
+      toast.error(t('budgets.toastEnterMonth'));
       return;
     }
 
@@ -61,7 +65,7 @@ export default function BudgetsPage() {
 
     createMutation.mutate(payload, {
       onSuccess: () => {
-        toast.success('Đã tạo ngân sách thành công');
+        toast.success(t('budgets.toastCreateSuccess'));
         modal.close();
         setFormName('');
         setFormCategoryId('');
@@ -69,23 +73,18 @@ export default function BudgetsPage() {
         setFormMonth(new Date().toISOString().slice(0, 7));
       },
       onError: () => {
-        toast.error('Lỗi khi tạo ngân sách');
+        toast.error(t('budgets.toastCreateError'));
       },
     });
   };
 
   const handleDelete = (id: string, e: React.MouseEvent) => {
     e.stopPropagation();
-    if (confirm('Bạn có chắc muốn xóa ngân sách này?')) {
-      deleteMutation.mutate(id, {
-        onSuccess: () => toast.success('Đã xóa ngân sách'),
-        onError: () => toast.error('Lỗi khi xóa ngân sách'),
-      });
-    }
+    setDeleteId(id);
   };
 
   if (loadingBudgets || loadingTxs || loadingCats) return <LoadingState />;
-  if (isErrorBudgets) return <ErrorState message="Lỗi khi tải danh sách ngân sách" onRetry={refetchBudgets} />;
+  if (isErrorBudgets) return <ErrorState message={t('budgets.errorLoad')} onRetry={refetchBudgets} />;
 
   // Calculate spent amount for a budget based on transactions
   const getSpentForBudget = (b: any) => {
@@ -107,14 +106,14 @@ export default function BudgetsPage() {
     <div className="space-y-5 animate-slide-up">
       <PageHeader
         title={t('nav.budgets')}
-        actions={<Button size="sm" onClick={modal.open}><Plus size={14} />Thêm ngân sách</Button>}
+        actions={<Button size="sm" onClick={modal.open}><Plus size={14} />{t('budgets.addBudget')}</Button>}
       />
 
       {budgets.length === 0 ? (
         <EmptyState
           icon={<Calendar size={24} />}
-          title="Chưa thiết lập ngân sách nào"
-          action={<Button size="sm" onClick={modal.open}>Thêm ngân sách đầu tiên</Button>}
+          title={t('budgets.noBudgetsTitle')}
+          action={<Button size="sm" onClick={modal.open}>{t('budgets.addFirstBudget')}</Button>}
         />
       ) : (
         <div className="grid gap-4 sm:grid-cols-2">
@@ -129,7 +128,7 @@ export default function BudgetsPage() {
                 <button
                   onClick={(e) => handleDelete(b.id, e)}
                   className="absolute top-3 right-3 p-1 text-muted-foreground hover:text-destructive hover:bg-secondary/40 rounded transition-opacity opacity-0 group-hover:opacity-100"
-                  title="Xóa ngân sách"
+                  title={t('common.delete')}
                 >
                   <Trash2 size={13} />
                 </button>
@@ -138,7 +137,7 @@ export default function BudgetsPage() {
                   <div>
                     <p className="font-medium text-foreground text-sm">{b.name}</p>
                     {categoryObj && (
-                      <p className="text-[10px] text-muted-foreground mt-0.5">Danh mục: {categoryObj.name}</p>
+                      <p className="text-[10px] text-muted-foreground mt-0.5">{t('budgets.category')}: {categoryObj.name}</p>
                     )}
                   </div>
                   <div className="flex items-center gap-1.5 mr-6 sm:mr-0">
@@ -155,8 +154,8 @@ export default function BudgetsPage() {
                 </div>
 
                 <div className="flex justify-between text-xs text-muted-foreground pt-1">
-                  <span>Đã chi: {formatMoney(spent, 'VND')}</span>
-                  <span>Giới hạn: {formatMoney(b.amount, 'VND')}</span>
+                  <span>{t('budgets.spent')}: {formatMoney(spent, 'VND')}</span>
+                  <span>{t('budgets.limit')}: {formatMoney(b.amount, 'VND')}</span>
                 </div>
               </Card>
             );
@@ -164,19 +163,19 @@ export default function BudgetsPage() {
         </div>
       )}
 
-      <Modal open={modal.isOpen} onClose={modal.close} title="Tạo ngân sách chi tiêu">
+      <Modal open={modal.isOpen} onClose={modal.close} title={t('budgets.createBudgetTitle')}>
         <div className="space-y-4">
           <Input
-            label="Tên ngân sách"
-            placeholder="Ví dụ: Ăn uống hàng tháng, Tiền nhà..."
+            label={t('budgets.budgetName')}
+            placeholder={t('budgets.budgetNamePlaceholder')}
             value={formName}
             onChange={(e) => setFormName(e.target.value)}
           />
 
           <Select
-            label="Danh mục chi tiêu áp dụng (Không bắt buộc)"
+            label={t('budgets.applicableCategory')}
             options={[
-              { value: '', label: '-- Tất cả danh mục --' },
+              { value: '', label: t('budgets.allCategories') },
               ...categories
                 .filter((c) => c.type === 'EXPENSE')
                 .map((c) => ({ value: c.id, label: c.name })),
@@ -186,7 +185,7 @@ export default function BudgetsPage() {
           />
 
           <Input
-            label="Hạn mức ngân sách (VND)"
+            label={t('budgets.budgetLimit')}
             type="number"
             placeholder="5,000,000"
             value={formAmount}
@@ -194,7 +193,7 @@ export default function BudgetsPage() {
           />
 
           <Input
-            label="Tháng áp dụng"
+            label={t('budgets.applicableMonth')}
             type="month"
             value={formMonth}
             onChange={(e) => setFormMonth(e.target.value)}
@@ -206,6 +205,27 @@ export default function BudgetsPage() {
           </div>
         </div>
       </Modal>
+
+      <ConfirmModal
+        open={!!deleteId}
+        onClose={() => setDeleteId(null)}
+        onConfirm={() => {
+          if (deleteId) {
+            deleteMutation.mutate(deleteId, {
+              onSuccess: () => {
+                toast.success(t('budgets.toastDeleteSuccess'));
+                setDeleteId(null);
+              },
+              onError: () => toast.error(t('budgets.toastDeleteError')),
+            });
+          }
+        }}
+        title={t('nav.budgets')}
+        description={t('confirmations.deleteBudget')}
+        variant="danger"
+        confirmText={t('common.delete')}
+        loading={deleteMutation.isPending}
+      />
     </div>
   );
 }

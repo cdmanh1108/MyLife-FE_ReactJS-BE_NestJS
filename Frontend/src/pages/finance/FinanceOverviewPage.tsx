@@ -27,7 +27,7 @@ export default function FinanceOverviewPage() {
   const { data: categories = [], isLoading: loadingCats } = useCategories();
 
   if (loadingTxs || loadingCats) return <LoadingState />;
-  if (isError) return <ErrorState message="Lỗi khi tải dữ liệu tài chính" onRetry={refetch} />;
+  if (isError) return <ErrorState message={t('common.error')} onRetry={refetch} />;
 
   // Calculate totals
   let totalIncome = 0;
@@ -49,7 +49,7 @@ export default function FinanceOverviewPage() {
 
   const expenseByCategory: Record<string, number> = {};
   expenseTransactions.forEach((tx) => {
-    const categoryName = tx.categoryId ? (categoryMap.get(tx.categoryId) || 'Khác') : 'Khác';
+    const categoryName = tx.categoryId ? (categoryMap.get(tx.categoryId) || t('common.other')) : t('common.other');
     expenseByCategory[categoryName] = (expenseByCategory[categoryName] || 0) + tx.amount;
   });
 
@@ -84,10 +84,10 @@ export default function FinanceOverviewPage() {
 
       <div className="grid grid-cols-1 gap-4 lg:grid-cols-3">
         <Card className="lg:col-span-2">
-          <CardHeader><CardTitle>Chi tiêu theo danh mục</CardTitle></CardHeader>
+          <CardHeader><CardTitle>{t('finance.expenseByCategory')}</CardTitle></CardHeader>
           <CardContent>
             {categoryData.length === 0 ? (
-              <p className="text-xs text-muted-foreground italic text-center py-8">Chưa ghi nhận chi tiêu nào</p>
+              <p className="text-xs text-muted-foreground italic text-center py-8">{t('finance.noExpensesRecorded')}</p>
             ) : (
               <div className="flex flex-col sm:flex-row items-center gap-6">
                 <ResponsiveContainer width={160} height={160} className="flex-shrink-0">
@@ -128,18 +128,18 @@ export default function FinanceOverviewPage() {
 
         <Card>
           <CardHeader className="flex flex-row items-center justify-between pb-2">
-            <CardTitle>Giao dịch gần đây</CardTitle>
+            <CardTitle>{t('finance.recentTransactions')}</CardTitle>
             <button onClick={() => navigate(ROUTES.FINANCE_TRANSACTIONS)} className="text-xs text-primary hover:underline flex items-center gap-1">
-              Xem tất cả <ArrowRight size={11} />
+              {t('finance.viewAll')} <ArrowRight size={11} />
             </button>
           </CardHeader>
           <CardContent>
             {recentTransactions.length === 0 ? (
-              <p className="text-xs text-muted-foreground italic text-center py-8">Chưa có giao dịch nào</p>
+              <p className="text-xs text-muted-foreground italic text-center py-8">{t('finance.noTransactions')}</p>
             ) : (
               <div className="space-y-3">
                 {recentTransactions.map((tx) => {
-                  const categoryName = tx.categoryId ? (categoryMap.get(tx.categoryId) || 'Giao dịch') : 'Giao dịch';
+                  const categoryName = tx.categoryId ? (categoryMap.get(tx.categoryId) || t('finance.defaultTransactionName')) : t('finance.defaultTransactionName');
                   const isIncome = tx.type === 'INCOME';
                   return (
                     <div key={tx.id} className="flex items-center justify-between gap-2 border-b border-border/20 pb-2 last:border-0 last:pb-0">

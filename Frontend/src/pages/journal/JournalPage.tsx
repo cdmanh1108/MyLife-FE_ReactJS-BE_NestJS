@@ -35,7 +35,7 @@ export default function JournalPage() {
   const { data: entries = [], isLoading, isError, refetch } = useJournalEntries();
 
   if (isLoading) return <LoadingState />;
-  if (isError) return <ErrorState message="Lỗi khi tải nhật ký" onRetry={refetch} />;
+  if (isError) return <ErrorState message={t('journal.errorLoad')} onRetry={refetch} />;
 
   return (
     <div className="space-y-5 animate-slide-up">
@@ -47,7 +47,7 @@ export default function JournalPage() {
         <EmptyState
           icon={<BookOpen size={24} />}
           title={t('journal.noEntries')}
-          action={<Button size="sm" onClick={() => navigate(ROUTES.JOURNAL_NEW)}><Plus size={14} />Viết nhật ký đầu tiên</Button>}
+          action={<Button size="sm" onClick={() => navigate(ROUTES.JOURNAL_NEW)}><Plus size={14} />{t('journal.createFirstEntry')}</Button>}
         />
       ) : (
         <div className="grid gap-4 lg:grid-cols-2">

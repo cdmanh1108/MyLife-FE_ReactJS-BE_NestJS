@@ -15,6 +15,7 @@ import { formatCompactMoney } from '@/shared/lib/money';
 import { useDebtPeople, useCreateDebtPerson, useDeleteDebtPerson } from '@/features/debts/api/useDebtPeople';
 import { useDebtRecords } from '@/features/debts/api/useDebtRecords';
 import { toast } from 'sonner';
+import { ConfirmModal } from '@/shared/ui/ConfirmModal';
 
 export default function DebtPeoplePage() {
   const { t } = useTranslation();
@@ -22,6 +23,9 @@ export default function DebtPeoplePage() {
   const [formName, setFormName] = useState('');
   const [formNickname, setFormNickname] = useState('');
   const [formNote, setFormNote] = useState('');
+
+  // Delete state
+  const [deleteId, setDeleteId] = useState<string | null>(null);
 
   // Queries
   const { data: people = [], isLoading: loadingPeople, isError: isErrorPeople, refetch: refetchPeople } = useDebtPeople();
@@ -33,7 +37,7 @@ export default function DebtPeoplePage() {
 
   const handleSave = () => {
     if (!formName.trim()) {
-      toast.error('Vui lòng nhập tên người nợ/cho nợ');
+      toast.error(t('debts.toastEnterName'));
       return;
     }
     createMutation.mutate(
@@ -44,14 +48,14 @@ export default function DebtPeoplePage() {
       },
       {
         onSuccess: () => {
-          toast.success('Đã thêm người liên hệ');
+          toast.success(t('debts.toastCreateSuccess'));
           modal.close();
           setFormName('');
           setFormNickname('');
           setFormNote('');
         },
         onError: () => {
-          toast.error('Lỗi khi thêm người liên hệ');
+          toast.error(t('debts.toastCreateError'));
         },
       }
     );
@@ -59,16 +63,11 @@ export default function DebtPeoplePage() {
 
   const handleDelete = (id: string, e: React.MouseEvent) => {
     e.stopPropagation();
-    if (confirm('Bạn có chắc muốn xóa người liên hệ này? Sẽ không xóa các lịch sử giao dịch liên quan.')) {
-      deleteMutation.mutate(id, {
-        onSuccess: () => toast.success('Đã xóa thành công'),
-        onError: () => toast.error('Lỗi khi xóa người liên hệ'),
-      });
-    }
+    setDeleteId(id);
   };
 
   if (loadingPeople || loadingRecords) return <LoadingState />;
-  if (isErrorPeople) return <ErrorState message="Lỗi khi tải danh sách người liên hệ" onRetry={refetchPeople} />;
+  if (isErrorPeople) return <ErrorState message={t('debts.errorLoad')} onRetry={refetchPeople} />;
 
   // Calculate net balance for a person
   const getNetBalance = (personId: string) => {
@@ -88,14 +87,14 @@ export default function DebtPeoplePage() {
     <div className="space-y-5 animate-slide-up">
       <PageHeader
         title={t('nav.people')}
-        actions={<Button size="sm" onClick={modal.open}><Plus size={14} />Thêm người</Button>}
+        actions={<Button size="sm" onClick={modal.open}><Plus size={14} />{t('debts.addPerson')}</Button>}
       />
 
       {people.length === 0 ? (
         <EmptyState
           icon={<Users size={24} />}
-          title="Chưa có danh sách người liên hệ"
-          action={<Button size="sm" onClick={modal.open}>Thêm người đầu tiên</Button>}
+          title={t('debts.noPeopleTitle')}
+          action={<Button size="sm" onClick={modal.open}>{t('debts.addFirstPerson')}</Button>}
         />
       ) : (
         <div className="space-y-2">
@@ -112,7 +111,7 @@ export default function DebtPeoplePage() {
                     )}
                   </div>
                   <p className="text-xs text-muted-foreground mt-0.5">
-                    {netBalance > 0 ? 'Họ nợ tôi' : netBalance < 0 ? 'Tôi nợ họ' : 'Đã sòng phẳng'}
+                    {netBalance > 0 ? t('debts.owesMeLabel') : netBalance < 0 ? t('debts.iOweLabel') : t('debts.settledLabel')}
                   </p>
                 </div>
                 <div className="text-right flex items-center gap-3">
@@ -122,7 +121,7 @@ export default function DebtPeoplePage() {
                   <button
                     onClick={(e) => handleDelete(person.id, e)}
                     className="p-1.5 text-muted-foreground hover:text-destructive hover:bg-secondary/40 rounded opacity-0 group-hover:opacity-100 transition-opacity"
-                    title="Xóa liên hệ"
+                    title={t('debts.deleteContact')}
                   >
                     <Trash2 size={13} />
                   </button>
@@ -133,25 +132,25 @@ export default function DebtPeoplePage() {
         </div>
       )}
 
-      <Modal open={modal.isOpen} onClose={modal.close} title="Thêm người liên hệ">
+      <Modal open={modal.isOpen} onClose={modal.close} title={t('debts.addContactTitle')}>
         <div className="space-y-4">
           <Input
-            label="Họ tên"
-            placeholder="Ví dụ: Nguyễn Văn A..."
+            label={t('debts.fullName')}
+            placeholder={t('debts.fullNamePlaceholder')}
             value={formName}
             onChange={(e) => setFormName(e.target.value)}
           />
 
           <Input
-            label="Biệt danh (Không bắt buộc)"
-            placeholder="Ví dụ: Bạn thân, Đồng nghiệp..."
+            label={t('debts.nickname')}
+            placeholder={t('debts.nicknamePlaceholder')}
             value={formNickname}
             onChange={(e) => setFormNickname(e.target.value)}
           />
 
           <Input
-            label="Ghi chú"
-            placeholder="Thông tin liên hệ, ghi chú..."
+            label={t('debts.note')}
+            placeholder={t('debts.notePlaceholder')}
             value={formNote}
             onChange={(e) => setFormNote(e.target.value)}
           />
@@ -162,6 +161,27 @@ export default function DebtPeoplePage() {
           </div>
         </div>
       </Modal>
+
+      <ConfirmModal
+        open={!!deleteId}
+        onClose={() => setDeleteId(null)}
+        onConfirm={() => {
+          if (deleteId) {
+            deleteMutation.mutate(deleteId, {
+              onSuccess: () => {
+                toast.success(t('debts.toastDeleteSuccess'));
+                setDeleteId(null);
+              },
+              onError: () => toast.error(t('debts.toastDeleteError')),
+            });
+          }
+        }}
+        title={t('debts.deleteContact')}
+        description={t('confirmations.deletePerson')}
+        variant="danger"
+        confirmText={t('common.delete')}
+        loading={deleteMutation.isPending}
+      />
     </div>
   );
 }

@@ -1,4 +1,4 @@
-import { useRef } from 'react';
+import { useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Upload, Trash2 } from 'lucide-react';
 import { PageHeader } from '@/shared/ui/PageHeader';
@@ -8,10 +8,14 @@ import { LoadingState } from '@/shared/ui/LoadingState';
 import { ErrorState } from '@/shared/ui/ErrorState';
 import { useMediaAssets, useUploadMedia, useDeleteMediaAsset } from '@/features/media/api/useMediaAssets';
 import { toast } from 'sonner';
+import { ConfirmModal } from '@/shared/ui/ConfirmModal';
 
 export default function MediaLibraryPage() {
   const { t } = useTranslation();
   const fileInputRef = useRef<HTMLInputElement>(null);
+  
+  // Delete state
+  const [deleteId, setDeleteId] = useState<string | null>(null);
 
   const { data: media = [], isLoading, isError, refetch } = useMediaAssets();
   const uploadMutation = useUploadMedia();
@@ -30,27 +34,22 @@ export default function MediaLibraryPage() {
 
     uploadMutation.mutate(formData, {
       onSuccess: () => {
-        toast.success('Đã tải lên hình ảnh');
+        toast.success(t('media.toastUploadSuccess'));
         if (fileInputRef.current) fileInputRef.current.value = '';
       },
       onError: () => {
-        toast.error('Lỗi khi tải ảnh lên');
+        toast.error(t('media.toastUploadError'));
       },
     });
   };
 
   const handleDelete = (id: string, e: React.MouseEvent) => {
     e.stopPropagation();
-    if (confirm('Bạn có chắc chắn muốn xóa ảnh này?')) {
-      deleteMutation.mutate(id, {
-        onSuccess: () => toast.success('Đã xóa thành công'),
-        onError: () => toast.error('Lỗi khi xóa ảnh'),
-      });
-    }
+    setDeleteId(id);
   };
 
   if (isLoading) return <LoadingState />;
-  if (isError) return <ErrorState message="Lỗi khi tải thư viện ảnh" onRetry={refetch} />;
+  if (isError) return <ErrorState message={t('media.errorLoad')} onRetry={refetch} />;
 
   return (
     <div className="space-y-5 animate-slide-up">
@@ -75,8 +74,8 @@ export default function MediaLibraryPage() {
       {media.length === 0 ? (
         <EmptyState
           icon={<Upload size={24} />}
-          title="Chưa có hình ảnh nào"
-          action={<Button size="sm" onClick={handleUploadClick}>Tải lên ảnh đầu tiên</Button>}
+          title={t('media.noMedia')}
+          action={<Button size="sm" onClick={handleUploadClick}>{t('media.uploadFirstPhoto')}</Button>}
         />
       ) : (
         <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3">
@@ -92,7 +91,7 @@ export default function MediaLibraryPage() {
                   <button
                     onClick={(e) => handleDelete(m.id, e)}
                     className="p-1.5 text-muted-foreground hover:text-destructive hover:bg-secondary/40 rounded-md transition-colors"
-                    title="Xóa ảnh"
+                    title={t('media.deletePhoto')}
                   >
                     <Trash2 size={14} />
                   </button>
@@ -103,6 +102,27 @@ export default function MediaLibraryPage() {
           ))}
         </div>
       )}
+
+      <ConfirmModal
+        open={!!deleteId}
+        onClose={() => setDeleteId(null)}
+        onConfirm={() => {
+          if (deleteId) {
+            deleteMutation.mutate(deleteId, {
+              onSuccess: () => {
+                toast.success(t('media.toastDeleteSuccess'));
+                setDeleteId(null);
+              },
+              onError: () => toast.error(t('media.toastDeleteError')),
+            });
+          }
+        }}
+        title={t('media.deletePhotoTitle')}
+        description={t('confirmations.deletePhoto')}
+        variant="danger"
+        confirmText={t('common.delete')}
+        loading={deleteMutation.isPending}
+      />
     </div>
   );
 }

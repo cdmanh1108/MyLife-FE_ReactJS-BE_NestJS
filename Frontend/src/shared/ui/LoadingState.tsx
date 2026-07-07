@@ -1,10 +1,12 @@
+import { useTranslation } from 'react-i18next';
 import { cn } from '@/shared/lib/cn';
 
 export function LoadingState({ className }: { className?: string }) {
+  const { t } = useTranslation();
   return (
     <div className={cn('flex flex-col items-center justify-center gap-3 py-16', className)}>
       <div className="size-8 rounded-full border-2 border-primary/20 border-t-primary animate-spin" />
-      <p className="text-sm text-muted-foreground">Đang tải...</p>
+      <p className="text-sm text-muted-foreground">{t('common.loading')}</p>
     </div>
   );
 }

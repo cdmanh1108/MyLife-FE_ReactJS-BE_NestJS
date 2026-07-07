@@ -26,14 +26,14 @@ export default function SettingsPage() {
         <CardHeader><CardTitle className="flex items-center gap-2"><Globe size={14} />{t('settings.language')}</CardTitle></CardHeader>
         <CardContent>
           <LanguageSwitcher />
-          <p className="text-xs text-muted-foreground mt-2">Ngôn ngữ giao diện ứng dụng. Mặc định: Tiếng Việt.</p>
+          <p className="text-xs text-muted-foreground mt-2">{t('settings.languageDescription')}</p>
         </CardContent>
       </Card>
 
       <Card>
         <CardHeader><CardTitle className="flex items-center gap-2"><Info size={14} />{t('settings.theme')}</CardTitle></CardHeader>
         <CardContent>
-          <p className="text-sm text-muted-foreground">Deep Ocean Dark — thiết kế tối, cinematic, nội tâm. Màu chủ đạo: navy + cyan.</p>
+          <p className="text-sm text-muted-foreground">{t('settings.themeDescription')}</p>
         </CardContent>
       </Card>
 
@@ -46,7 +46,7 @@ export default function SettingsPage() {
           </div>
           <div className="flex items-center gap-2">
             <div className="size-2 rounded-full bg-green-500" />
-            <span className="text-xs text-muted-foreground">API đã được cấu hình</span>
+            <span className="text-xs text-muted-foreground">{t('settings.apiConfigured')}</span>
           </div>
         </CardContent>
       </Card>

@@ -18,13 +18,14 @@ import { cn } from '@/shared/lib/cn';
 import { useTimelineEvents, useCreateTimelineEvent, useDeleteTimelineEvent } from '@/features/timeline/api/useTimelineEvents';
 import { toast } from 'sonner';
 import type { TimelineEventType } from '@/types';
+import { ConfirmModal } from '@/shared/ui/ConfirmModal';
 
-const typeConfig: Record<TimelineEventType, { icon: React.ReactNode; color: string; label: string }> = {
-  EDUCATION: { icon: <GraduationCap size={14} />, color: 'bg-blue-500/15 text-blue-400 border-blue-500/25', label: 'Học tập' },
-  WORK: { icon: <Briefcase size={14} />, color: 'bg-purple-500/15 text-purple-400 border-purple-500/25', label: 'Công việc' },
-  PROJECT: { icon: <Code2 size={14} />, color: 'bg-cyan-500/15 text-cyan-400 border-cyan-500/25', label: 'Dự án' },
-  MILESTONE: { icon: <Star size={14} />, color: 'bg-yellow-500/15 text-yellow-400 border-yellow-500/25', label: 'Mốc quan trọng' },
-  MEMORY: { icon: <Heart size={14} />, color: 'bg-pink-500/15 text-pink-400 border-pink-500/25', label: 'Kỷ niệm' },
+const typeConfig: Record<TimelineEventType, { icon: React.ReactNode; color: string; labelKey: string }> = {
+  EDUCATION: { icon: <GraduationCap size={14} />, color: 'bg-blue-500/15 text-blue-400 border-blue-500/25', labelKey: 'timeline.typeEducation' },
+  WORK: { icon: <Briefcase size={14} />, color: 'bg-purple-500/15 text-purple-400 border-purple-500/25', labelKey: 'timeline.typeWork' },
+  PROJECT: { icon: <Code2 size={14} />, color: 'bg-cyan-500/15 text-cyan-400 border-cyan-500/25', labelKey: 'timeline.typeProject' },
+  MILESTONE: { icon: <Star size={14} />, color: 'bg-yellow-500/15 text-yellow-400 border-yellow-500/25', labelKey: 'timeline.typeMilestone' },
+  MEMORY: { icon: <Heart size={14} />, color: 'bg-pink-500/15 text-pink-400 border-pink-500/25', labelKey: 'timeline.typeMemory' },
 };
 
 export default function TimelinePage() {
@@ -37,13 +38,16 @@ export default function TimelinePage() {
   const [formDate, setFormDate] = useState(new Date().toISOString().split('T')[0]);
   const [formType, setFormType] = useState<TimelineEventType>('MILESTONE');
 
+  // Delete state
+  const [deleteId, setDeleteId] = useState<string | null>(null);
+
   const { data: events = [], isLoading, isError, refetch } = useTimelineEvents();
   const createMutation = useCreateTimelineEvent();
   const deleteMutation = useDeleteTimelineEvent();
 
   const handleSave = () => {
     if (!formTitle.trim()) {
-      toast.error('Vui lòng nhập tiêu đề sự kiện');
+      toast.error(t('timeline.toastEnterTitle'));
       return;
     }
     createMutation.mutate(
@@ -55,29 +59,24 @@ export default function TimelinePage() {
       },
       {
         onSuccess: () => {
-          toast.success('Đã thêm sự kiện dòng thời gian');
+          toast.success(t('timeline.toastCreateSuccess'));
           modal.close();
           setFormTitle('');
           setFormDescription('');
           setFormDate(new Date().toISOString().split('T')[0]);
           setFormType('MILESTONE');
         },
-        onError: () => toast.error('Lỗi khi thêm sự kiện'),
+        onError: () => toast.error(t('timeline.toastCreateError')),
       }
     );
   };
 
   const handleDelete = (id: string) => {
-    if (confirm('Bạn có chắc chắn muốn xóa sự kiện này?')) {
-      deleteMutation.mutate(id, {
-        onSuccess: () => toast.success('Đã xóa sự kiện'),
-        onError: () => toast.error('Lỗi khi xóa sự kiện'),
-      });
-    }
+    setDeleteId(id);
   };
 
   if (isLoading) return <LoadingState />;
-  if (isError) return <ErrorState message="Lỗi khi tải dòng thời gian" onRetry={refetch} />;
+  if (isError) return <ErrorState message={t('timeline.errorLoad')} onRetry={refetch} />;
 
   const sorted = [...events].sort((a, b) => new Date(b.eventDate).getTime() - new Date(a.eventDate).getTime());
 
@@ -92,7 +91,7 @@ export default function TimelinePage() {
         <EmptyState
           icon={<Star size={24} />}
           title={t('timeline.noEvents')}
-          action={<Button size="sm" onClick={modal.open}><Plus size={14} />Tạo sự kiện đầu tiên</Button>}
+          action={<Button size="sm" onClick={modal.open}><Plus size={14} />{t('timeline.createFirstEvent')}</Button>}
         />
       ) : (
         <div className="relative pl-8">
@@ -118,7 +117,7 @@ export default function TimelinePage() {
                         <button
                           onClick={() => handleDelete(event.id)}
                           className="opacity-0 group-hover:opacity-100 text-muted-foreground hover:text-destructive transition-opacity size-6 flex items-center justify-center rounded-md hover:bg-secondary"
-                          title="Xóa sự kiện"
+                          title={t('common.delete')}
                         >
                           <Trash2 size={12} />
                         </button>
@@ -126,7 +125,7 @@ export default function TimelinePage() {
                     </div>
                     {event.description && <p className="text-sm text-muted-foreground leading-relaxed">{event.description}</p>}
                     <div className="mt-3 flex items-center gap-2">
-                      <Badge variant="muted">{config.label}</Badge>
+                      <Badge variant="muted">{t(config.labelKey)}</Badge>
                       <span className="text-xs text-muted-foreground">{formatDate(event.eventDate)}</span>
                     </div>
                   </div>
@@ -139,26 +138,26 @@ export default function TimelinePage() {
 
       <Modal open={modal.isOpen} onClose={modal.close} title={t('timeline.addEvent')}>
         <div className="space-y-4">
-          <Input label="Tiêu đề" placeholder="Tên cột mốc / công việc..." value={formTitle} onChange={(e) => setFormTitle(e.target.value)} />
+          <Input label={t('timeline.eventTitle')} placeholder={t('timeline.eventTitlePlaceholder')} value={formTitle} onChange={(e) => setFormTitle(e.target.value)} />
           
           <Select
-            label="Loại sự kiện"
+            label={t('timeline.eventType')}
             options={[
-              { value: 'MILESTONE', label: 'Mốc quan trọng' },
-              { value: 'WORK', label: 'Công việc' },
-              { value: 'EDUCATION', label: 'Học tập' },
-              { value: 'PROJECT', label: 'Dự án' },
-              { value: 'MEMORY', label: 'Kỷ niệm' },
+              { value: 'MILESTONE', label: t('timeline.typeMilestone') },
+              { value: 'WORK', label: t('timeline.typeWork') },
+              { value: 'EDUCATION', label: t('timeline.typeEducation') },
+              { value: 'PROJECT', label: t('timeline.typeProject') },
+              { value: 'MEMORY', label: t('timeline.typeMemory') },
             ]}
             value={formType}
             onChange={(e) => setFormType(e.target.value as TimelineEventType)}
           />
 
-          <Input label="Ngày diễn ra" type="date" value={formDate} onChange={(e) => setFormDate(e.target.value)} />
+          <Input label={t('timeline.eventDate')} type="date" value={formDate} onChange={(e) => setFormDate(e.target.value)} />
 
           <Textarea
-            label="Mô tả chi tiết"
-            placeholder="Nội dung cột mốc..."
+            label={t('timeline.eventDescription')}
+            placeholder={t('timeline.eventDescriptionPlaceholder')}
             value={formDescription}
             onChange={(e) => setFormDescription(e.target.value)}
           />
@@ -169,6 +168,27 @@ export default function TimelinePage() {
           </div>
         </div>
       </Modal>
+
+      <ConfirmModal
+        open={!!deleteId}
+        onClose={() => setDeleteId(null)}
+        onConfirm={() => {
+          if (deleteId) {
+            deleteMutation.mutate(deleteId, {
+              onSuccess: () => {
+                toast.success(t('timeline.toastDeleteSuccess'));
+                setDeleteId(null);
+              },
+              onError: () => toast.error(t('timeline.toastDeleteError')),
+            });
+          }
+        }}
+        title={t('timeline.deleteEventTitle')}
+        description={t('confirmations.deleteEvent')}
+        variant="danger"
+        confirmText={t('common.delete')}
+        loading={deleteMutation.isPending}
+      />
     </div>
   );
 }

@@ -33,18 +33,18 @@ export default function BiographyPage() {
       { content },
       {
         onSuccess: () => {
-          toast.success('Đã cập nhật tiểu sử thành công');
+          toast.success(t('profile.toastUpdateSuccess'));
           setIsEditing(false);
         },
         onError: () => {
-          toast.error('Lỗi khi cập nhật tiểu sử');
+          toast.error(t('profile.toastUpdateError'));
         },
       }
     );
   };
 
   if (isLoading) return <LoadingState />;
-  if (isError) return <ErrorState message="Lỗi khi tải tiểu sử" onRetry={refetch} />;
+  if (isError) return <ErrorState message={t('profile.errorLoad')} onRetry={refetch} />;
 
   const paragraphs = content.trim().split('\n\n').filter(Boolean);
 
@@ -79,8 +79,8 @@ export default function BiographyPage() {
         {isEditing ? (
           <div className="space-y-4">
             <Textarea
-              label="Nội dung tiểu sử"
-              placeholder="Giới thiệu bản thân, hành trình lập trình, lý do tạo MyLife OS..."
+              label={t('profile.bioLabel')}
+              placeholder={t('profile.bioPlaceholder')}
               value={content}
               onChange={(e) => setContent(e.target.value)}
               rows={12}
@@ -89,7 +89,7 @@ export default function BiographyPage() {
         ) : (
           <div className="space-y-4 text-foreground leading-relaxed prose prose-invert prose-sm max-w-none">
             {paragraphs.length === 0 ? (
-              <p className="text-sm text-muted-foreground italic">Chưa có thông tin tiểu sử. Nhấn Chỉnh sửa để thêm mới.</p>
+              <p className="text-sm text-muted-foreground italic">{t('profile.emptyBio')}</p>
             ) : (
               paragraphs.map((p, idx) => (
                 <p key={idx} className="whitespace-pre-line text-sm text-foreground/90">
