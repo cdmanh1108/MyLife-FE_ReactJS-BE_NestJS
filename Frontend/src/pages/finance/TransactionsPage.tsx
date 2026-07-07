@@ -19,6 +19,7 @@ import { useTransactions, useDeleteTransaction, useUpdateTransaction } from '@/f
 import { useCreateTransaction } from '@/features/finance/api/useCreateTransaction';
 import { useCategories, useCreateCategory } from '@/features/finance/api/useCategories';
 import { toast } from 'sonner';
+import { ConfirmModal } from '@/shared/ui/ConfirmModal';
 
 export default function TransactionsPage() {
   const { t } = useTranslation();
@@ -34,6 +35,9 @@ export default function TransactionsPage() {
   const [formCategoryId, setFormCategoryId] = useState('');
   const [formNote, setFormNote] = useState('');
   const [formDate, setFormDate] = useState(new Date().toISOString().split('T')[0]);
+
+  // Delete State
+  const [deleteId, setDeleteId] = useState<string | null>(null);
 
   // Pagination State
   const [currentPage, setCurrentPage] = useState(1);
@@ -61,12 +65,7 @@ export default function TransactionsPage() {
   };
 
   const handleDelete = (id: string) => {
-    if (confirm('Bạn có chắc chắn muốn xóa giao dịch này?')) {
-      deleteTxMutation.mutate(id, {
-        onSuccess: () => toast.success('Đã xóa giao dịch thành công'),
-        onError: () => toast.error('Lỗi khi xóa giao dịch'),
-      });
-    }
+    setDeleteId(id);
   };
 
   const handleEdit = (tx: any) => {
@@ -357,6 +356,27 @@ export default function TransactionsPage() {
           </div>
         </div>
       </Modal>
+
+      <ConfirmModal
+        open={!!deleteId}
+        onClose={() => setDeleteId(null)}
+        onConfirm={() => {
+          if (deleteId) {
+            deleteTxMutation.mutate(deleteId, {
+              onSuccess: () => {
+                toast.success('Đã xóa giao dịch thành công');
+                setDeleteId(null);
+              },
+              onError: () => toast.error('Lỗi khi xóa giao dịch'),
+            });
+          }
+        }}
+        title="Xóa giao dịch"
+        description="Bạn có chắc chắn muốn xóa giao dịch này?"
+        variant="danger"
+        confirmText="Xóa"
+        loading={deleteTxMutation.isPending}
+      />
     </div>
   );
 }
