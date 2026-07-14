@@ -362,6 +362,45 @@ export interface CreateAlbumDto {
   title: string;
 }
 
+export interface PaginationMetaDto {
+  limit: number;
+  page: number;
+  total: number;
+  totalPages: number;
+}
+
+export type MediaAssetDtoType = typeof MediaAssetDtoType[keyof typeof MediaAssetDtoType];
+
+
+// eslint-disable-next-line @typescript-eslint/no-redeclare
+export const MediaAssetDtoType = {
+  IMAGE: 'IMAGE',
+  VIDEO: 'VIDEO',
+  AUDIO: 'AUDIO',
+  DOCUMENT: 'DOCUMENT',
+} as const;
+
+export interface MediaAssetDto {
+  albumId?: string;
+  createdAt: string;
+  filename: string;
+  id: string;
+  mimeType: string;
+  originalName: string;
+  size: number;
+  storageKey: string;
+  tags: string[];
+  takenAt?: string;
+  type: MediaAssetDtoType;
+  updatedAt: string;
+  url: string;
+}
+
+export interface PaginatedMediaAssetDto {
+  items: MediaAssetDto[];
+  meta: PaginationMetaDto;
+}
+
 export interface UpdateMilestoneDto {
   completed?: boolean;
   dueDate?: string;
@@ -6746,7 +6785,7 @@ export const mediaControllerList = (
 ) => {
       
       
-      return customInstance<void>(
+      return customInstance<PaginatedMediaAssetDto>(
       {url: `/api/v1/media/assets`, method: 'GET',
         params, signal
     },
