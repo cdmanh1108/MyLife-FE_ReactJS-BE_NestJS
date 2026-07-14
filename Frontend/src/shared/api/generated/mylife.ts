@@ -605,6 +605,11 @@ export interface CreateJournalEntryDto {
   writtenAt: string;
 }
 
+export interface LearningStatisticsResponseDto {
+  learningStreak: number;
+  totalMinutes: number;
+}
+
 export type CreateStudyLogDtoSkill = typeof CreateStudyLogDtoSkill[keyof typeof CreateStudyLogDtoSkill];
 
 
@@ -633,6 +638,39 @@ export interface CreateStudyLogDto {
   note?: string;
   skill: CreateStudyLogDtoSkill;
   studiedAt: string;
+}
+
+export type StudyLogResponseDtoSkill = typeof StudyLogResponseDtoSkill[keyof typeof StudyLogResponseDtoSkill];
+
+
+// eslint-disable-next-line @typescript-eslint/no-redeclare
+export const StudyLogResponseDtoSkill = {
+  LISTENING: 'LISTENING',
+  READING: 'READING',
+  WRITING: 'WRITING',
+  SPEAKING: 'SPEAKING',
+  VOCABULARY: 'VOCABULARY',
+  GRAMMAR: 'GRAMMAR',
+} as const;
+
+export type StudyLogResponseDtoLanguage = typeof StudyLogResponseDtoLanguage[keyof typeof StudyLogResponseDtoLanguage];
+
+
+// eslint-disable-next-line @typescript-eslint/no-redeclare
+export const StudyLogResponseDtoLanguage = {
+  IELTS: 'IELTS',
+  TOPIK: 'TOPIK',
+} as const;
+
+export interface StudyLogResponseDto {
+  createdAt: string;
+  id: string;
+  language: StudyLogResponseDtoLanguage;
+  minutes: number;
+  note?: string;
+  skill: StudyLogResponseDtoSkill;
+  studiedAt: string;
+  updatedAt: string;
 }
 
 export type UpdateStudyPlanDtoStatus = typeof UpdateStudyPlanDtoStatus[keyof typeof UpdateStudyPlanDtoStatus];
@@ -675,6 +713,40 @@ export interface CreateStudyPlanDto {
   title: string;
 }
 
+export type StudyPlanResponseDtoStatus = typeof StudyPlanResponseDtoStatus[keyof typeof StudyPlanResponseDtoStatus];
+
+
+// eslint-disable-next-line @typescript-eslint/no-redeclare
+export const StudyPlanResponseDtoStatus = {
+  PLANNED: 'PLANNED',
+  ACTIVE: 'ACTIVE',
+  DONE: 'DONE',
+  PAUSED: 'PAUSED',
+} as const;
+
+export type StudyPlanResponseDtoLanguage = typeof StudyPlanResponseDtoLanguage[keyof typeof StudyPlanResponseDtoLanguage];
+
+
+// eslint-disable-next-line @typescript-eslint/no-redeclare
+export const StudyPlanResponseDtoLanguage = {
+  IELTS: 'IELTS',
+  TOPIK: 'TOPIK',
+} as const;
+
+export interface StudyPlanResponseDto {
+  createdAt: string;
+  dailyMinutes: number;
+  description?: string;
+  endDate: string;
+  id: string;
+  language: StudyPlanResponseDtoLanguage;
+  startDate: string;
+  status: StudyPlanResponseDtoStatus;
+  targetScore?: string;
+  title: string;
+  updatedAt: string;
+}
+
 export type UpdateMockTestDtoLanguage = typeof UpdateMockTestDtoLanguage[keyof typeof UpdateMockTestDtoLanguage];
 
 
@@ -714,6 +786,30 @@ export interface CreateMockTestDto {
   testDate: string;
   testName: string;
   totalScore?: number;
+  writingScore?: number;
+}
+
+export type MockTestResponseDtoLanguage = typeof MockTestResponseDtoLanguage[keyof typeof MockTestResponseDtoLanguage];
+
+
+// eslint-disable-next-line @typescript-eslint/no-redeclare
+export const MockTestResponseDtoLanguage = {
+  IELTS: 'IELTS',
+  TOPIK: 'TOPIK',
+} as const;
+
+export interface MockTestResponseDto {
+  createdAt: string;
+  id: string;
+  language: MockTestResponseDtoLanguage;
+  listeningScore?: number;
+  note?: string;
+  readingScore?: number;
+  speakingScore?: number;
+  testDate: string;
+  testName: string;
+  totalScore?: number;
+  updatedAt: string;
   writingScore?: number;
 }
 
@@ -766,6 +862,37 @@ export interface CreateFlashcardDto {
   language: CreateFlashcardDtoLanguage;
 }
 
+export type FlashcardResponseDtoStatus = typeof FlashcardResponseDtoStatus[keyof typeof FlashcardResponseDtoStatus];
+
+
+// eslint-disable-next-line @typescript-eslint/no-redeclare
+export const FlashcardResponseDtoStatus = {
+  NEW: 'NEW',
+  LEARNING: 'LEARNING',
+  REVIEWING: 'REVIEWING',
+  MASTERED: 'MASTERED',
+} as const;
+
+export type FlashcardResponseDtoLanguage = typeof FlashcardResponseDtoLanguage[keyof typeof FlashcardResponseDtoLanguage];
+
+
+// eslint-disable-next-line @typescript-eslint/no-redeclare
+export const FlashcardResponseDtoLanguage = {
+  IELTS: 'IELTS',
+  TOPIK: 'TOPIK',
+} as const;
+
+export interface FlashcardResponseDto {
+  back: string;
+  createdAt: string;
+  front: string;
+  id: string;
+  language: FlashcardResponseDtoLanguage;
+  nextReviewAt?: string;
+  status: FlashcardResponseDtoStatus;
+  updatedAt: string;
+}
+
 export type UpdateVocabularyDtoLanguage = typeof UpdateVocabularyDtoLanguage[keyof typeof UpdateVocabularyDtoLanguage];
 
 
@@ -803,6 +930,30 @@ export interface CreateVocabularyDto {
   note?: string;
   pronunciation?: string;
   tags?: string[];
+  word: string;
+}
+
+export type VocabularyResponseDtoLanguage = typeof VocabularyResponseDtoLanguage[keyof typeof VocabularyResponseDtoLanguage];
+
+
+// eslint-disable-next-line @typescript-eslint/no-redeclare
+export const VocabularyResponseDtoLanguage = {
+  IELTS: 'IELTS',
+  TOPIK: 'TOPIK',
+} as const;
+
+export interface VocabularyResponseDto {
+  createdAt: string;
+  example?: string;
+  id: string;
+  language: VocabularyResponseDtoLanguage;
+  level?: string;
+  mastered: boolean;
+  meaning: string;
+  note?: string;
+  pronunciation?: string;
+  tags: string[];
+  updatedAt: string;
   word: string;
 }
 
@@ -894,6 +1045,13 @@ export interface TodoResponseDto {
   updatedAt: string;
 }
 
+export interface SettlementResponseDto {
+  byPerson: SettlementPersonDto[];
+  netBalance: number;
+  totalIOwe: number;
+  totalOwedToMe: number;
+}
+
 export type SettlementPersonDtoDirection = typeof SettlementPersonDtoDirection[keyof typeof SettlementPersonDtoDirection];
 
 
@@ -919,13 +1077,6 @@ export interface SettlementPersonDto {
   direction: SettlementPersonDtoDirection;
   personId: string;
   personName: string;
-}
-
-export interface SettlementResponseDto {
-  byPerson: SettlementPersonDto[];
-  netBalance: number;
-  totalIOwe: number;
-  totalOwedToMe: number;
 }
 
 export type UpdateDebtRecordDtoStatus = typeof UpdateDebtRecordDtoStatus[keyof typeof UpdateDebtRecordDtoStatus];
@@ -4456,7 +4607,7 @@ export const learningControllerListV = (
 ) => {
       
       
-      return customInstance<void>(
+      return customInstance<VocabularyResponseDto[]>(
       {url: `/api/v1/learning/vocabulary`, method: 'GET',
         params, signal
     },
@@ -4539,7 +4690,7 @@ export const learningControllerCreateV = (
 ) => {
       
       
-      return customInstance<void>(
+      return customInstance<VocabularyResponseDto>(
       {url: `/api/v1/learning/vocabulary`, method: 'POST',
       headers: {'Content-Type': 'application/json', },
       data: createVocabularyDto, signal
@@ -4592,7 +4743,7 @@ export const learningControllerUpdateV = (
  options?: SecondParameter<typeof customInstance>,) => {
       
       
-      return customInstance<void>(
+      return customInstance<VocabularyResponseDto>(
       {url: `/api/v1/learning/vocabulary/${id}`, method: 'PATCH',
       headers: {'Content-Type': 'application/json', },
       data: updateVocabularyDto
@@ -4695,7 +4846,7 @@ export const learningControllerListF = (
 ) => {
       
       
-      return customInstance<void>(
+      return customInstance<FlashcardResponseDto[]>(
       {url: `/api/v1/learning/flashcards`, method: 'GET',
         params, signal
     },
@@ -4778,7 +4929,7 @@ export const learningControllerCreateF = (
 ) => {
       
       
-      return customInstance<void>(
+      return customInstance<FlashcardResponseDto>(
       {url: `/api/v1/learning/flashcards`, method: 'POST',
       headers: {'Content-Type': 'application/json', },
       data: createFlashcardDto, signal
@@ -4831,7 +4982,7 @@ export const learningControllerUpdateF = (
  options?: SecondParameter<typeof customInstance>,) => {
       
       
-      return customInstance<void>(
+      return customInstance<FlashcardResponseDto>(
       {url: `/api/v1/learning/flashcards/${id}`, method: 'PATCH',
       headers: {'Content-Type': 'application/json', },
       data: updateFlashcardDto
@@ -4935,7 +5086,7 @@ export const learningControllerReviewF = (
 ) => {
       
       
-      return customInstance<void>(
+      return customInstance<FlashcardResponseDto>(
       {url: `/api/v1/learning/flashcards/${id}/review`, method: 'POST',
       headers: {'Content-Type': 'application/json', },
       data: reviewFlashcardDto, signal
@@ -4988,7 +5139,7 @@ export const learningControllerListT = (
 ) => {
       
       
-      return customInstance<void>(
+      return customInstance<MockTestResponseDto[]>(
       {url: `/api/v1/learning/mock-tests`, method: 'GET',
         params, signal
     },
@@ -5071,7 +5222,7 @@ export const learningControllerCreateT = (
 ) => {
       
       
-      return customInstance<void>(
+      return customInstance<MockTestResponseDto>(
       {url: `/api/v1/learning/mock-tests`, method: 'POST',
       headers: {'Content-Type': 'application/json', },
       data: createMockTestDto, signal
@@ -5124,7 +5275,7 @@ export const learningControllerUpdateT = (
  options?: SecondParameter<typeof customInstance>,) => {
       
       
-      return customInstance<void>(
+      return customInstance<MockTestResponseDto>(
       {url: `/api/v1/learning/mock-tests/${id}`, method: 'PATCH',
       headers: {'Content-Type': 'application/json', },
       data: updateMockTestDto
@@ -5227,7 +5378,7 @@ export const learningControllerListP = (
 ) => {
       
       
-      return customInstance<void>(
+      return customInstance<StudyPlanResponseDto[]>(
       {url: `/api/v1/learning/study-plans`, method: 'GET',
         params, signal
     },
@@ -5310,7 +5461,7 @@ export const learningControllerCreateP = (
 ) => {
       
       
-      return customInstance<void>(
+      return customInstance<StudyPlanResponseDto>(
       {url: `/api/v1/learning/study-plans`, method: 'POST',
       headers: {'Content-Type': 'application/json', },
       data: createStudyPlanDto, signal
@@ -5363,7 +5514,7 @@ export const learningControllerUpdateP = (
  options?: SecondParameter<typeof customInstance>,) => {
       
       
-      return customInstance<void>(
+      return customInstance<StudyPlanResponseDto>(
       {url: `/api/v1/learning/study-plans/${id}`, method: 'PATCH',
       headers: {'Content-Type': 'application/json', },
       data: updateStudyPlanDto
@@ -5466,7 +5617,7 @@ export const learningControllerListL = (
 ) => {
       
       
-      return customInstance<void>(
+      return customInstance<StudyLogResponseDto[]>(
       {url: `/api/v1/learning/study-logs`, method: 'GET',
         params, signal
     },
@@ -5549,7 +5700,7 @@ export const learningControllerCreateL = (
 ) => {
       
       
-      return customInstance<void>(
+      return customInstance<StudyLogResponseDto>(
       {url: `/api/v1/learning/study-logs`, method: 'POST',
       headers: {'Content-Type': 'application/json', },
       data: createStudyLogDto, signal
@@ -5602,7 +5753,7 @@ export const learningControllerStats = (
 ) => {
       
       
-      return customInstance<void>(
+      return customInstance<LearningStatisticsResponseDto>(
       {url: `/api/v1/learning/statistics`, method: 'GET', signal
     },
       options);

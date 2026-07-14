@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Plus, FileText, TrendingUp, Trash2 } from 'lucide-react';
+import { Plus, FileText, TrendingUp, Trash2, Edit2 } from 'lucide-react';
 import { PageHeader } from '@/shared/ui/PageHeader';
 import { Button } from '@/shared/ui/Button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/shared/ui/Card';
@@ -13,7 +13,7 @@ import { LoadingState } from '@/shared/ui/LoadingState';
 import { ErrorState } from '@/shared/ui/ErrorState';
 import { useDisclosure } from '@/shared/hooks/useDisclosure';
 import { formatDate } from '@/shared/lib/date';
-import { useMockTests, useCreateMockTest, useDeleteMockTest } from '@/features/learning/api/useMockTests';
+import { useMockTests, useCreateMockTest, useUpdateMockTest, useDeleteMockTest } from '@/features/learning/api/useMockTests';
 import { LineChart, Line, XAxis, YAxis, Tooltip, ResponsiveContainer } from 'recharts';
 import { toast } from 'sonner';
 import { ConfirmModal } from '@/shared/ui/ConfirmModal';
@@ -21,6 +21,7 @@ import { ConfirmModal } from '@/shared/ui/ConfirmModal';
 export default function MockTestsPage() {
   const { t } = useTranslation();
   const modal = useDisclosure();
+  const [activeTest, setActiveTest] = useState<any | null>(null);
 
   // Form states
   const [formLanguage, setFormLanguage] = useState<'IELTS' | 'TOPIK'>('TOPIK');
@@ -39,14 +40,43 @@ export default function MockTestsPage() {
 
   const { data: tests = [], isLoading, isError, refetch } = useMockTests();
   const createMutation = useCreateMockTest();
+  const updateMutation = useUpdateMockTest();
   const deleteMutation = useDeleteMockTest();
+
+  const handleAddClick = () => {
+    setActiveTest(null);
+    setFormLanguage('TOPIK');
+    setFormTestName('');
+    setFormTestDate(new Date().toISOString().split('T')[0]);
+    setFormListeningScore('');
+    setFormReadingScore('');
+    setFormWritingScore('');
+    setFormSpeakingScore('');
+    setFormTotalScore('');
+    setFormNote('');
+    modal.open();
+  };
+
+  const handleEditClick = (test: any) => {
+    setActiveTest(test);
+    setFormLanguage(test.language);
+    setFormTestName(test.testName);
+    setFormTestDate(test.testDate ? test.testDate.split('T')[0] : '');
+    setFormListeningScore(test.listeningScore !== undefined ? String(test.listeningScore) : '');
+    setFormReadingScore(test.readingScore !== undefined ? String(test.readingScore) : '');
+    setFormWritingScore(test.writingScore !== undefined ? String(test.writingScore) : '');
+    setFormSpeakingScore(test.speakingScore !== undefined ? String(test.speakingScore) : '');
+    setFormTotalScore(test.totalScore !== undefined ? String(test.totalScore) : '');
+    setFormNote(test.note || '');
+    modal.open();
+  };
 
   const handleSave = () => {
     if (!formTestName.trim()) {
       toast.error(t('learning.toastEnterTestName'));
       return;
     }
-    const payload = {
+    const payload: any = {
       language: formLanguage,
       testName: formTestName.trim(),
       testDate: new Date(formTestDate).toISOString(),
@@ -58,20 +88,27 @@ export default function MockTestsPage() {
       note: formNote.trim() || undefined,
     };
 
-    createMutation.mutate(payload, {
-      onSuccess: () => {
-        toast.success(t('learning.toastTestAdded'));
-        modal.close();
-        setFormTestName('');
-        setFormListeningScore('');
-        setFormReadingScore('');
-        setFormWritingScore('');
-        setFormSpeakingScore('');
-        setFormTotalScore('');
-        setFormNote('');
-      },
-      onError: () => toast.error(t('learning.toastTestAddError')),
-    });
+    if (activeTest && activeTest.id) {
+      updateMutation.mutate(
+        { id: activeTest.id, dto: payload },
+        {
+          onSuccess: () => {
+            toast.success(t('learning.toastTestUpdated'));
+            modal.close();
+            setActiveTest(null);
+          },
+          onError: () => toast.error(t('learning.toastTestUpdateError')),
+        }
+      );
+    } else {
+      createMutation.mutate(payload, {
+        onSuccess: () => {
+          toast.success(t('learning.toastTestAdded'));
+          modal.close();
+        },
+        onError: () => toast.error(t('learning.toastTestAddError')),
+      });
+    }
   };
 
   const handleDelete = (id: string) => {
@@ -95,13 +132,21 @@ export default function MockTestsPage() {
     <div className="space-y-5 animate-slide-up">
       <PageHeader
         title={t('nav.mockTests')}
-        actions={<Button size="sm" onClick={modal.open}><Plus size={14} />{t('learning.addResult')}</Button>}
+        actions={
+          <Button size="sm" onClick={handleAddClick}>
+            <Plus size={14} />
+            {t('learning.addResult')}
+          </Button>
+        }
       />
 
       {sortedTests.length > 0 && (
         <Card>
           <CardHeader>
-            <CardTitle className="flex items-center gap-2"><TrendingUp size={14} />{t('learning.scoreTrend')}</CardTitle>
+            <CardTitle className="flex items-center gap-2">
+              <TrendingUp size={14} />
+              {t('learning.scoreTrend')}
+            </CardTitle>
           </CardHeader>
           <CardContent>
             <ResponsiveContainer width="100%" height={160}>
@@ -109,11 +154,22 @@ export default function MockTestsPage() {
                 <XAxis dataKey="name" tick={{ fill: '#64748b', fontSize: 11 }} axisLine={false} tickLine={false} />
                 <YAxis tick={{ fill: '#64748b', fontSize: 10 }} axisLine={false} tickLine={false} />
                 <Tooltip
-                  contentStyle={{ backgroundColor: '#0d1526', border: '1px solid rgba(56,189,248,0.1)', borderRadius: '8px', fontSize: '12px' }}
+                  contentStyle={{
+                    backgroundColor: '#0d1526',
+                    border: '1px solid rgba(56,189,248,0.1)',
+                    borderRadius: '8px',
+                    fontSize: '12px',
+                  }}
                   itemStyle={{ color: '#cbd5e1' }}
                   labelStyle={{ color: '#f8fafc', fontWeight: '600' }}
                 />
-                <Line type="monotone" dataKey="score" stroke="#38bdf8" strokeWidth={2} dot={{ fill: '#38bdf8', r: 4 }} />
+                <Line
+                  type="monotone"
+                  dataKey="score"
+                  stroke="#38bdf8"
+                  strokeWidth={2}
+                  dot={{ fill: '#38bdf8', r: 4 }}
+                />
               </LineChart>
             </ResponsiveContainer>
           </CardContent>
@@ -124,7 +180,11 @@ export default function MockTestsPage() {
         <EmptyState
           icon={<FileText size={24} />}
           title={t('learning.noTestsRecorded')}
-          action={<Button size="sm" onClick={modal.open}>{t('learning.addFirstResult')}</Button>}
+          action={
+            <Button size="sm" onClick={handleAddClick}>
+              {t('learning.addFirstResult')}
+            </Button>
+          }
         />
       ) : (
         <div className="space-y-2">
@@ -136,7 +196,7 @@ export default function MockTestsPage() {
                   <FileText size={16} />
                 </div>
                 <div className="flex-1 min-w-0">
-                  <p className="text-sm font-medium text-foreground">{test.testName}</p>
+                  <p className="text-sm font-medium text-foreground break-words">{test.testName}</p>
                   <p className="text-xs text-muted-foreground">{formatDate(test.testDate)}</p>
                 </div>
                 <div className="text-right flex items-center gap-3">
@@ -149,13 +209,22 @@ export default function MockTestsPage() {
                       {test.language}
                     </Badge>
                   </div>
-                  <button
-                    onClick={() => handleDelete(test.id)}
-                    className="p-1.5 text-muted-foreground hover:text-destructive hover:bg-secondary/40 rounded-md opacity-0 group-hover:opacity-100 transition-opacity"
-                    title={t('learning.deleteResult')}
-                  >
-                    <Trash2 size={14} />
-                  </button>
+                  <div className="flex items-center gap-0.5 opacity-0 group-hover:opacity-100 transition-opacity">
+                    <button
+                      onClick={() => handleEditClick(test)}
+                      className="p-1.5 text-muted-foreground hover:text-primary hover:bg-secondary/40 rounded-md transition-colors cursor-pointer"
+                      title={t('common.edit')}
+                    >
+                      <Edit2 size={14} />
+                    </button>
+                    <button
+                      onClick={() => handleDelete(test.id)}
+                      className="p-1.5 text-muted-foreground hover:text-destructive hover:bg-secondary/40 rounded-md transition-colors cursor-pointer"
+                      title={t('learning.deleteResult')}
+                    >
+                      <Trash2 size={14} />
+                    </button>
+                  </div>
                 </div>
               </Card>
             );
@@ -163,26 +232,63 @@ export default function MockTestsPage() {
         </div>
       )}
 
-      <Modal open={modal.isOpen} onClose={modal.close} title={t('learning.addTestResult')}>
+      <Modal open={modal.isOpen} onClose={modal.close} title={activeTest ? t('learning.editTestResult') : t('learning.addTestResult')}>
         <div className="space-y-4">
           <Select
             label={t('learning.studyLanguage')}
-            options={[{ value: 'TOPIK', label: 'TOPIK' }, { value: 'IELTS', label: 'IELTS' }]}
+            options={[
+              { value: 'TOPIK', label: 'TOPIK' },
+              { value: 'IELTS', label: 'IELTS' },
+            ]}
             value={formLanguage}
             onChange={(e) => setFormLanguage(e.target.value as any)}
           />
 
-          <Input label={t('learning.testName')} placeholder={t('learning.testNamePlaceholder')} value={formTestName} onChange={(e) => setFormTestName(e.target.value)} />
-          <Input label={t('learning.testDate')} type="date" value={formTestDate} onChange={(e) => setFormTestDate(e.target.value)} />
+          <Input
+            label={t('learning.testName')}
+            placeholder={t('learning.testNamePlaceholder')}
+            value={formTestName}
+            onChange={(e) => setFormTestName(e.target.value)}
+          />
+          <Input
+            label={t('learning.testDate')}
+            type="date"
+            value={formTestDate}
+            onChange={(e) => setFormTestDate(e.target.value)}
+          />
 
           <div className="grid grid-cols-2 gap-4">
-            <Input label={t('learning.scoreListening')} type="number" placeholder="0" value={formListeningScore} onChange={(e) => setFormListeningScore(e.target.value)} />
-            <Input label={t('learning.scoreReading')} type="number" placeholder="0" value={formReadingScore} onChange={(e) => setFormReadingScore(e.target.value)} />
+            <Input
+              label={t('learning.scoreListening')}
+              type="number"
+              placeholder="0"
+              value={formListeningScore}
+              onChange={(e) => setFormListeningScore(e.target.value)}
+            />
+            <Input
+              label={t('learning.scoreReading')}
+              type="number"
+              placeholder="0"
+              value={formReadingScore}
+              onChange={(e) => setFormReadingScore(e.target.value)}
+            />
           </div>
 
           <div className="grid grid-cols-2 gap-4">
-            <Input label={t('learning.scoreWriting')} type="number" placeholder="0" value={formWritingScore} onChange={(e) => setFormWritingScore(e.target.value)} />
-            <Input label={t('learning.scoreSpeaking')} type="number" placeholder="0" value={formSpeakingScore} onChange={(e) => setFormSpeakingScore(e.target.value)} />
+            <Input
+              label={t('learning.scoreWriting')}
+              type="number"
+              placeholder="0"
+              value={formWritingScore}
+              onChange={(e) => setFormWritingScore(e.target.value)}
+            />
+            <Input
+              label={t('learning.scoreSpeaking')}
+              type="number"
+              placeholder="0"
+              value={formSpeakingScore}
+              onChange={(e) => setFormSpeakingScore(e.target.value)}
+            />
           </div>
 
           <Input
@@ -193,11 +299,20 @@ export default function MockTestsPage() {
             onChange={(e) => setFormTotalScore(e.target.value)}
           />
 
-          <Input label={t('learning.additionalNotes')} placeholder={t('learning.testNotesPlaceholder')} value={formNote} onChange={(e) => setFormNote(e.target.value)} />
+          <Input
+            label={t('learning.additionalNotes')}
+            placeholder={t('learning.testNotesPlaceholder')}
+            value={formNote}
+            onChange={(e) => setFormNote(e.target.value)}
+          />
 
           <div className="flex gap-2 pt-2">
-            <Button variant="ghost" onClick={modal.close} fullWidth>{t('common.cancel')}</Button>
-            <Button fullWidth onClick={handleSave} loading={createMutation.isPending}>{t('common.save')}</Button>
+            <Button variant="ghost" onClick={modal.close} fullWidth>
+              {t('common.cancel')}
+            </Button>
+            <Button fullWidth onClick={handleSave} loading={createMutation.isPending || updateMutation.isPending}>
+              {t('common.save')}
+            </Button>
           </div>
         </div>
       </Modal>
@@ -216,8 +331,8 @@ export default function MockTestsPage() {
             });
           }
         }}
-        title={t('learning.deleteTestTitle')}
-        description={t('confirmations.deleteTest')}
+        title={t('learning.confirmDeleteTestTitle')}
+        description={t('learning.confirmDeleteTestMessage')}
         variant="danger"
         confirmText={t('common.delete')}
         loading={deleteMutation.isPending}

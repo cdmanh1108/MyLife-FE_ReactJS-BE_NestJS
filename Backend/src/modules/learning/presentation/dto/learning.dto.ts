@@ -70,3 +70,75 @@ export class CreateStudyLogDto {
   @ApiProperty() @IsDateString() studiedAt: string;
   @ApiPropertyOptional() @IsOptional() @IsString() note?: string;
 }
+
+export class VocabularyResponseDto {
+  @ApiProperty() id: string;
+  @ApiProperty({ enum: LearningLanguage }) language: LearningLanguage;
+  @ApiProperty() word: string;
+  @ApiProperty() meaning: string;
+  @ApiPropertyOptional() pronunciation?: string;
+  @ApiPropertyOptional() example?: string;
+  @ApiPropertyOptional() note?: string;
+  @ApiProperty({ type: [String] }) tags: string[];
+  @ApiPropertyOptional() level?: string;
+  @ApiProperty() mastered: boolean;
+  @ApiProperty() createdAt: string;
+  @ApiProperty() updatedAt: string;
+}
+
+export class FlashcardResponseDto {
+  @ApiProperty() id: string;
+  @ApiProperty({ enum: LearningLanguage }) language: LearningLanguage;
+  @ApiProperty() front: string;
+  @ApiProperty() back: string;
+  @ApiProperty({ enum: FlashcardStatus }) status: FlashcardStatus;
+  @ApiPropertyOptional() nextReviewAt?: string;
+  @ApiProperty() createdAt: string;
+  @ApiProperty() updatedAt: string;
+}
+
+export class MockTestResponseDto {
+  @ApiProperty() id: string;
+  @ApiProperty({ enum: LearningLanguage }) language: LearningLanguage;
+  @ApiProperty() testName: string;
+  @ApiProperty() testDate: string;
+  @ApiPropertyOptional() listeningScore?: number;
+  @ApiPropertyOptional() readingScore?: number;
+  @ApiPropertyOptional() writingScore?: number;
+  @ApiPropertyOptional() speakingScore?: number;
+  @ApiPropertyOptional() totalScore?: number;
+  @ApiPropertyOptional() note?: string;
+  @ApiProperty() createdAt: string;
+  @ApiProperty() updatedAt: string;
+}
+
+export class StudyPlanResponseDto {
+  @ApiProperty() id: string;
+  @ApiProperty({ enum: LearningLanguage }) language: LearningLanguage;
+  @ApiProperty() title: string;
+  @ApiPropertyOptional() description?: string;
+  @ApiProperty() startDate: string;
+  @ApiProperty() endDate: string;
+  @ApiPropertyOptional() targetScore?: string;
+  @ApiProperty() dailyMinutes: number;
+  @ApiProperty({ enum: StudyPlanStatus }) status: StudyPlanStatus;
+  @ApiProperty() createdAt: string;
+  @ApiProperty() updatedAt: string;
+}
+
+export class StudyLogResponseDto {
+  @ApiProperty() id: string;
+  @ApiProperty({ enum: LearningLanguage }) language: LearningLanguage;
+  @ApiProperty({ enum: LearningSkill }) skill: LearningSkill;
+  @ApiProperty() minutes: number;
+  @ApiProperty() studiedAt: string;
+  @ApiPropertyOptional() note?: string;
+  @ApiProperty() createdAt: string;
+  @ApiProperty() updatedAt: string;
+}
+
+export class LearningStatisticsResponseDto {
+  @ApiProperty() totalMinutes: number;
+  @ApiProperty() learningStreak: number;
+}
+
