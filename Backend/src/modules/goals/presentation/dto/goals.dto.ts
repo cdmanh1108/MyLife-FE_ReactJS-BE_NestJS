@@ -27,3 +27,47 @@ export class UpdateMilestoneDto {
   @ApiPropertyOptional() @IsOptional() @IsBoolean() completed?: boolean;
   @ApiPropertyOptional() @IsOptional() @IsDateString() dueDate?: string;
 }
+
+export class MilestoneResponseDto {
+  @ApiProperty()
+  id: string;
+
+  @ApiProperty()
+  title: string;
+
+  @ApiProperty()
+  completed: boolean;
+
+  @ApiPropertyOptional()
+  dueDate?: string;
+}
+
+export class GoalResponseDto {
+  @ApiProperty()
+  id: string;
+
+  @ApiProperty()
+  title: string;
+
+  @ApiPropertyOptional()
+  description?: string;
+
+  @ApiProperty({ enum: GoalStatus })
+  status: GoalStatus;
+
+  @ApiProperty()
+  progress: number;
+
+  @ApiPropertyOptional()
+  targetDate?: string;
+
+  @ApiProperty({ type: [MilestoneResponseDto] })
+  milestones: MilestoneResponseDto[];
+
+  @ApiProperty()
+  createdAt: string;
+
+  @ApiProperty()
+  updatedAt: string;
+}
+

@@ -30,19 +30,19 @@ export class GoalsService {
     });
   }
   async get(userId: string, id: string) {
-    const d = await this.model.findOne({ _id: id, userId });
+    const d = await this.model.findOne({ _id: new Types.ObjectId(id), userId: new Types.ObjectId(userId) });
     if (!d) throw new NotFoundException({ code: 'GOAL_NOT_FOUND', message: 'Goal not found' });
     return d;
   }
   async update(userId: string, id: string, dto: UpdateGoalDto) {
     const u: Record<string, unknown> = { ...dto };
     if (dto.targetDate) u.targetDate = new Date(dto.targetDate);
-    const d = await this.model.findOneAndUpdate({ _id: id, userId }, u, { new: true });
+    const d = await this.model.findOneAndUpdate({ _id: new Types.ObjectId(id), userId: new Types.ObjectId(userId) }, u, { new: true });
     if (!d) throw new NotFoundException({ code: 'GOAL_NOT_FOUND', message: 'Goal not found' });
     return d;
   }
   async remove(userId: string, id: string) {
-    await this.model.deleteOne({ _id: id, userId });
+    await this.model.deleteOne({ _id: new Types.ObjectId(id), userId: new Types.ObjectId(userId) });
     return { deleted: true };
   }
   async addMilestone(userId: string, id: string, dto: CreateMilestoneDto) {
