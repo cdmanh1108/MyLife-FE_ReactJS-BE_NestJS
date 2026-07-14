@@ -25,11 +25,16 @@ export class DashboardService {
       this.timeline.latest(userId, 5),
     ]);
     return {
-      ...finance,
+      balance: finance.balance,
+      monthlyIncome: finance.monthlyIncome,
+      monthlyExpense: finance.monthlyExpense,
+      currency: 'VND',
       debtsIOwe: debt.totalIOwe,
       debtsOwedToMe: debt.totalOwedToMe,
-      ...todo,
+      todayCount: todo.todayTodosCount,
+      doneToday: todo.completedTodosCount,
       learningStreak: learning.learningStreak,
+      learningLanguage: 'TOPIK',
       latestMood,
       latestTimelineEvents,
       recentTransactions: [],

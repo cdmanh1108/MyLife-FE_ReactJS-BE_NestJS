@@ -1,5 +1,5 @@
 import { Body, Controller, Delete, Get, Param, Patch, Post, Query } from '@nestjs/common';
-import { ApiBearerAuth, ApiOperation, ApiTags } from '@nestjs/swagger';
+import { ApiBearerAuth, ApiOkResponse, ApiOperation, ApiTags } from '@nestjs/swagger';
 import { CurrentUser } from '../../../common/decorators/current-user.decorator';
 import { AuthenticatedUser } from '../../../common/types/authenticated-user.type';
 import { FinanceService } from '../application/finance.service';
@@ -8,6 +8,7 @@ import {
   CreateCategoryDto,
   CreateTransactionDto,
   TransactionQueryDto,
+  TransactionResponseDto,
   UpdateBudgetDto,
   UpdateCategoryDto,
   UpdateTransactionDto,
@@ -17,10 +18,11 @@ import {
 @ApiBearerAuth('access-token')
 @Controller('finance')
 export class FinanceController {
-  constructor(private readonly finance: FinanceService) {}
+  constructor(private readonly finance: FinanceService) { }
 
   @Get('transactions')
   @ApiOperation({ summary: 'List finance transactions' })
+  @ApiOkResponse({ type: [TransactionResponseDto] })
   listTransactions(@CurrentUser() user: AuthenticatedUser, @Query() query: TransactionQueryDto) {
     return this.finance.listTransactions(user.id, query);
   }
