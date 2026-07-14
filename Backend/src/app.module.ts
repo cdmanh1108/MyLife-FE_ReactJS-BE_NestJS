@@ -24,6 +24,7 @@ import { MediaModule } from './modules/media/media.module';
 import { InterestsModule } from './modules/interests/interests.module';
 import { LearningModule } from './modules/learning/learning.module';
 import { NotificationsModule } from './modules/notifications/notifications.module';
+import { PortfolioModule } from './modules/portfolio/portfolio.module';
 
 @Module({
   imports: [
@@ -45,6 +46,7 @@ import { NotificationsModule } from './modules/notifications/notifications.modul
     InterestsModule,
     LearningModule,
     NotificationsModule,
+    PortfolioModule,
   ],
   providers: [
     { provide: APP_FILTER, useClass: GlobalExceptionFilter },
