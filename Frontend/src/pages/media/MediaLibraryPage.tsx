@@ -17,7 +17,8 @@ export default function MediaLibraryPage() {
   // Delete state
   const [deleteId, setDeleteId] = useState<string | null>(null);
 
-  const { data: media = [], isLoading, isError, refetch } = useMediaAssets();
+  const { data, isLoading, isError, refetch } = useMediaAssets();
+  const mediaItems = data?.items ?? [];
   const uploadMutation = useUploadMedia();
   const deleteMutation = useDeleteMediaAsset();
 
@@ -29,10 +30,7 @@ export default function MediaLibraryPage() {
     const file = e.target.files?.[0];
     if (!file) return;
 
-    const formData = new FormData();
-    formData.append('file', file);
-
-    uploadMutation.mutate(formData, {
+    uploadMutation.mutate({ file }, {
       onSuccess: () => {
         toast.success(t('media.toastUploadSuccess'));
         if (fileInputRef.current) fileInputRef.current.value = '';
@@ -71,7 +69,7 @@ export default function MediaLibraryPage() {
         }
       />
 
-      {media.length === 0 ? (
+      {mediaItems.length === 0 ? (
         <EmptyState
           icon={<Upload size={24} />}
           title={t('media.noMedia')}
@@ -79,7 +77,7 @@ export default function MediaLibraryPage() {
         />
       ) : (
         <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3">
-          {media.map((m) => (
+          {mediaItems.map((m) => (
             <div key={m.id} className="group relative aspect-square overflow-hidden rounded-lg border border-border bg-secondary cursor-pointer">
               <img
                 src={m.url.startsWith('http') ? m.url : `http://localhost:3000${m.url}`}

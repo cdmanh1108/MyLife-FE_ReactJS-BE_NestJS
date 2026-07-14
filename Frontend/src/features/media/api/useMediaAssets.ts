@@ -21,7 +21,8 @@ export function useUploadMedia() {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: (formData: FormData) => mediaControllerUpload(formData),
+    mutationFn: (data: { file: Blob; albumId?: string; tags?: string[]; takenAt?: string }) =>
+      mediaControllerUpload(data),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['media'] });
     },
