@@ -236,7 +236,14 @@
     "goalTitle": "Tiêu đề",
     "goalTitlePlaceholder": "Tên mục tiêu...",
     "goalDescription": "Mô tả",
-    "goalDescriptionPlaceholder": "Chi tiết..."
+    "goalDescriptionPlaceholder": "Chi tiết...",
+    "editGoal": "Sửa mục tiêu",
+    "toastUpdateSuccess": "Đã cập nhật mục tiêu",
+    "toastUpdateError": "Lỗi khi cập nhật mục tiêu",
+    "toastDeleteSuccess": "Đã xóa mục tiêu",
+    "toastDeleteError": "Lỗi khi xóa mục tiêu",
+    "confirmDeleteTitle": "Xóa mục tiêu",
+    "confirmDeleteMessage": "Bạn có chắc chắn muốn xóa mục tiêu này không?"
   },
   "timeline": {
     "title": "Dòng thời gian",

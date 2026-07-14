@@ -238,7 +238,14 @@
     "goalTitle": "제목",
     "goalTitlePlaceholder": "목표 제목...",
     "goalDescription": "설명",
-    "goalDescriptionPlaceholder": "상세 내용..."
+    "goalDescriptionPlaceholder": "상세 내용...",
+    "editGoal": "목표 수정",
+    "toastUpdateSuccess": "목표가 수정되었습니다",
+    "toastUpdateError": "목표 수정 중 오류가 발생했습니다",
+    "toastDeleteSuccess": "목표가 삭제되었습니다",
+    "toastDeleteError": "목표 삭제 중 오류가 발생했습니다",
+    "confirmDeleteTitle": "목표 삭제",
+    "confirmDeleteMessage": "이 목표를 삭제하시겠습니까?"
   },
   "timeline": {
     "title": "타임라인",

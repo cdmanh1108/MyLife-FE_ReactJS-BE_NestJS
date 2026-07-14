@@ -238,7 +238,14 @@
     "goalTitle": "Title",
     "goalTitlePlaceholder": "Goal title...",
     "goalDescription": "Description",
-    "goalDescriptionPlaceholder": "Details..."
+    "goalDescriptionPlaceholder": "Details...",
+    "editGoal": "Edit Goal",
+    "toastUpdateSuccess": "Goal updated successfully",
+    "toastUpdateError": "Error updating goal",
+    "toastDeleteSuccess": "Goal deleted successfully",
+    "toastDeleteError": "Error deleting goal",
+    "confirmDeleteTitle": "Delete Goal",
+    "confirmDeleteMessage": "Are you sure you want to delete this goal?"
   },
   "timeline": {
     "title": "Timeline",

@@ -426,6 +426,37 @@ export interface CreateGoalDto {
   title: string;
 }
 
+export type GoalResponseDtoStatus = typeof GoalResponseDtoStatus[keyof typeof GoalResponseDtoStatus];
+
+
+// eslint-disable-next-line @typescript-eslint/no-redeclare
+export const GoalResponseDtoStatus = {
+  NOT_STARTED: 'NOT_STARTED',
+  IN_PROGRESS: 'IN_PROGRESS',
+  COMPLETED: 'COMPLETED',
+  PAUSED: 'PAUSED',
+  CANCELLED: 'CANCELLED',
+} as const;
+
+export interface MilestoneResponseDto {
+  completed: boolean;
+  dueDate?: string;
+  id: string;
+  title: string;
+}
+
+export interface GoalResponseDto {
+  createdAt: string;
+  description?: string;
+  id: string;
+  milestones: MilestoneResponseDto[];
+  progress: number;
+  status: GoalResponseDtoStatus;
+  targetDate?: string;
+  title: string;
+  updatedAt: string;
+}
+
 export type UpdateTimelineEventDtoType = typeof UpdateTimelineEventDtoType[keyof typeof UpdateTimelineEventDtoType];
 
 
@@ -6349,7 +6380,7 @@ export const goalsControllerList = (
 ) => {
       
       
-      return customInstance<void>(
+      return customInstance<GoalResponseDto[]>(
       {url: `/api/v1/goals`, method: 'GET',
         params, signal
     },
@@ -6432,7 +6463,7 @@ export const goalsControllerCreate = (
 ) => {
       
       
-      return customInstance<void>(
+      return customInstance<GoalResponseDto>(
       {url: `/api/v1/goals`, method: 'POST',
       headers: {'Content-Type': 'application/json', },
       data: createGoalDto, signal
@@ -6485,7 +6516,7 @@ export const goalsControllerGet = (
 ) => {
       
       
-      return customInstance<void>(
+      return customInstance<GoalResponseDto>(
       {url: `/api/v1/goals/${id}`, method: 'GET', signal
     },
       options);
@@ -6567,7 +6598,7 @@ export const goalsControllerUpdate = (
  options?: SecondParameter<typeof customInstance>,) => {
       
       
-      return customInstance<void>(
+      return customInstance<GoalResponseDto>(
       {url: `/api/v1/goals/${id}`, method: 'PATCH',
       headers: {'Content-Type': 'application/json', },
       data: updateGoalDto
@@ -6671,7 +6702,7 @@ export const goalsControllerAddM = (
 ) => {
       
       
-      return customInstance<void>(
+      return customInstance<GoalResponseDto>(
       {url: `/api/v1/goals/${id}/milestones`, method: 'POST',
       headers: {'Content-Type': 'application/json', },
       data: createMilestoneDto, signal
@@ -6725,7 +6756,7 @@ export const goalsControllerUpdM = (
  options?: SecondParameter<typeof customInstance>,) => {
       
       
-      return customInstance<void>(
+      return customInstance<GoalResponseDto>(
       {url: `/api/v1/goals/${id}/milestones/${mid}`, method: 'PATCH',
       headers: {'Content-Type': 'application/json', },
       data: updateMilestoneDto
@@ -6778,7 +6809,7 @@ export const goalsControllerDelM = (
  options?: SecondParameter<typeof customInstance>,) => {
       
       
-      return customInstance<void>(
+      return customInstance<GoalResponseDto>(
       {url: `/api/v1/goals/${id}/milestones/${mid}`, method: 'DELETE'
     },
       options);
