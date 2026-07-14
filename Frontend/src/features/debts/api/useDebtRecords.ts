@@ -5,6 +5,8 @@ import {
   debtsControllerCreateRecord,
   debtsControllerSettle,
   debtsControllerCalculate,
+  debtsControllerUpdateRecord,
+  debtsControllerDeleteRecord,
 } from '@/shared/api/generated/mylife';
 
 export function useDebtRecords(params?: any) {
@@ -19,6 +21,30 @@ export function useCreateDebtRecord() {
 
   return useMutation({
     mutationFn: (dto: any) => debtsControllerCreateRecord(dto),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['debts'] });
+      queryClient.invalidateQueries({ queryKey: QUERY_KEYS.DASHBOARD_SUMMARY });
+    },
+  });
+}
+
+export function useUpdateDebtRecord() {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: ({ id, dto }: { id: string; dto: any }) => debtsControllerUpdateRecord(id, dto),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['debts'] });
+      queryClient.invalidateQueries({ queryKey: QUERY_KEYS.DASHBOARD_SUMMARY });
+    },
+  });
+}
+
+export function useDeleteDebtRecord() {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: (id: string) => debtsControllerDeleteRecord(id),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['debts'] });
       queryClient.invalidateQueries({ queryKey: QUERY_KEYS.DASHBOARD_SUMMARY });
@@ -44,3 +70,4 @@ export function useDebtCalculation() {
     queryFn: () => debtsControllerCalculate(),
   });
 }
+

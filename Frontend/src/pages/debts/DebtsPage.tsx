@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Plus, ArrowUpLeft, ArrowDownRight, CheckCircle, Circle } from 'lucide-react';
+import { Plus, ArrowUpLeft, ArrowDownRight, CheckCircle, Circle, Edit2, Trash2 } from 'lucide-react';
 import { PageHeader } from '@/shared/ui/PageHeader';
 import { Card } from '@/shared/ui/Card';
 import { StatCard } from '@/shared/ui/StatCard';
@@ -16,10 +16,11 @@ import { useDisclosure } from '@/shared/hooks/useDisclosure';
 import { formatMoney, formatCompactMoney } from '@/shared/lib/money';
 import { formatDate } from '@/shared/lib/date';
 import { cn } from '@/shared/lib/cn';
-import { useDebtRecords, useCreateDebtRecord, useSettleDebtRecord } from '@/features/debts/api/useDebtRecords';
+import { useDebtRecords, useCreateDebtRecord, useSettleDebtRecord, useUpdateDebtRecord, useDeleteDebtRecord } from '@/features/debts/api/useDebtRecords';
 import { useDebtSummary } from '@/features/debts/api/useDebtSummary';
 import { useDebtPeople, useCreateDebtPerson } from '@/features/debts/api/useDebtPeople';
 import { toast } from 'sonner';
+import { ConfirmModal } from '@/shared/ui/ConfirmModal';
 
 export default function DebtsPage() {
   const { t } = useTranslation();
@@ -33,12 +34,42 @@ export default function DebtsPage() {
   const [formNote, setFormNote] = useState('');
   const [formDate, setFormDate] = useState(new Date().toISOString().split('T')[0]);
 
+  // Edit & Delete state
+  const [editingRecord, setEditingRecord] = useState<any>(null);
+  const [deleteId, setDeleteId] = useState<string | null>(null);
+
   const { data: records = [], isLoading, isError, refetch } = useDebtRecords();
   const { data: summary } = useDebtSummary();
   const { data: people = [] } = useDebtPeople();
   const createRecord = useCreateDebtRecord();
+  const updateRecord = useUpdateDebtRecord();
+  const deleteRecord = useDeleteDebtRecord();
   const createPerson = useCreateDebtPerson();
   const settleRecord = useSettleDebtRecord();
+
+  const handleEdit = (debt: any) => {
+    setEditingRecord(debt);
+    setFormPersonId(debt.personId);
+    setFormDirection(debt.direction);
+    setFormAmount(debt.amount.toString());
+    setFormNote(debt.note || '');
+    setFormDate(debt.occurredAt.split('T')[0]);
+    modal.open();
+  };
+
+  const handleDelete = (id: string) => {
+    setDeleteId(id);
+  };
+
+  const handleCloseModal = () => {
+    modal.close();
+    setEditingRecord(null);
+    setFormPersonId('');
+    setFormNewPerson('');
+    setFormAmount('');
+    setFormNote('');
+    setFormDate(new Date().toISOString().split('T')[0]);
+  };
 
   const handleSave = async () => {
     if (!formAmount || isNaN(Number(formAmount))) { toast.error(t('finance.toastInvalidAmount')); return; }
@@ -54,18 +85,38 @@ export default function DebtsPage() {
     }
     if (!personId) { toast.error(t('debts.toastSelectOrCreatePerson')); return; }
 
-    createRecord.mutate(
-      { personId, direction: formDirection, amount: Number(formAmount), currency: 'VND', note: formNote || undefined, occurredAt: new Date(formDate).toISOString() },
-      {
-        onSuccess: () => {
-          toast.success(t('debts.toastDebtAdded'));
-          modal.close();
-          setFormPersonId(''); setFormNewPerson(''); setFormAmount(''); setFormNote('');
-          setFormDate(new Date().toISOString().split('T')[0]);
-        },
-        onError: () => toast.error(t('debts.toastDebtAddError')),
-      }
-    );
+    const payload = {
+      personId,
+      direction: formDirection,
+      amount: Number(formAmount),
+      currency: 'VND',
+      note: formNote || undefined,
+      occurredAt: new Date(formDate).toISOString(),
+    };
+
+    if (editingRecord) {
+      updateRecord.mutate(
+        { id: editingRecord.id, dto: payload },
+        {
+          onSuccess: () => {
+            toast.success(t('debts.toastDebtUpdated'));
+            handleCloseModal();
+          },
+          onError: () => toast.error(t('debts.toastDebtUpdateError')),
+        }
+      );
+    } else {
+      createRecord.mutate(
+        payload,
+        {
+          onSuccess: () => {
+            toast.success(t('debts.toastDebtAdded'));
+            handleCloseModal();
+          },
+          onError: () => toast.error(t('debts.toastDebtAddError')),
+        }
+      );
+    }
   };
 
   const handleSettle = (id: string) => {
@@ -126,16 +177,34 @@ export default function DebtsPage() {
                     debt.direction === 'OWES_ME' ? 'text-green-400' : 'text-red-400')}>
                     {formatMoney(debt.amount, debt.currency)}
                   </p>
-                  {debt.status === 'OPEN' && (
-                    <button
-                      onClick={() => handleSettle(debt.id)}
-                      className="p-1.5 text-muted-foreground hover:text-green-400 transition-colors"
-                      title={t('debts.markAsPaid')}
-                    >
-                      <Circle size={14} />
-                    </button>
-                  )}
-                  {debt.status === 'SETTLED' && <CheckCircle size={14} className="text-green-400/50" />}
+                  <div className="flex items-center gap-1">
+                    <div className="flex items-center gap-0.5 opacity-0 group-hover:opacity-100 transition-opacity">
+                      <button
+                        onClick={() => handleEdit(debt)}
+                        className="p-1.5 text-muted-foreground hover:text-primary hover:bg-secondary/40 rounded-md transition-colors"
+                        title={t('common.edit')}
+                      >
+                        <Edit2 size={14} />
+                      </button>
+                      <button
+                        onClick={() => handleDelete(debt.id)}
+                        className="p-1.5 text-muted-foreground hover:text-destructive hover:bg-secondary/40 rounded-md transition-colors"
+                        title={t('common.delete')}
+                      >
+                        <Trash2 size={14} />
+                      </button>
+                    </div>
+                    {debt.status === 'OPEN' && (
+                      <button
+                        onClick={() => handleSettle(debt.id)}
+                        className="p-1.5 text-muted-foreground hover:text-green-400 transition-colors flex-shrink-0"
+                        title={t('debts.markAsPaid')}
+                      >
+                        <Circle size={14} />
+                      </button>
+                    )}
+                    {debt.status === 'SETTLED' && <CheckCircle size={14} className="text-green-400/50 flex-shrink-0" />}
+                  </div>
                 </Card>
               );
             });
@@ -143,7 +212,7 @@ export default function DebtsPage() {
         </div>
       )}
 
-      <Modal open={modal.isOpen} onClose={modal.close} title={t('debts.addDebt')}>
+      <Modal open={modal.isOpen} onClose={handleCloseModal} title={editingRecord ? t('debts.editDebt') : t('debts.addDebt')}>
         <div className="space-y-4">
           <div className="space-y-1.5">
             <label className="text-xs font-medium text-muted-foreground">{t('debts.person')}</label>
@@ -156,14 +225,19 @@ export default function DebtsPage() {
                 value={formPersonId}
                 onChange={(e) => { setFormPersonId(e.target.value); if (e.target.value) setFormNewPerson(''); }}
                 className="flex-1"
+                disabled={!!editingRecord}
               />
-              <span className="text-sm text-muted-foreground self-center">{t('common.or')}</span>
-              <Input
-                placeholder={t('debts.newPersonPlaceholder')}
-                value={formNewPerson}
-                onChange={(e) => { setFormNewPerson(e.target.value); if (e.target.value) setFormPersonId(''); }}
-                className="w-36"
-              />
+              {!editingRecord && (
+                <>
+                  <span className="text-sm text-muted-foreground self-center">{t('common.or')}</span>
+                  <Input
+                    placeholder={t('debts.newPersonPlaceholder')}
+                    value={formNewPerson}
+                    onChange={(e) => { setFormNewPerson(e.target.value); if (e.target.value) setFormPersonId(''); }}
+                    className="w-36"
+                  />
+                </>
+              )}
             </div>
           </div>
           <Select
@@ -176,11 +250,32 @@ export default function DebtsPage() {
           <Input label={t('debts.note') || 'Ghi chú'} placeholder={t('debts.debtNotePlaceholder')} value={formNote} onChange={(e) => setFormNote(e.target.value)} />
           <Input label={t('debts.dateLabel')} type="date" value={formDate} onChange={(e) => setFormDate(e.target.value)} />
           <div className="flex gap-2 pt-2">
-            <Button variant="ghost" onClick={modal.close} fullWidth>{t('common.cancel')}</Button>
-            <Button fullWidth onClick={handleSave} loading={createRecord.isPending || createPerson.isPending}>{t('common.save')}</Button>
+            <Button variant="ghost" onClick={handleCloseModal} fullWidth>{t('common.cancel')}</Button>
+            <Button fullWidth onClick={handleSave} loading={createRecord.isPending || updateRecord.isPending || createPerson.isPending}>{t('common.save')}</Button>
           </div>
         </div>
       </Modal>
+
+      <ConfirmModal
+        open={!!deleteId}
+        onClose={() => setDeleteId(null)}
+        onConfirm={() => {
+          if (deleteId) {
+            deleteRecord.mutate(deleteId, {
+              onSuccess: () => {
+                toast.success(t('debts.toastDeleteSuccess'));
+                setDeleteId(null);
+              },
+              onError: () => toast.error(t('debts.toastDeleteError')),
+            });
+          }
+        }}
+        title={t('debts.deleteDebtTitle')}
+        description={t('confirmations.deleteDebt')}
+        variant="danger"
+        confirmText={t('common.delete')}
+        loading={deleteRecord.isPending}
+      />
     </div>
   );
 }

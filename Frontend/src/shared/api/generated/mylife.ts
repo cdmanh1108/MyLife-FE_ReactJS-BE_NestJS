@@ -797,6 +797,40 @@ export interface CreateTodoDto {
   title: string;
 }
 
+export type SettlementPersonDtoDirection = typeof SettlementPersonDtoDirection[keyof typeof SettlementPersonDtoDirection];
+
+
+// eslint-disable-next-line @typescript-eslint/no-redeclare
+export const SettlementPersonDtoDirection = {
+  I_OWE: 'I_OWE',
+  OWES_ME: 'OWES_ME',
+} as const;
+
+export type SettlementPersonDtoCurrency = typeof SettlementPersonDtoCurrency[keyof typeof SettlementPersonDtoCurrency];
+
+
+// eslint-disable-next-line @typescript-eslint/no-redeclare
+export const SettlementPersonDtoCurrency = {
+  VND: 'VND',
+  USD: 'USD',
+  KRW: 'KRW',
+} as const;
+
+export interface SettlementPersonDto {
+  amount: number;
+  currency: SettlementPersonDtoCurrency;
+  direction: SettlementPersonDtoDirection;
+  personId: string;
+  personName: string;
+}
+
+export interface SettlementResponseDto {
+  byPerson: SettlementPersonDto[];
+  netBalance: number;
+  totalIOwe: number;
+  totalOwedToMe: number;
+}
+
 export type UpdateDebtRecordDtoStatus = typeof UpdateDebtRecordDtoStatus[keyof typeof UpdateDebtRecordDtoStatus];
 
 
@@ -863,6 +897,47 @@ export interface CreateDebtRecordDto {
   personId: string;
 }
 
+export type DebtRecordResponseDtoStatus = typeof DebtRecordResponseDtoStatus[keyof typeof DebtRecordResponseDtoStatus];
+
+
+// eslint-disable-next-line @typescript-eslint/no-redeclare
+export const DebtRecordResponseDtoStatus = {
+  OPEN: 'OPEN',
+  SETTLED: 'SETTLED',
+} as const;
+
+export type DebtRecordResponseDtoDirection = typeof DebtRecordResponseDtoDirection[keyof typeof DebtRecordResponseDtoDirection];
+
+
+// eslint-disable-next-line @typescript-eslint/no-redeclare
+export const DebtRecordResponseDtoDirection = {
+  I_OWE: 'I_OWE',
+  OWES_ME: 'OWES_ME',
+} as const;
+
+export type DebtRecordResponseDtoCurrency = typeof DebtRecordResponseDtoCurrency[keyof typeof DebtRecordResponseDtoCurrency];
+
+
+// eslint-disable-next-line @typescript-eslint/no-redeclare
+export const DebtRecordResponseDtoCurrency = {
+  VND: 'VND',
+  USD: 'USD',
+  KRW: 'KRW',
+} as const;
+
+export interface DebtRecordResponseDto {
+  amount: number;
+  createdAt: string;
+  currency: DebtRecordResponseDtoCurrency;
+  direction: DebtRecordResponseDtoDirection;
+  id: string;
+  note?: string;
+  occurredAt: string;
+  personId: string;
+  status: DebtRecordResponseDtoStatus;
+  updatedAt: string;
+}
+
 export interface UpdateDebtPersonDto {
   name?: string;
   nickname?: string;
@@ -873,6 +948,15 @@ export interface CreateDebtPersonDto {
   name: string;
   nickname?: string;
   note?: string;
+}
+
+export interface DebtPersonResponseDto {
+  createdAt: string;
+  id: string;
+  name: string;
+  nickname?: string;
+  note?: string;
+  updatedAt: string;
 }
 
 export type UpdateBudgetDtoCurrency = typeof UpdateBudgetDtoCurrency[keyof typeof UpdateBudgetDtoCurrency];
@@ -2970,7 +3054,7 @@ export const debtsControllerListPeople = (
 ) => {
       
       
-      return customInstance<void>(
+      return customInstance<DebtPersonResponseDto[]>(
       {url: `/api/v1/debts/people`, method: 'GET', signal
     },
       options);
@@ -3052,7 +3136,7 @@ export const debtsControllerCreatePerson = (
 ) => {
       
       
-      return customInstance<void>(
+      return customInstance<DebtPersonResponseDto>(
       {url: `/api/v1/debts/people`, method: 'POST',
       headers: {'Content-Type': 'application/json', },
       data: createDebtPersonDto, signal
@@ -3105,7 +3189,7 @@ export const debtsControllerGetPerson = (
 ) => {
       
       
-      return customInstance<void>(
+      return customInstance<DebtPersonResponseDto>(
       {url: `/api/v1/debts/people/${id}`, method: 'GET', signal
     },
       options);
@@ -3187,7 +3271,7 @@ export const debtsControllerUpdatePerson = (
  options?: SecondParameter<typeof customInstance>,) => {
       
       
-      return customInstance<void>(
+      return customInstance<DebtPersonResponseDto>(
       {url: `/api/v1/debts/people/${id}`, method: 'PATCH',
       headers: {'Content-Type': 'application/json', },
       data: updateDebtPersonDto
@@ -3293,7 +3377,7 @@ export const debtsControllerListRecords = (
 ) => {
       
       
-      return customInstance<void>(
+      return customInstance<DebtRecordResponseDto[]>(
       {url: `/api/v1/debts/records`, method: 'GET',
         params, signal
     },
@@ -3379,7 +3463,7 @@ export const debtsControllerCreateRecord = (
 ) => {
       
       
-      return customInstance<void>(
+      return customInstance<DebtRecordResponseDto>(
       {url: `/api/v1/debts/records`, method: 'POST',
       headers: {'Content-Type': 'application/json', },
       data: createDebtRecordDto, signal
@@ -3432,7 +3516,7 @@ export const debtsControllerGetRecord = (
 ) => {
       
       
-      return customInstance<void>(
+      return customInstance<DebtRecordResponseDto>(
       {url: `/api/v1/debts/records/${id}`, method: 'GET', signal
     },
       options);
@@ -3514,7 +3598,7 @@ export const debtsControllerUpdateRecord = (
  options?: SecondParameter<typeof customInstance>,) => {
       
       
-      return customInstance<void>(
+      return customInstance<DebtRecordResponseDto>(
       {url: `/api/v1/debts/records/${id}`, method: 'PATCH',
       headers: {'Content-Type': 'application/json', },
       data: updateDebtRecordDto
@@ -3617,7 +3701,7 @@ export const debtsControllerSettle = (
 ) => {
       
       
-      return customInstance<void>(
+      return customInstance<DebtRecordResponseDto>(
       {url: `/api/v1/debts/records/${id}/settle`, method: 'POST', signal
     },
       options);
@@ -3719,7 +3803,7 @@ export const debtsControllerSummary = (
 ) => {
       
       
-      return customInstance<void>(
+      return customInstance<SettlementResponseDto>(
       {url: `/api/v1/debts/summary`, method: 'GET', signal
     },
       options);
@@ -3801,7 +3885,7 @@ export const debtsControllerCalculate = (
 ) => {
       
       
-      return customInstance<void>(
+      return customInstance<SettlementResponseDto>(
       {url: `/api/v1/debts/settlements/calculate`, method: 'POST', signal
     },
       options);

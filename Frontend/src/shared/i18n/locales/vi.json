@@ -179,7 +179,13 @@
     "selectPersonPlaceholder": "-- Chọn người --",
     "newPersonPlaceholder": "Tên mới...",
     "debtNotePlaceholder": "Nội dung khoản nợ...",
-    "dateLabel": "Ngày"
+    "dateLabel": "Ngày",
+    "editDebt": "Sửa khoản nợ",
+    "deleteDebtTitle": "Xóa khoản nợ",
+    "toastDebtUpdated": "Cập nhật khoản nợ thành công",
+    "toastDebtUpdateError": "Lỗi khi cập nhật khoản nợ",
+    "toastDeleteSuccess": "Đã xóa khoản nợ thành công",
+    "toastDeleteError": "Lỗi khi xóa khoản nợ"
   },
   "todos": {
     "title": "Công việc",
@@ -526,7 +532,8 @@
     "deleteTest": "Bạn có chắc muốn xóa kết quả thi này?",
     "deletePhoto": "Bạn có chắc chắn muốn xóa ảnh này?",
     "deleteAlbum": "Bạn có chắc muốn xóa album này? Sẽ không xóa các ảnh bên trong.",
-    "deleteInterest": "Bạn có chắc muốn xóa sở thích này?"
+    "deleteInterest": "Bạn có chắc muốn xóa sở thích này?",
+    "deleteDebt": "Bạn có chắc chắn muốn xóa khoản nợ này?"
   },
   "moods": {
     "happy": "Vui vẻ",

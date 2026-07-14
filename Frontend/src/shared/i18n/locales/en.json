@@ -179,7 +179,13 @@
     "selectPersonPlaceholder": "-- Select person --",
     "newPersonPlaceholder": "New name...",
     "debtNotePlaceholder": "Debt details...",
-    "dateLabel": "Date"
+    "dateLabel": "Date",
+    "editDebt": "Edit Debt",
+    "deleteDebtTitle": "Delete Debt",
+    "toastDebtUpdated": "Debt updated successfully",
+    "toastDebtUpdateError": "Error updating debt",
+    "toastDeleteSuccess": "Debt deleted successfully",
+    "toastDeleteError": "Error deleting debt"
   },
   "todos": {
     "title": "Todos",
@@ -526,7 +532,8 @@
     "deleteTest": "Are you sure you want to delete this test result?",
     "deletePhoto": "Are you sure you want to delete this photo?",
     "deleteAlbum": "Are you sure you want to delete this album? Photos inside will not be deleted.",
-    "deleteInterest": "Are you sure you want to delete this interest?"
+    "deleteInterest": "Are you sure you want to delete this interest?",
+    "deleteDebt": "Are you sure you want to delete this debt?"
   },
   "moods": {
     "happy": "Happy",

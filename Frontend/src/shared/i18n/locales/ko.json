@@ -179,7 +179,13 @@
     "selectPersonPlaceholder": "-- 사람 선택 --",
     "newPersonPlaceholder": "새 이름...",
     "debtNotePlaceholder": "부채 내용...",
-    "dateLabel": "날짜"
+    "dateLabel": "날짜",
+    "editDebt": "부채 수정",
+    "deleteDebtTitle": "부채 삭제",
+    "toastDebtUpdated": "부채가 성공적으로 수정되었습니다",
+    "toastDebtUpdateError": "부채 수정 중 오류가 발생했습니다",
+    "toastDeleteSuccess": "부채가 삭제되었습니다",
+    "toastDeleteError": "부채 삭제 중 오류가 발생했습니다"
   },
   "todos": {
     "title": "할 일",
@@ -526,7 +532,8 @@
     "deleteTest": "이 시험 결과를 삭제하시겠습니까?",
     "deletePhoto": "이 사진을 삭제하시겠습니까?",
     "deleteAlbum": "이 앨범을 삭제하시겠습니까? 내부 사진은 삭제되지 않습니다.",
-    "deleteInterest": "이 관심사를 삭제하시겠습니까?"
+    "deleteInterest": "이 관심사를 삭제하시겠습니까?",
+    "deleteDebt": "이 부채를 삭제하시겠습니까?"
   },
   "moods": {
     "happy": "기쁨",
