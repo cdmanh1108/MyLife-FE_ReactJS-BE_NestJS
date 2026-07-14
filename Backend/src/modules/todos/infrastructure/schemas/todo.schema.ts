@@ -12,6 +12,7 @@ export class Todo {
   @Prop({ index: true }) dueDate?: Date;
   @Prop() repeatRule?: string;
   @Prop() completedAt?: Date;
+  @Prop({ type: Number, default: 0 }) order: number;
 }
 export const TodoSchema = SchemaFactory.createForClass(Todo);
 TodoSchema.index({ userId: 1, dueDate: 1, status: 1 });

@@ -208,7 +208,14 @@
     "toastEnterTitle": "Please enter a title",
     "toastCreateSuccess": "Task created successfully",
     "toastCreateError": "Error creating task",
-    "errorLoad": "Error loading task list"
+    "errorLoad": "Error loading task list",
+    "editTodo": "Edit Todo",
+    "toastUpdateSuccess": "Task updated successfully",
+    "toastUpdateError": "Error updating task",
+    "toastDeleteSuccess": "Task deleted successfully",
+    "toastDeleteError": "Error deleting task",
+    "confirmDeleteTitle": "Delete Task",
+    "confirmDeleteMessage": "Are you sure you want to delete this task?"
   },
   "goals": {
     "title": "Goals",

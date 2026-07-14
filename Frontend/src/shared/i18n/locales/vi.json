@@ -183,9 +183,7 @@
     "editDebt": "Sửa khoản nợ",
     "deleteDebtTitle": "Xóa khoản nợ",
     "toastDebtUpdated": "Cập nhật khoản nợ thành công",
-    "toastDebtUpdateError": "Lỗi khi cập nhật khoản nợ",
-    "toastDeleteSuccess": "Đã xóa khoản nợ thành công",
-    "toastDeleteError": "Lỗi khi xóa khoản nợ"
+    "toastDebtUpdateError": "Lỗi khi cập nhật khoản nợ"
   },
   "todos": {
     "title": "Công việc",
@@ -208,7 +206,14 @@
     "toastEnterTitle": "Vui lòng nhập tiêu đề",
     "toastCreateSuccess": "Đã thêm công việc mới",
     "toastCreateError": "Lỗi khi thêm công việc",
-    "errorLoad": "Lỗi khi tải danh sách công việc"
+    "errorLoad": "Lỗi khi tải danh sách công việc",
+    "editTodo": "Sửa công việc",
+    "toastUpdateSuccess": "Đã cập nhật công việc",
+    "toastUpdateError": "Lỗi khi cập nhật công việc",
+    "toastDeleteSuccess": "Đã xóa công việc",
+    "toastDeleteError": "Lỗi khi xóa công việc",
+    "confirmDeleteTitle": "Xóa công việc",
+    "confirmDeleteMessage": "Bạn có chắc chắn muốn xóa công việc này không?"
   },
   "goals": {
     "title": "Mục tiêu",

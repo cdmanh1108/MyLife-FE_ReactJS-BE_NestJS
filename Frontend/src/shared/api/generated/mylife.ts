@@ -772,6 +772,7 @@ export const UpdateTodoDtoPriority = {
 export interface UpdateTodoDto {
   description?: string;
   dueDate?: string;
+  order?: number;
   priority?: UpdateTodoDtoPriority;
   repeatRule?: string;
   status?: UpdateTodoDtoStatus;
@@ -792,9 +793,46 @@ export const CreateTodoDtoPriority = {
 export interface CreateTodoDto {
   description?: string;
   dueDate?: string;
+  order?: number;
   priority?: CreateTodoDtoPriority;
   repeatRule?: string;
   title: string;
+}
+
+export type TodoResponseDtoStatus = typeof TodoResponseDtoStatus[keyof typeof TodoResponseDtoStatus];
+
+
+// eslint-disable-next-line @typescript-eslint/no-redeclare
+export const TodoResponseDtoStatus = {
+  TODO: 'TODO',
+  IN_PROGRESS: 'IN_PROGRESS',
+  DONE: 'DONE',
+  CANCELLED: 'CANCELLED',
+} as const;
+
+export type TodoResponseDtoPriority = typeof TodoResponseDtoPriority[keyof typeof TodoResponseDtoPriority];
+
+
+// eslint-disable-next-line @typescript-eslint/no-redeclare
+export const TodoResponseDtoPriority = {
+  LOW: 'LOW',
+  MEDIUM: 'MEDIUM',
+  HIGH: 'HIGH',
+  URGENT: 'URGENT',
+} as const;
+
+export interface TodoResponseDto {
+  completedAt?: string;
+  createdAt: string;
+  description?: string;
+  dueDate?: string;
+  id: string;
+  order: number;
+  priority: TodoResponseDtoPriority;
+  repeatRule?: string;
+  status: TodoResponseDtoStatus;
+  title: string;
+  updatedAt: string;
 }
 
 export type SettlementPersonDtoDirection = typeof SettlementPersonDtoDirection[keyof typeof SettlementPersonDtoDirection];
@@ -3936,7 +3974,7 @@ export const todosControllerList = (
 ) => {
       
       
-      return customInstance<void>(
+      return customInstance<TodoResponseDto[]>(
       {url: `/api/v1/todos`, method: 'GET',
         params, signal
     },
@@ -4019,7 +4057,7 @@ export const todosControllerCreate = (
 ) => {
       
       
-      return customInstance<void>(
+      return customInstance<TodoResponseDto>(
       {url: `/api/v1/todos`, method: 'POST',
       headers: {'Content-Type': 'application/json', },
       data: createTodoDto, signal
@@ -4072,7 +4110,7 @@ export const todosControllerGet = (
 ) => {
       
       
-      return customInstance<void>(
+      return customInstance<TodoResponseDto>(
       {url: `/api/v1/todos/${id}`, method: 'GET', signal
     },
       options);
@@ -4154,7 +4192,7 @@ export const todosControllerUpdate = (
  options?: SecondParameter<typeof customInstance>,) => {
       
       
-      return customInstance<void>(
+      return customInstance<TodoResponseDto>(
       {url: `/api/v1/todos/${id}`, method: 'PATCH',
       headers: {'Content-Type': 'application/json', },
       data: updateTodoDto
@@ -4257,7 +4295,7 @@ export const todosControllerComplete = (
 ) => {
       
       
-      return customInstance<void>(
+      return customInstance<TodoResponseDto>(
       {url: `/api/v1/todos/${id}/complete`, method: 'POST', signal
     },
       options);
@@ -4308,7 +4346,7 @@ export const todosControllerReopen = (
 ) => {
       
       
-      return customInstance<void>(
+      return customInstance<TodoResponseDto>(
       {url: `/api/v1/todos/${id}/reopen`, method: 'POST', signal
     },
       options);

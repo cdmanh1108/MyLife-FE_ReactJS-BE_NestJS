@@ -208,7 +208,14 @@
     "toastEnterTitle": "제목을 입력해주세요",
     "toastCreateSuccess": "새 할 일이 추가되었습니다",
     "toastCreateError": "할 일 추가 중 오류가 발생했습니다",
-    "errorLoad": "할 일 목록을 불러오는 중 오류가 발생했습니다"
+    "errorLoad": "할 일 목록을 불러오는 중 오류가 발생했습니다",
+    "editTodo": "할 일 수정",
+    "toastUpdateSuccess": "할 일이 수정되었습니다",
+    "toastUpdateError": "할 일 수정 중 오류가 발생했습니다",
+    "toastDeleteSuccess": "할 일이 삭제되었습니다",
+    "toastDeleteError": "할 일 삭제 중 오류가 발생했습니다",
+    "confirmDeleteTitle": "할 일 삭제",
+    "confirmDeleteMessage": "이 할 일을 삭제하시겠습니까?"
   },
   "goals": {
     "title": "목표",
