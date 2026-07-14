@@ -51,3 +51,57 @@ export class SettlementResponseDto {
   @ApiProperty() netBalance: number;
   @ApiProperty({ type: [SettlementPersonDto] }) byPerson: SettlementPersonDto[];
 }
+
+export class DebtPersonResponseDto {
+  @ApiProperty()
+  id: string;
+
+  @ApiProperty()
+  name: string;
+
+  @ApiPropertyOptional()
+  nickname?: string;
+
+  @ApiPropertyOptional()
+  note?: string;
+
+  @ApiProperty()
+  createdAt: string;
+
+  @ApiProperty()
+  updatedAt: string;
+}
+
+export class DebtRecordResponseDto {
+  @ApiProperty()
+  id: string;
+
+  @ApiProperty()
+  personId: string;
+
+  @ApiProperty({ enum: DebtDirection })
+  direction: DebtDirection;
+
+  @ApiProperty()
+  amount: number;
+
+  @ApiProperty({ enum: Currency })
+  currency: Currency;
+
+  @ApiPropertyOptional()
+  note?: string;
+
+  @ApiProperty()
+  occurredAt: string;
+
+  @ApiProperty({ enum: DebtStatus })
+  status: DebtStatus;
+
+  @ApiProperty()
+  createdAt: string;
+
+  @ApiProperty()
+  updatedAt: string;
+}
+
+
