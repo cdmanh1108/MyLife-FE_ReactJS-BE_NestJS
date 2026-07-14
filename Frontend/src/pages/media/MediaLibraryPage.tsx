@@ -18,7 +18,7 @@ export default function MediaLibraryPage() {
   const [deleteId, setDeleteId] = useState<string | null>(null);
 
   const { data, isLoading, isError, refetch } = useMediaAssets();
-  const mediaItems = data?.items ?? [];
+  const mediaItems = data ?? [];
   const uploadMutation = useUploadMedia();
   const deleteMutation = useDeleteMediaAsset();
 

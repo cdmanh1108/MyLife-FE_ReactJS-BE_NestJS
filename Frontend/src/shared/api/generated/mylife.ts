@@ -362,13 +362,6 @@ export interface CreateAlbumDto {
   title: string;
 }
 
-export interface PaginationMetaDto {
-  limit: number;
-  page: number;
-  total: number;
-  totalPages: number;
-}
-
 export type MediaAssetDtoType = typeof MediaAssetDtoType[keyof typeof MediaAssetDtoType];
 
 
@@ -394,11 +387,6 @@ export interface MediaAssetDto {
   type: MediaAssetDtoType;
   updatedAt: string;
   url: string;
-}
-
-export interface PaginatedMediaAssetDto {
-  items: MediaAssetDto[];
-  meta: PaginationMetaDto;
 }
 
 export interface UpdateMilestoneDto {
@@ -6785,7 +6773,7 @@ export const mediaControllerList = (
 ) => {
       
       
-      return customInstance<PaginatedMediaAssetDto>(
+      return customInstance<MediaAssetDto[]>(
       {url: `/api/v1/media/assets`, method: 'GET',
         params, signal
     },
