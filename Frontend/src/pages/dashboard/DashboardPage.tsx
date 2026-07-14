@@ -1,9 +1,9 @@
 import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router';
 import {
-  TrendingUp, TrendingDown, Wallet, Users, CheckSquare,
-  BookOpen, Flame, Plus, PenLine, BookText, ListTodo,
-  Smile, Clock
+  TrendingUp, TrendingDown, Wallet, Users,
+  Flame, Plus, PenLine, BookText, ListTodo,
+
 } from 'lucide-react';
 import { PageHeader } from '@/shared/ui/PageHeader';
 import { StatCard } from '@/shared/ui/StatCard';
@@ -47,10 +47,10 @@ export default function DashboardPage() {
 
   const summary = {
     finance: {
-      incomeThisMonth: (summaryData as any)?.monthlyIncome ?? 0,
-      expenseThisMonth: (summaryData as any)?.monthlyExpense ?? 0,
+      incomeThisMonth: summaryData?.monthlyIncome ?? 0,
+      expenseThisMonth: summaryData?.monthlyExpense ?? 0,
       balance: summaryData?.balance ?? 0,
-      currency: (summaryData as any)?.currency ?? 'VND',
+      currency: summaryData?.currency ?? 'VND',
     },
     debts: {
       totalIOwe: summaryData?.debtsIOwe ?? 0,

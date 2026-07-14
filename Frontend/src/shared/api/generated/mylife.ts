@@ -1045,13 +1045,6 @@ export interface TodoResponseDto {
   updatedAt: string;
 }
 
-export interface SettlementResponseDto {
-  byPerson: SettlementPersonDto[];
-  netBalance: number;
-  totalIOwe: number;
-  totalOwedToMe: number;
-}
-
 export type SettlementPersonDtoDirection = typeof SettlementPersonDtoDirection[keyof typeof SettlementPersonDtoDirection];
 
 
@@ -1077,6 +1070,13 @@ export interface SettlementPersonDto {
   direction: SettlementPersonDtoDirection;
   personId: string;
   personName: string;
+}
+
+export interface SettlementResponseDto {
+  byPerson: SettlementPersonDto[];
+  netBalance: number;
+  totalIOwe: number;
+  totalOwedToMe: number;
 }
 
 export type UpdateDebtRecordDtoStatus = typeof UpdateDebtRecordDtoStatus[keyof typeof UpdateDebtRecordDtoStatus];
@@ -1333,7 +1333,60 @@ export interface CreateTransactionDto {
   walletId?: string;
 }
 
+export type TransactionResponseDtoType = typeof TransactionResponseDtoType[keyof typeof TransactionResponseDtoType];
+
+
+// eslint-disable-next-line @typescript-eslint/no-redeclare
+export const TransactionResponseDtoType = {
+  INCOME: 'INCOME',
+  EXPENSE: 'EXPENSE',
+} as const;
+
+export type TransactionResponseDtoCurrency = typeof TransactionResponseDtoCurrency[keyof typeof TransactionResponseDtoCurrency];
+
+
+// eslint-disable-next-line @typescript-eslint/no-redeclare
+export const TransactionResponseDtoCurrency = {
+  VND: 'VND',
+  USD: 'USD',
+  KRW: 'KRW',
+} as const;
+
+export interface TransactionResponseDto {
+  amount: number;
+  categoryId?: string;
+  createdAt: string;
+  currency: TransactionResponseDtoCurrency;
+  id: string;
+  note?: string;
+  occurredAt: string;
+  type: TransactionResponseDtoType;
+  updatedAt: string;
+  walletId?: string;
+}
+
 export interface Object { [key: string]: unknown }
+
+export interface DashboardLatestMoodDto {
+  mood: string;
+  occurredAt: string;
+}
+
+export interface DashboardSummaryResponseDto {
+  balance: number;
+  currency: string;
+  debtsIOwe: number;
+  debtsOwedToMe: number;
+  doneToday: number;
+  latestMood?: DashboardLatestMoodDto;
+  latestTimelineEvents: string[];
+  learningLanguage: string;
+  learningStreak: number;
+  monthlyExpense: number;
+  monthlyIncome: number;
+  recentTransactions: string[];
+  todayCount: number;
+}
 
 export interface TokenPairDto {
   accessToken: string;
@@ -2223,13 +2276,16 @@ export function useHealthControllerReadiness<TData = Awaited<ReturnType<typeof h
 
 
 
+/**
+ * @summary Get dashboard summary data
+ */
 export const dashboardControllerSummary = (
     
  options?: SecondParameter<typeof customInstance>,signal?: AbortSignal
 ) => {
       
       
-      return customInstance<void>(
+      return customInstance<DashboardSummaryResponseDto>(
       {url: `/api/v1/dashboard/summary`, method: 'GET', signal
     },
       options);
@@ -2287,6 +2343,9 @@ export function useDashboardControllerSummary<TData = Awaited<ReturnType<typeof 
   options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof dashboardControllerSummary>>, TError, TData>>, request?: SecondParameter<typeof customInstance>}
 
   ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData> }
+/**
+ * @summary Get dashboard summary data
+ */
 
 export function useDashboardControllerSummary<TData = Awaited<ReturnType<typeof dashboardControllerSummary>>, TError = unknown>(
   options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof dashboardControllerSummary>>, TError, TData>>, request?: SecondParameter<typeof customInstance>}
@@ -2314,7 +2373,7 @@ export const financeControllerListTransactions = (
 ) => {
       
       
-      return customInstance<void>(
+      return customInstance<TransactionResponseDto[]>(
       {url: `/api/v1/finance/transactions`, method: 'GET',
         params, signal
     },
