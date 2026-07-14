@@ -252,8 +252,12 @@
     "typeEducation": "Học tập",
     "typeWork": "Công việc",
     "typeProject": "Dự án",
-    "typeMilestone": "Mốc quan trọng",
+    "typeMilestone": "Cột mốc",
     "typeMemory": "Kỷ niệm",
+    "typeLife": "Đời sống",
+    "typeAchievement": "Thành tựu",
+    "typeSad": "Nỗi buồn",
+    "typeOther": "Khác",
     "toastEnterTitle": "Vui lòng nhập tiêu đề sự kiện",
     "toastCreateSuccess": "Đã thêm sự kiện dòng thời gian",
     "toastCreateError": "Lỗi khi thêm sự kiện",
@@ -267,7 +271,10 @@
     "eventDescriptionPlaceholder": "Nội dung cột mốc...",
     "toastDeleteSuccess": "Đã xóa sự kiện",
     "toastDeleteError": "Lỗi khi xóa sự kiện",
-    "deleteEventTitle": "Xóa sự kiện"
+    "deleteEventTitle": "Xóa sự kiện",
+    "editEvent": "Sửa sự kiện",
+    "toastUpdateSuccess": "Đã cập nhật sự kiện",
+    "toastUpdateError": "Lỗi khi cập nhật sự kiện"
   },
   "journal": {
     "title": "Nhật ký",

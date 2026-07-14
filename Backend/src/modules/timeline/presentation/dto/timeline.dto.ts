@@ -24,3 +24,36 @@ export class UpdateTimelineEventDto {
 export class TimelineQueryDto extends IntersectionType(PaginationQueryDto, DateRangeQueryDto) {
   @ApiPropertyOptional({ enum: TimelineEventType }) @IsOptional() @IsEnum(TimelineEventType) type?: TimelineEventType;
 }
+
+export class TimelineEventResponseDto {
+  @ApiProperty()
+  id: string;
+
+  @ApiProperty()
+  title: string;
+
+  @ApiPropertyOptional()
+  description?: string;
+
+  @ApiProperty()
+  eventDate: string;
+
+  @ApiProperty({ enum: TimelineEventType })
+  type: TimelineEventType;
+
+  @ApiPropertyOptional()
+  location?: string;
+
+  @ApiPropertyOptional({ type: [String] })
+  mediaIds?: string[];
+
+  @ApiPropertyOptional({ type: [String] })
+  tags?: string[];
+
+  @ApiProperty()
+  createdAt: string;
+
+  @ApiProperty()
+  updatedAt: string;
+}
+

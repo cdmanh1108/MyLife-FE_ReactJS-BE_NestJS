@@ -256,6 +256,10 @@
     "typeProject": "프로젝트",
     "typeMilestone": "주요 마일스톤",
     "typeMemory": "추억",
+    "typeLife": "일상",
+    "typeAchievement": "성취",
+    "typeSad": "슬픔",
+    "typeOther": "기타",
     "toastEnterTitle": "이벤트 제목을 입력해주세요",
     "toastCreateSuccess": "타임라인 이벤트가 추가되었습니다",
     "toastCreateError": "이벤트 추가 중 오류가 발생했습니다",
@@ -269,7 +273,10 @@
     "eventDescriptionPlaceholder": "마일스톤 내용...",
     "toastDeleteSuccess": "이벤트가 삭제되었습니다",
     "toastDeleteError": "이벤트 삭제 중 오류가 발생했습니다",
-    "deleteEventTitle": "이벤트 삭제"
+    "deleteEventTitle": "이벤트 삭제",
+    "editEvent": "이벤트 수정",
+    "toastUpdateSuccess": "이벤트가 수정되었습니다",
+    "toastUpdateError": "이벤트 수정 중 오류가 발생했습니다"
   },
   "journal": {
     "title": "일기",

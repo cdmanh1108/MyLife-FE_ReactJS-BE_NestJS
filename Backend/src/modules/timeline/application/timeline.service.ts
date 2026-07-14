@@ -30,7 +30,7 @@ export class TimelineService {
     });
   }
   async get(userId: string, id: string) {
-    const d = await this.model.findOne({ _id: id, userId });
+    const d = await this.model.findOne({ _id: new Types.ObjectId(id), userId: new Types.ObjectId(userId) });
     if (!d) throw new NotFoundException({ code: 'TIMELINE_EVENT_NOT_FOUND', message: 'Timeline event not found' });
     return d;
   }
@@ -38,15 +38,15 @@ export class TimelineService {
     const u: Record<string, unknown> = { ...d };
     if (d.eventDate) u.eventDate = new Date(d.eventDate);
     if (d.mediaIds) u.mediaIds = d.mediaIds.map((x) => new Types.ObjectId(x));
-    const doc = await this.model.findOneAndUpdate({ _id: id, userId }, u, { new: true });
+    const doc = await this.model.findOneAndUpdate({ _id: new Types.ObjectId(id), userId: new Types.ObjectId(userId) }, u, { new: true });
     if (!doc) throw new NotFoundException({ code: 'TIMELINE_EVENT_NOT_FOUND', message: 'Timeline event not found' });
     return doc;
   }
   async remove(userId: string, id: string) {
-    await this.model.deleteOne({ _id: id, userId });
+    await this.model.deleteOne({ _id: new Types.ObjectId(id), userId: new Types.ObjectId(userId) });
     return { deleted: true };
   }
   async latest(userId: string, limit = 5) {
-    return this.model.find({ userId }).sort({ eventDate: -1 }).limit(limit);
+    return this.model.find({ userId: new Types.ObjectId(userId) }).sort({ eventDate: -1 }).limit(limit);
   }
 }

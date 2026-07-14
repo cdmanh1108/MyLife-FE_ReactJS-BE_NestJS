@@ -507,6 +507,34 @@ export interface CreateTimelineEventDto {
   type: CreateTimelineEventDtoType;
 }
 
+export type TimelineEventResponseDtoType = typeof TimelineEventResponseDtoType[keyof typeof TimelineEventResponseDtoType];
+
+
+// eslint-disable-next-line @typescript-eslint/no-redeclare
+export const TimelineEventResponseDtoType = {
+  LIFE: 'LIFE',
+  EDUCATION: 'EDUCATION',
+  WORK: 'WORK',
+  PROJECT: 'PROJECT',
+  MEMORY: 'MEMORY',
+  ACHIEVEMENT: 'ACHIEVEMENT',
+  SAD: 'SAD',
+  OTHER: 'OTHER',
+} as const;
+
+export interface TimelineEventResponseDto {
+  createdAt: string;
+  description?: string;
+  eventDate: string;
+  id: string;
+  location?: string;
+  mediaIds?: string[];
+  tags?: string[];
+  title: string;
+  type: TimelineEventResponseDtoType;
+  updatedAt: string;
+}
+
 export type UpdateJournalEntryDtoVisibility = typeof UpdateJournalEntryDtoVisibility[keyof typeof UpdateJournalEntryDtoVisibility];
 
 
@@ -6059,7 +6087,7 @@ export const timelineControllerList = (
 ) => {
       
       
-      return customInstance<void>(
+      return customInstance<TimelineEventResponseDto[]>(
       {url: `/api/v1/timeline/events`, method: 'GET',
         params, signal
     },
@@ -6142,7 +6170,7 @@ export const timelineControllerCreate = (
 ) => {
       
       
-      return customInstance<void>(
+      return customInstance<TimelineEventResponseDto>(
       {url: `/api/v1/timeline/events`, method: 'POST',
       headers: {'Content-Type': 'application/json', },
       data: createTimelineEventDto, signal
@@ -6195,7 +6223,7 @@ export const timelineControllerGet = (
 ) => {
       
       
-      return customInstance<void>(
+      return customInstance<TimelineEventResponseDto>(
       {url: `/api/v1/timeline/events/${id}`, method: 'GET', signal
     },
       options);
@@ -6277,7 +6305,7 @@ export const timelineControllerUpdate = (
  options?: SecondParameter<typeof customInstance>,) => {
       
       
-      return customInstance<void>(
+      return customInstance<TimelineEventResponseDto>(
       {url: `/api/v1/timeline/events/${id}`, method: 'PATCH',
       headers: {'Content-Type': 'application/json', },
       data: updateTimelineEventDto

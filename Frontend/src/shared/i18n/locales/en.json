@@ -256,6 +256,10 @@
     "typeProject": "Project",
     "typeMilestone": "Milestone",
     "typeMemory": "Memory",
+    "typeLife": "Life",
+    "typeAchievement": "Achievement",
+    "typeSad": "Sad",
+    "typeOther": "Other",
     "toastEnterTitle": "Please enter event title",
     "toastCreateSuccess": "Timeline event added",
     "toastCreateError": "Error adding event",
@@ -269,7 +273,10 @@
     "eventDescriptionPlaceholder": "Milestone contents...",
     "toastDeleteSuccess": "Event deleted successfully",
     "toastDeleteError": "Error deleting event",
-    "deleteEventTitle": "Delete Event"
+    "deleteEventTitle": "Delete Event",
+    "editEvent": "Edit Event",
+    "toastUpdateSuccess": "Event updated successfully",
+    "toastUpdateError": "Error updating event"
   },
   "journal": {
     "title": "Journal",
