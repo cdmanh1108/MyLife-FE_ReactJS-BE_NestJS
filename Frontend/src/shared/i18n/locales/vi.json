@@ -45,7 +45,11 @@
     "loginButton": "Đăng nhập",
     "loginError": "Email hoặc mật khẩu không đúng",
     "welcomeBack": "Chào mừng trở lại",
-    "subtitle": "Hệ thống quản lý cuộc sống cá nhân"
+    "subtitle": "Hệ thống quản lý cuộc sống cá nhân",
+    "emailInvalid": "Email không hợp lệ",
+    "passwordRequired": "Mật khẩu không được để trống",
+    "loginQuote": "Cuộc đời không phải là thứ xảy ra với bạn.\nĐó là thứ bạn tạo ra.",
+    "loginQuoteAuthor": "Hệ thống nhật ký cá nhân"
   },
   "nav": {
     "dashboard": "Tổng quan",
@@ -516,11 +520,14 @@
   },
   "profile": {
     "title": "Hồ sơ",
+    "name": "Họ và tên",
     "biography": "Tiểu sử",
     "defaultUser": "Người dùng",
     "noBiography": "Chưa có tiểu sử. Nhấn để thêm...",
     "toastUpdateSuccess": "Đã cập nhật tiểu sử thành công",
     "toastUpdateError": "Lỗi khi cập nhật tiểu sử",
+    "profileUpdateSuccess": "Đã cập nhật hồ sơ thành công",
+    "profileUpdateError": "Lỗi khi cập nhật hồ sơ",
     "errorLoad": "Lỗi khi tải tiểu sử",
     "bioLabel": "Nội dung tiểu sử",
     "bioPlaceholder": "Giới thiệu bản thân, hành trình lập trình, lý do tạo MyLife OS...",
@@ -530,11 +537,18 @@
     "title": "Cài đặt",
     "language": "Ngôn ngữ",
     "theme": "Giao diện",
-    "apiStatus": "Trạng thái API",
+    "themeLight": "Sáng",
+    "themeDark": "Tối",
+    "themeToggleLabel": "Chọn chủ đề hiển thị ưa thích.",
+    "apiStatus": "Kết nối API",
     "logout": "Đăng xuất",
-    "languageDescription": "Ngôn ngữ giao diện ứng dụng. Mặc định: Tiếng Việt.",
-    "themeDescription": "Deep Ocean Dark — thiết kế tối, cinematic, nội tâm. Màu chủ đạo: navy + cyan.",
-    "apiConfigured": "API đã được cấu hình"
+    "languageDescription": "Chọn ngôn ngữ ưa thích của bạn.",
+    "themeDescription": "Chọn giữa chế độ sáng và tối.",
+    "apiConfigured": "Đã kết nối",
+    "apiBackendUrl": "Đường dẫn Backend",
+    "dangerZone": "Tài khoản",
+    "dangerZoneDesc": "Đăng xuất khỏi tất cả phiên trên thiết bị này.",
+    "version": "Phiên bản"
   },
   "budgets": {
     "addBudget": "Thêm ngân sách",

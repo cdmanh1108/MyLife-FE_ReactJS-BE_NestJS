@@ -43,7 +43,7 @@ export default function DashboardPage() {
   const { data: transactions = [], isLoading: loadingTxs } = useTransactions({ limit: 100 });
 
   if (loadingSummary || loadingTxs) return <LoadingState />;
-  if (isErrorSummary) return <ErrorState message="Không thể tải tổng quan dữ liệu" onRetry={refetchSummary} />;
+  if (isErrorSummary) return <ErrorState message={t('errors.serverError')} onRetry={refetchSummary} />;
 
   const summary = {
     finance: {

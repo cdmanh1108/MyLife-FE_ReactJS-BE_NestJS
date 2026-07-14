@@ -45,7 +45,11 @@
     "loginButton": "Sign In",
     "loginError": "Invalid email or password",
     "welcomeBack": "Welcome back",
-    "subtitle": "Your personal life management system"
+    "subtitle": "Your personal life management system",
+    "emailInvalid": "Invalid email address",
+    "passwordRequired": "Password is required",
+    "loginQuote": "Life is not something that happens to you.\nIt is something you create.",
+    "loginQuoteAuthor": "Personal Life Journal System"
   },
   "nav": {
     "dashboard": "Dashboard",
@@ -518,11 +522,14 @@
   },
   "profile": {
     "title": "Profile",
+    "name": "Full Name",
     "biography": "Biography",
     "defaultUser": "User",
     "noBiography": "No biography yet. Click to add...",
     "toastUpdateSuccess": "Biography updated successfully",
     "toastUpdateError": "Error updating biography",
+    "profileUpdateSuccess": "Profile updated successfully",
+    "profileUpdateError": "Error updating profile",
     "errorLoad": "Error loading biography",
     "bioLabel": "Biography Content",
     "bioPlaceholder": "Introduce yourself, programming journey, reasons for MyLife OS...",
@@ -531,12 +538,19 @@
   "settings": {
     "title": "Settings",
     "language": "Language",
-    "theme": "Theme",
-    "apiStatus": "API Status",
+    "theme": "Appearance",
+    "themeLight": "Light",
+    "themeDark": "Dark",
+    "themeToggleLabel": "Choose your preferred display theme.",
+    "apiStatus": "API Connection",
     "logout": "Sign Out",
-    "languageDescription": "Application interface language. Default: Vietnamese.",
-    "themeDescription": "Deep Ocean Dark — dark, cinematic, introspective design. Primary color: navy + cyan.",
-    "apiConfigured": "API configured"
+    "languageDescription": "Choose your preferred language.",
+    "themeDescription": "Choose between light and dark mode.",
+    "apiConfigured": "Connected",
+    "apiBackendUrl": "Backend URL",
+    "dangerZone": "Account",
+    "dangerZoneDesc": "Sign out from all sessions on this device.",
+    "version": "Version"
   },
   "budgets": {
     "addBudget": "Add Budget",

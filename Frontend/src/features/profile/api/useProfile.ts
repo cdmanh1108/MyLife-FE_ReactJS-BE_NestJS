@@ -6,6 +6,7 @@ import {
   profileControllerGetBiography,
   profileControllerUpdateBiography,
 } from '@/shared/api/generated/mylife';
+import type { UpdateProfileDto } from '@/shared/api/generated/mylife';
 import { useAuthStore } from '@/features/auth/store';
 
 export function useProfile() {
@@ -20,7 +21,7 @@ export function useUpdateProfile() {
   const { fetchMe } = useAuthStore();
 
   return useMutation({
-    mutationFn: (dto: any) => profileControllerUpdateMe(dto),
+    mutationFn: (dto: UpdateProfileDto) => profileControllerUpdateMe(dto),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: QUERY_KEYS.PROFILE });
       fetchMe(); // reload profile in auth store

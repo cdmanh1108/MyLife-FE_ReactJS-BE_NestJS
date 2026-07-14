@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useMemo } from 'react';
 import { useNavigate, useLocation } from 'react-router';
 import { useTranslation } from 'react-i18next';
 import { useForm } from 'react-hook-form';
@@ -9,15 +9,14 @@ import { ROUTES } from '@/shared/constants/routes';
 import { Input } from '@/shared/ui/Input';
 import { Button } from '@/shared/ui/Button';
 import { LanguageSwitcher } from '@/shared/ui/LanguageSwitcher';
+import { ThemeToggle } from '@/shared/ui/ThemeToggle';
 import { Eye, EyeOff, Lock, Mail } from 'lucide-react';
 
-const schema = z.object({
-  email: z.string().email('Email không hợp lệ'),
-  password: z.string().min(1, 'Mật khẩu không được để trống'),
-  rememberMe: z.boolean().optional(),
-});
-
-type FormData = z.infer<typeof schema>;
+type FormData = {
+  email: string;
+  password: string;
+  rememberMe?: boolean;
+};
 
 export default function LoginPage() {
   const { t } = useTranslation();
@@ -29,7 +28,21 @@ export default function LoginPage() {
 
   const from = (location.state as { from?: { pathname: string } })?.from?.pathname ?? ROUTES.DASHBOARD;
 
-  const { register, handleSubmit, formState: { errors, isSubmitting } } = useForm<FormData>({
+  const schema = useMemo(
+    () =>
+      z.object({
+        email: z.string().email(t('auth.emailInvalid')),
+        password: z.string().min(1, t('auth.passwordRequired')),
+        rememberMe: z.boolean().optional(),
+      }),
+    [t]
+  );
+
+  const {
+    register,
+    handleSubmit,
+    formState: { errors, isSubmitting },
+  } = useForm<FormData>({
     resolver: zodResolver(schema),
   });
 
@@ -53,16 +66,22 @@ export default function LoginPage() {
             background: 'linear-gradient(135deg, #080c14 0%, #0a1628 40%, #0d1f3c 70%, #071525 100%)',
           }}
         />
-        <div className="absolute inset-0 opacity-30"
+        <div
+          className="absolute inset-0 opacity-30"
           style={{
-            backgroundImage: 'radial-gradient(circle at 30% 40%, rgba(56,189,248,0.15) 0%, transparent 50%), radial-gradient(circle at 70% 70%, rgba(6,182,212,0.08) 0%, transparent 40%)',
+            backgroundImage:
+              'radial-gradient(circle at 30% 40%, rgba(56,189,248,0.15) 0%, transparent 50%), radial-gradient(circle at 70% 70%, rgba(6,182,212,0.08) 0%, transparent 40%)',
           }}
         />
         {/* Grid lines */}
-        <div className="absolute inset-0" style={{
-          backgroundImage: 'linear-gradient(rgba(56,189,248,0.04) 1px, transparent 1px), linear-gradient(90deg, rgba(56,189,248,0.04) 1px, transparent 1px)',
-          backgroundSize: '60px 60px',
-        }} />
+        <div
+          className="absolute inset-0"
+          style={{
+            backgroundImage:
+              'linear-gradient(rgba(56,189,248,0.04) 1px, transparent 1px), linear-gradient(90deg, rgba(56,189,248,0.04) 1px, transparent 1px)',
+            backgroundSize: '60px 60px',
+          }}
+        />
         <div className="relative z-10 flex flex-col justify-between p-12 w-full">
           <div className="flex items-center gap-3">
             <div className="flex size-8 items-center justify-center rounded-lg bg-primary/15 border border-primary/25">
@@ -71,11 +90,10 @@ export default function LoginPage() {
             <span className="font-semibold text-foreground">{t('common.appName')}</span>
           </div>
           <div>
-            <blockquote className="text-2xl font-light text-foreground/80 leading-relaxed mb-4">
-              "Cuộc đời không phải là thứ xảy ra với bạn.<br />
-              Đó là thứ bạn tạo ra."
+            <blockquote className="text-2xl font-light text-foreground/80 leading-relaxed mb-4 whitespace-pre-line">
+              "{t('auth.loginQuote')}"
             </blockquote>
-            <p className="text-sm text-muted-foreground">— Hệ thống nhật ký cá nhân</p>
+            <p className="text-sm text-muted-foreground">— {t('auth.loginQuoteAuthor')}</p>
           </div>
           <div className="flex gap-4">
             {['Finance', 'Journal', 'Goals', 'Learning'].map((tag) => (
@@ -89,8 +107,10 @@ export default function LoginPage() {
 
       {/* Right login panel */}
       <div className="flex flex-1 flex-col items-center justify-center px-6 py-12">
-        <div className="absolute top-4 right-4">
+        {/* Top-right controls */}
+        <div className="absolute top-4 right-4 flex items-center gap-2">
           <LanguageSwitcher />
+          <ThemeToggle />
         </div>
 
         <div className="w-full max-w-sm animate-slide-up">
@@ -133,7 +153,9 @@ export default function LoginPage() {
 
             <div className="flex items-center gap-2">
               <input type="checkbox" id="rememberMe" {...register('rememberMe')} className="size-3.5 rounded accent-primary" />
-              <label htmlFor="rememberMe" className="text-xs text-muted-foreground">{t('auth.rememberMe')}</label>
+              <label htmlFor="rememberMe" className="text-xs text-muted-foreground">
+                {t('auth.rememberMe')}
+              </label>
             </div>
 
             {loginError && (
@@ -147,9 +169,7 @@ export default function LoginPage() {
             </Button>
           </form>
 
-          <p className="mt-6 text-center text-xs text-muted-foreground">
-            MyLife OS — Personal Life Management
-          </p>
+          <p className="mt-6 text-center text-xs text-muted-foreground">MyLife OS — Personal Life Management</p>
         </div>
       </div>
     </div>
