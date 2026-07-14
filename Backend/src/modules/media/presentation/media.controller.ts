@@ -15,12 +15,12 @@ import { ApiBearerAuth, ApiBody, ApiConsumes, ApiOkResponse, ApiTags } from '@ne
 import { CurrentUser } from '../../../common/decorators/current-user.decorator';
 import { AuthenticatedUser } from '../../../common/types/authenticated-user.type';
 import { MediaService } from '../application/media.service';
-import { CreateAlbumDto, MediaQueryDto, UpdateAlbumDto, UploadMediaDto, PaginatedMediaAssetDto } from './dto/media.dto';
+import { CreateAlbumDto, MediaQueryDto, UpdateAlbumDto, UploadMediaDto, PaginatedMediaAssetDto, MediaAssetDto } from './dto/media.dto';
 @ApiTags('media')
 @ApiBearerAuth('access-token')
 @Controller('media')
 export class MediaController {
-  constructor(private readonly media: MediaService) {}
+  constructor(private readonly media: MediaService) { }
   @Post('assets/upload')
   @UseInterceptors(FileInterceptor('file', { limits: { fileSize: 50 * 1024 * 1024 } }))
   @ApiConsumes('multipart/form-data')
@@ -39,7 +39,7 @@ export class MediaController {
     return this.media.upload(u.id, file, dto);
   }
   @Get('assets')
-  @ApiOkResponse({ type: PaginatedMediaAssetDto })
+  @ApiOkResponse({ type: [MediaAssetDto] })
   list(@CurrentUser() u: AuthenticatedUser, @Query() q: MediaQueryDto) {
     return this.media.list(u.id, q);
   }
