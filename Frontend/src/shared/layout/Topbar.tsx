@@ -1,6 +1,7 @@
 import { Menu, Bell } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { LanguageSwitcher } from '@/shared/ui/LanguageSwitcher';
+import { ThemeToggle } from '@/shared/ui/ThemeToggle';
 import { useAuth } from '@/shared/hooks/useAuth';
 import { Avatar } from '@/shared/ui/Avatar';
 import { formatDate } from '@/shared/lib/date';
@@ -28,6 +29,7 @@ export function Topbar({ onMenuClick }: TopbarProps) {
 
       <div className="flex items-center gap-3">
         <LanguageSwitcher />
+        <ThemeToggle />
         <button className="relative flex size-8 items-center justify-center rounded-lg text-muted-foreground hover:bg-secondary hover:text-foreground transition-colors">
           <Bell size={16} />
           <span className="absolute top-1 right-1 size-1.5 rounded-full bg-primary" />
