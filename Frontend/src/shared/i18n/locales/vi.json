@@ -533,6 +533,29 @@
     "bioPlaceholder": "Giới thiệu bản thân, hành trình lập trình, lý do tạo MyLife OS...",
     "emptyBio": "Chưa có thông tin tiểu sử. Nhấn Chỉnh sửa để thêm mới."
   },
+  "portfolio": {
+    "title": "Portfolio",
+    "about": "Giới thiệu",
+    "experience": "Kinh nghiệm",
+    "projects": "Dự án",
+    "education": "Học vấn",
+    "contact": "Liên hệ",
+    "downloadCv": "Tải CV",
+    "viewCv": "Xem CV",
+    "hello": "Xin chào, tôi là",
+    "softSkillsTitle": "Kỹ năng mềm & Phẩm chất",
+    "skillsTitle": "Kỹ năng & Công nghệ",
+    "contactTitle": "Kết nối với tôi",
+    "contactSubtitle": "Liên hệ với tôi nếu bạn muốn hợp tác hoặc chỉ muốn trò chuyện.",
+    "toastUpdateSuccess": "Đã cập nhật Portfolio thành công",
+    "toastUpdateError": "Lỗi khi cập nhật Portfolio",
+    "managerTitle": "Portfolio Nhà phát triển",
+    "managerDesc": "Quản lý thông tin hiển thị trên trang portfolio cá nhân của bạn.",
+    "editTitle": "Sửa Portfolio",
+    "scrollToExplore": "Cuộn để khám phá",
+    "sendEmail": "Gửi email cho tôi",
+    "builtWith": "Được xây dựng bằng React, TypeScript và hệ thống thiết kế của MyLife."
+  },
   "settings": {
     "title": "Cài đặt",
     "language": "Ngôn ngữ",
@@ -611,6 +634,7 @@
   },
   "landing": {
     "description": "Hệ thống quản lý cuộc sống cá nhân. Tài chính, nhật ký, học tập, mục tiêu — tất cả trong một nơi.",
-    "getStarted": "Bắt đầu"
+    "getStarted": "Bắt đầu",
+    "viewPortfolio": "Xem portfolio nhà phát triển"
   }
 }

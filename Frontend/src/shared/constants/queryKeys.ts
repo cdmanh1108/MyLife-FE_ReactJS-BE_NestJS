@@ -20,4 +20,5 @@ export const QUERY_KEYS = {
   STUDY_PLANS: ['learning', 'study-plans'],
   PROFILE: ['profile', 'me'],
   BIOGRAPHY: ['profile', 'biography'],
+  PORTFOLIO: ['portfolio'],
 } as const;

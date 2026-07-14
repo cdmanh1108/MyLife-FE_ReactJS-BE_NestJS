@@ -1,5 +1,5 @@
 import { useTranslation } from 'react-i18next';
-import { useNavigate } from 'react-router';
+import { Link, useNavigate } from 'react-router';
 import { ROUTES } from '@/shared/constants/routes';
 import { Button } from '@/shared/ui/Button';
 import { LanguageSwitcher } from '@/shared/ui/LanguageSwitcher';
@@ -38,7 +38,7 @@ export default function LandingPage() {
         </div>
 
         <h1 className="text-4xl sm:text-5xl font-semibold text-foreground mb-3 tracking-tight">
-          MyLife OS
+          {t('common.appName')}
         </h1>
         <p className="text-muted-foreground max-w-sm mx-auto mb-10 leading-relaxed">
           {t('landing.description')}
@@ -48,6 +48,14 @@ export default function LandingPage() {
           {t('landing.getStarted')}
           <ArrowRight size={16} />
         </Button>
+
+        <Link
+          to={ROUTES.PORTFOLIO}
+          className="mt-5 inline-flex items-center gap-2 text-sm text-muted-foreground transition-colors hover:text-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+        >
+          {t('landing.viewPortfolio')}
+          <ArrowRight size={14} />
+        </Link>
 
         {/* Feature tags */}
         <div className="mt-10 flex flex-wrap justify-center gap-2">

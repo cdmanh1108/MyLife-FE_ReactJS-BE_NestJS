@@ -1,6 +1,6 @@
 import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router';
-import { Edit2, BookOpen, ArrowRight } from 'lucide-react';
+import { Edit2, BookOpen, ArrowRight, FolderGit2 } from 'lucide-react';
 import { PageHeader } from '@/shared/ui/PageHeader';
 import { Card, CardContent, CardHeader, CardTitle } from '@/shared/ui/Card';
 import { Button } from '@/shared/ui/Button';
@@ -68,6 +68,18 @@ export default function ProfilePage() {
         <CardContent>
           <p className="text-sm text-muted-foreground leading-relaxed line-clamp-3">
             {biography?.content ?? t('profile.noBiography')}
+          </p>
+        </CardContent>
+      </Card>
+
+      <Card className="card-glow cursor-pointer" onClick={() => navigate(ROUTES.PROFILE_PORTFOLIO)}>
+        <CardHeader className="flex flex-row items-center justify-between pb-2">
+          <CardTitle className="flex items-center gap-2"><FolderGit2 size={14} />{t('portfolio.managerTitle')}</CardTitle>
+          <ArrowRight size={14} className="text-muted-foreground" />
+        </CardHeader>
+        <CardContent>
+          <p className="text-sm text-muted-foreground leading-relaxed">
+            {t('portfolio.managerDesc')}
           </p>
         </CardContent>
       </Card>

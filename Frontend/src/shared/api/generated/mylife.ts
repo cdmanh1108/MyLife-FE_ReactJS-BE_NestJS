@@ -296,6 +296,79 @@ categoryId?: string;
 walletId?: string;
 };
 
+export interface EducationItemDto {
+  degree: string;
+  details: string[];
+  period: string;
+  school: string;
+}
+
+export interface PortfolioProjectDto {
+  githubUrl?: string;
+  highlights: string[];
+  name: string;
+  period: string;
+  role: string;
+  summary: string;
+  teamSize?: number;
+  technologies: string[];
+  websiteUrl?: string;
+}
+
+export interface ExperienceItemDto {
+  company: string;
+  endDate: string;
+  highlights: string[];
+  position: string;
+  startDate: string;
+}
+
+export interface SkillGroupDto {
+  label: string;
+  skills: string[];
+}
+
+export interface UpdatePortfolioDto {
+  about: string[];
+  cvUrl: string;
+  education: EducationItemDto[];
+  email: string;
+  emailHref: string;
+  experiences: ExperienceItemDto[];
+  initials: string;
+  linkedinUrl: string;
+  name: string;
+  phone: string;
+  phoneHref: string;
+  portfolioUrl: string;
+  projects: PortfolioProjectDto[];
+  role: string;
+  skillGroups: SkillGroupDto[];
+  softSkills: string;
+  tagline: string;
+}
+
+export interface PortfolioResponseDto {
+  about: string[];
+  cvUrl: string;
+  education: EducationItemDto[];
+  email: string;
+  emailHref: string;
+  experiences: ExperienceItemDto[];
+  id: string;
+  initials: string;
+  linkedinUrl: string;
+  name: string;
+  phone: string;
+  phoneHref: string;
+  portfolioUrl: string;
+  projects: PortfolioProjectDto[];
+  role: string;
+  skillGroups: SkillGroupDto[];
+  softSkills: string;
+  tagline: string;
+}
+
 export type UpdateInterestDtoType = typeof UpdateInterestDtoType[keyof typeof UpdateInterestDtoType];
 
 
@@ -8014,3 +8087,149 @@ export function useNotificationsControllerStream<TData = Awaited<ReturnType<type
 
 
 
+/**
+ * @summary Get portfolio of the site owner
+ */
+export const portfolioControllerGetOwnerPortfolio = (
+    
+ options?: SecondParameter<typeof customInstance>,signal?: AbortSignal
+) => {
+      
+      
+      return customInstance<PortfolioResponseDto>(
+      {url: `/api/v1/portfolio`, method: 'GET', signal
+    },
+      options);
+    }
+  
+
+export const getPortfolioControllerGetOwnerPortfolioQueryKey = () => {
+    return [`/api/v1/portfolio`] as const;
+    }
+
+    
+export const getPortfolioControllerGetOwnerPortfolioQueryOptions = <TData = Awaited<ReturnType<typeof portfolioControllerGetOwnerPortfolio>>, TError = unknown>( options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof portfolioControllerGetOwnerPortfolio>>, TError, TData>>, request?: SecondParameter<typeof customInstance>}
+) => {
+
+const {query: queryOptions, request: requestOptions} = options ?? {};
+
+  const queryKey =  queryOptions?.queryKey ?? getPortfolioControllerGetOwnerPortfolioQueryKey();
+
+  
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof portfolioControllerGetOwnerPortfolio>>> = ({ signal }) => portfolioControllerGetOwnerPortfolio(requestOptions, signal);
+
+      
+
+      
+
+   return  { queryKey, queryFn, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof portfolioControllerGetOwnerPortfolio>>, TError, TData> & { queryKey: DataTag<QueryKey, TData> }
+}
+
+export type PortfolioControllerGetOwnerPortfolioQueryResult = NonNullable<Awaited<ReturnType<typeof portfolioControllerGetOwnerPortfolio>>>
+export type PortfolioControllerGetOwnerPortfolioQueryError = unknown
+
+
+export function usePortfolioControllerGetOwnerPortfolio<TData = Awaited<ReturnType<typeof portfolioControllerGetOwnerPortfolio>>, TError = unknown>(
+  options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof portfolioControllerGetOwnerPortfolio>>, TError, TData>> & Pick<
+        DefinedInitialDataOptions<
+          Awaited<ReturnType<typeof portfolioControllerGetOwnerPortfolio>>,
+          TError,
+          TData
+        > , 'initialData'
+      >, request?: SecondParameter<typeof customInstance>}
+
+  ):  DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData> }
+export function usePortfolioControllerGetOwnerPortfolio<TData = Awaited<ReturnType<typeof portfolioControllerGetOwnerPortfolio>>, TError = unknown>(
+  options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof portfolioControllerGetOwnerPortfolio>>, TError, TData>> & Pick<
+        UndefinedInitialDataOptions<
+          Awaited<ReturnType<typeof portfolioControllerGetOwnerPortfolio>>,
+          TError,
+          TData
+        > , 'initialData'
+      >, request?: SecondParameter<typeof customInstance>}
+
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData> }
+export function usePortfolioControllerGetOwnerPortfolio<TData = Awaited<ReturnType<typeof portfolioControllerGetOwnerPortfolio>>, TError = unknown>(
+  options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof portfolioControllerGetOwnerPortfolio>>, TError, TData>>, request?: SecondParameter<typeof customInstance>}
+
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData> }
+/**
+ * @summary Get portfolio of the site owner
+ */
+
+export function usePortfolioControllerGetOwnerPortfolio<TData = Awaited<ReturnType<typeof portfolioControllerGetOwnerPortfolio>>, TError = unknown>(
+  options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof portfolioControllerGetOwnerPortfolio>>, TError, TData>>, request?: SecondParameter<typeof customInstance>}
+
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData> } {
+
+  const queryOptions = getPortfolioControllerGetOwnerPortfolioQueryOptions(options)
+
+  const query = useQuery(queryOptions) as  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData> };
+
+  query.queryKey = queryOptions.queryKey ;
+
+  return query;
+}
+
+
+
+
+/**
+ * @summary Update current user portfolio
+ */
+export const portfolioControllerUpdateMyPortfolio = (
+    updatePortfolioDto: UpdatePortfolioDto,
+ options?: SecondParameter<typeof customInstance>,) => {
+      
+      
+      return customInstance<PortfolioResponseDto>(
+      {url: `/api/v1/portfolio`, method: 'PATCH',
+      headers: {'Content-Type': 'application/json', },
+      data: updatePortfolioDto
+    },
+      options);
+    }
+  
+
+
+export const getPortfolioControllerUpdateMyPortfolioMutationOptions = <TError = unknown,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof portfolioControllerUpdateMyPortfolio>>, TError,{data: UpdatePortfolioDto}, TContext>, request?: SecondParameter<typeof customInstance>}
+): UseMutationOptions<Awaited<ReturnType<typeof portfolioControllerUpdateMyPortfolio>>, TError,{data: UpdatePortfolioDto}, TContext> => {
+const {mutation: mutationOptions, request: requestOptions} = options ?? {};
+
+      
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof portfolioControllerUpdateMyPortfolio>>, {data: UpdatePortfolioDto}> = (props) => {
+          const {data} = props ?? {};
+
+          return  portfolioControllerUpdateMyPortfolio(data,requestOptions)
+        }
+
+        
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type PortfolioControllerUpdateMyPortfolioMutationResult = NonNullable<Awaited<ReturnType<typeof portfolioControllerUpdateMyPortfolio>>>
+    export type PortfolioControllerUpdateMyPortfolioMutationBody = UpdatePortfolioDto
+    export type PortfolioControllerUpdateMyPortfolioMutationError = unknown
+
+    /**
+ * @summary Update current user portfolio
+ */
+export const usePortfolioControllerUpdateMyPortfolio = <TError = unknown,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof portfolioControllerUpdateMyPortfolio>>, TError,{data: UpdatePortfolioDto}, TContext>, request?: SecondParameter<typeof customInstance>}
+): UseMutationResult<
+        Awaited<ReturnType<typeof portfolioControllerUpdateMyPortfolio>>,
+        TError,
+        {data: UpdatePortfolioDto},
+        TContext
+      > => {
+
+      const mutationOptions = getPortfolioControllerUpdateMyPortfolioMutationOptions(options);
+
+      return useMutation(mutationOptions);
+    }
+    

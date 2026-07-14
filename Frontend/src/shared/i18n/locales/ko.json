@@ -535,6 +535,29 @@
     "bioPlaceholder": "자기소개, 프로그래밍 여정, MyLife OS 제작 이유 등을 적어보세요...",
     "emptyBio": "등록된 자기소개 정보가 없습니다. 편집을 클릭하여 추가해보세요."
   },
+  "portfolio": {
+    "title": "포트폴리오",
+    "about": "소개",
+    "experience": "경력",
+    "projects": "프로젝트",
+    "education": "학력",
+    "contact": "연락처",
+    "downloadCv": "CV 다운로드",
+    "viewCv": "CV 보기",
+    "hello": "안녕하세요, 저는",
+    "softSkillsTitle": "소프트 스킬 및 소양",
+    "skillsTitle": "기술 및 역량",
+    "contactTitle": "문의하기",
+    "contactSubtitle": "협업 제안이나 친목 도모 등 언제든 편하게 연락해 주세요.",
+    "toastUpdateSuccess": "포트폴리오가 성공적으로 업데이트되었습니다",
+    "toastUpdateError": "포트폴리오 업데이트 중 오류가 발생했습니다",
+    "managerTitle": "개발자 포트폴리오",
+    "managerDesc": "공개 개발자 포트폴리오 페이지의 세부 정보를 관리합니다.",
+    "editTitle": "개발자 포트폴리오 수정",
+    "scrollToExplore": "둘러보기",
+    "sendEmail": "이메일 보내기",
+    "builtWith": "React, TypeScript 및 MyLife 디자인 시스템으로 구축되었습니다."
+  },
   "settings": {
     "title": "설정",
     "language": "언어",
@@ -613,6 +636,7 @@
   },
   "landing": {
     "description": "개인 생활 관리 시스템. 재정, 일기, 학습, 목표 — 모든 것을 한 곳에서 관리하세요.",
-    "getStarted": "시작하기"
+    "getStarted": "시작하기",
+    "viewPortfolio": "개발자 포트폴리오 보기"
   }
 }

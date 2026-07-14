@@ -1,6 +1,7 @@
 export const ROUTES = {
   LANDING: '/',
   LOGIN: '/login',
+  PORTFOLIO: '/portfolio',
   DASHBOARD: '/dashboard',
   FINANCE: '/finance',
   FINANCE_TRANSACTIONS: '/finance/transactions',
@@ -23,5 +24,6 @@ export const ROUTES = {
   LEARNING_STUDY_PLAN: '/learning/study-plan',
   PROFILE: '/profile',
   PROFILE_BIOGRAPHY: '/profile/biography',
+  PROFILE_PORTFOLIO: '/profile/portfolio',
   SETTINGS: '/settings',
 } as const;

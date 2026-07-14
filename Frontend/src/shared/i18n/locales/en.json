@@ -535,6 +535,29 @@
     "bioPlaceholder": "Introduce yourself, programming journey, reasons for MyLife OS...",
     "emptyBio": "No biography information yet. Click Edit to add."
   },
+  "portfolio": {
+    "title": "Portfolio",
+    "about": "About",
+    "experience": "Experience",
+    "projects": "Projects",
+    "education": "Education",
+    "contact": "Contact",
+    "downloadCv": "Download CV",
+    "viewCv": "View CV",
+    "hello": "Hello, I’m",
+    "softSkillsTitle": "Soft Skills & Qualities",
+    "skillsTitle": "Skills & Technologies",
+    "contactTitle": "Let's Connect",
+    "contactSubtitle": "Feel free to reach out for collaborations or just a friendly chat.",
+    "toastUpdateSuccess": "Portfolio updated successfully",
+    "toastUpdateError": "Error updating portfolio",
+    "managerTitle": "Developer Portfolio",
+    "managerDesc": "Manage details for your public developer portfolio page.",
+    "editTitle": "Edit Developer Portfolio",
+    "scrollToExplore": "Scroll to explore",
+    "sendEmail": "Send me an email",
+    "builtWith": "Built with React, TypeScript, and MyLife’s design system."
+  },
   "settings": {
     "title": "Settings",
     "language": "Language",
@@ -613,6 +636,7 @@
   },
   "landing": {
     "description": "Personal life management system. Finance, journal, learning, goals — all in one place.",
-    "getStarted": "Get Started"
+    "getStarted": "Get Started",
+    "viewPortfolio": "View developer portfolio"
   }
 }

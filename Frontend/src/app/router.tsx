@@ -1,10 +1,11 @@
-import { createBrowserRouter, Navigate } from 'react-router';
+import { createBrowserRouter } from 'react-router';
 import { AppLayout } from '@/shared/layout/AppLayout';
 import { AuthGuard, GuestGuard } from '@/features/auth/AuthGuard';
 import { ROUTES } from '@/shared/constants/routes';
 
 import LandingPage from '@/pages/landing/LandingPage';
 import LoginPage from '@/pages/auth/LoginPage';
+import PortfolioPage from '@/pages/portfolio/PortfolioPage';
 import DashboardPage from '@/pages/dashboard/DashboardPage';
 import FinanceOverviewPage from '@/pages/finance/FinanceOverviewPage';
 import TransactionsPage from '@/pages/finance/TransactionsPage';
@@ -29,6 +30,7 @@ import ProfilePage from '@/pages/profile/ProfilePage';
 import BiographyPage from '@/pages/profile/BiographyPage';
 import SettingsPage from '@/pages/settings/SettingsPage';
 import NotFoundPage from '@/pages/NotFoundPage';
+import PortfolioEditorPage from '@/pages/profile/PortfolioEditorPage';
 
 function PrivateLayout() {
   return (
@@ -40,6 +42,7 @@ function PrivateLayout() {
 
 export const router = createBrowserRouter([
   { path: ROUTES.LANDING, element: <LandingPage /> },
+  { path: ROUTES.PORTFOLIO, element: <PortfolioPage /> },
   {
     path: ROUTES.LOGIN,
     element: (
@@ -74,6 +77,7 @@ export const router = createBrowserRouter([
       { path: ROUTES.LEARNING_STUDY_PLAN, element: <StudyPlanPage /> },
       { path: ROUTES.PROFILE, element: <ProfilePage /> },
       { path: ROUTES.PROFILE_BIOGRAPHY, element: <BiographyPage /> },
+      { path: ROUTES.PROFILE_PORTFOLIO, element: <PortfolioEditorPage /> },
       { path: ROUTES.SETTINGS, element: <SettingsPage /> },
     ],
   },
