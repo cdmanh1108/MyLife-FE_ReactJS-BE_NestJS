@@ -11,11 +11,11 @@ import {
   UseInterceptors,
 } from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
-import { ApiBearerAuth, ApiBody, ApiConsumes, ApiTags } from '@nestjs/swagger';
+import { ApiBearerAuth, ApiBody, ApiConsumes, ApiOkResponse, ApiTags } from '@nestjs/swagger';
 import { CurrentUser } from '../../../common/decorators/current-user.decorator';
 import { AuthenticatedUser } from '../../../common/types/authenticated-user.type';
 import { MediaService } from '../application/media.service';
-import { CreateAlbumDto, MediaQueryDto, UpdateAlbumDto, UploadMediaDto } from './dto/media.dto';
+import { CreateAlbumDto, MediaQueryDto, UpdateAlbumDto, UploadMediaDto, PaginatedMediaAssetDto } from './dto/media.dto';
 @ApiTags('media')
 @ApiBearerAuth('access-token')
 @Controller('media')
@@ -38,7 +38,9 @@ export class MediaController {
   upload(@CurrentUser() u: AuthenticatedUser, @UploadedFile() file: Express.Multer.File, @Body() dto: UploadMediaDto) {
     return this.media.upload(u.id, file, dto);
   }
-  @Get('assets') list(@CurrentUser() u: AuthenticatedUser, @Query() q: MediaQueryDto) {
+  @Get('assets')
+  @ApiOkResponse({ type: PaginatedMediaAssetDto })
+  list(@CurrentUser() u: AuthenticatedUser, @Query() q: MediaQueryDto) {
     return this.media.list(u.id, q);
   }
   @Get('assets/:id') get(@CurrentUser() u: AuthenticatedUser, @Param('id') id: string) {
