@@ -30,7 +30,6 @@ export default function VocabularyPage() {
   const [formMeaning, setFormMeaning] = useState('');
   const [formExample, setFormExample] = useState('');
   const [formLanguage, setFormLanguage] = useState<'IELTS' | 'TOPIK'>('TOPIK');
-  const [formSkill, setFormSkill] = useState<string>('VOCABULARY');
 
   const params = {
     keyword: search || undefined,
@@ -47,7 +46,6 @@ export default function VocabularyPage() {
     setFormMeaning('');
     setFormExample('');
     setFormLanguage('TOPIK');
-    setFormSkill('VOCABULARY');
     modal.open();
   };
 
@@ -57,7 +55,6 @@ export default function VocabularyPage() {
     setFormMeaning(v.meaning);
     setFormExample(v.example || '');
     setFormLanguage(v.language);
-    setFormSkill(v.skill || 'VOCABULARY');
     modal.open();
   };
 
@@ -84,7 +81,6 @@ export default function VocabularyPage() {
       meaning: formMeaning.trim(),
       example: formExample.trim() || undefined,
       language: formLanguage,
-      skill: formSkill,
     };
 
     if (activeVocab && activeVocab.id) {
@@ -220,19 +216,6 @@ export default function VocabularyPage() {
             ]}
             value={formLanguage}
             onChange={(e) => setFormLanguage(e.target.value as any)}
-          />
-          <Select
-            label={t('learning.studySkill')}
-            options={[
-              { value: 'VOCABULARY', label: t('learning.skillVocabulary') },
-              { value: 'GRAMMAR', label: t('learning.skillGrammar') },
-              { value: 'LISTENING', label: t('learning.skillListening') },
-              { value: 'READING', label: t('learning.skillReading') },
-              { value: 'WRITING', label: t('learning.skillWriting') },
-              { value: 'SPEAKING', label: t('learning.skillSpeaking') },
-            ]}
-            value={formSkill}
-            onChange={(e) => setFormSkill(e.target.value)}
           />
           <Input
             label={t('learning.vocabWord')}

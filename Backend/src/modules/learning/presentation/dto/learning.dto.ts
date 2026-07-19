@@ -1,6 +1,6 @@
-import { ApiProperty, ApiPropertyOptional, IntersectionType } from '@nestjs/swagger';
+import { ApiProperty, ApiPropertyOptional, IntersectionType, PartialType } from '@nestjs/swagger';
 import { Type } from 'class-transformer';
-import { IsArray, IsDateString, IsEnum, IsNumber, IsOptional, IsString, Min } from 'class-validator';
+import { IsArray, IsBoolean, IsDateString, IsEnum, IsNumber, IsOptional, IsString, Min } from 'class-validator';
 import { PaginationQueryDto } from '../../../../common/dto/pagination.dto';
 import { FlashcardStatus, LearningLanguage, LearningSkill, StudyPlanStatus } from '../../domain/enums/learning.enum';
 export class LearningQueryDto extends IntersectionType(PaginationQueryDto) {
@@ -17,7 +17,9 @@ export class CreateVocabularyDto {
   @ApiPropertyOptional({ type: [String] }) @IsOptional() @IsArray() @IsString({ each: true }) tags?: string[];
   @ApiPropertyOptional() @IsOptional() @IsString() level?: string;
 }
-export class UpdateVocabularyDto extends CreateVocabularyDto {}
+export class UpdateVocabularyDto extends PartialType(CreateVocabularyDto) {
+  @ApiPropertyOptional() @IsOptional() @IsBoolean() mastered?: boolean;
+}
 export class CreateFlashcardDto {
   @ApiProperty({ enum: LearningLanguage }) @IsEnum(LearningLanguage) language: LearningLanguage;
   @ApiProperty() @IsString() front: string;

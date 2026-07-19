@@ -13,6 +13,7 @@ export class Vocabulary {
   @Prop() note?: string;
   @Prop({ type: [String], default: [] }) tags: string[];
   @Prop() level?: string;
+  @Prop({ default: false }) mastered: boolean;
 }
 export const VocabularySchema = SchemaFactory.createForClass(Vocabulary);
 VocabularySchema.index({ userId: 1, language: 1, word: 1 });
