@@ -105,6 +105,7 @@ export function Sidebar({ onClose }: { onClose?: () => void }) {
                 <NavLink
                   key={item.to}
                   to={item.to}
+                  end={item.to === ROUTES.FINANCE || item.to === ROUTES.DEBTS || item.to === ROUTES.LEARNING}
                   onClick={onClose}
                   className={({ isActive }) =>
                     cn(
