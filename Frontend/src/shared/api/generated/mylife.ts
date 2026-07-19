@@ -296,6 +296,35 @@ categoryId?: string;
 walletId?: string;
 };
 
+export interface PortfolioLocalesDto {
+  en: PortfolioContentDto;
+  ko: PortfolioContentDto;
+  vi: PortfolioContentDto;
+}
+
+export interface UpdatePortfolioDto {
+  cvUrl: string;
+  email: string;
+  emailHref: string;
+  linkedinUrl: string;
+  locales: PortfolioLocalesDto;
+  phone: string;
+  phoneHref: string;
+  portfolioUrl: string;
+}
+
+export interface PortfolioResponseDto {
+  cvUrl: string;
+  email: string;
+  emailHref: string;
+  id: string;
+  linkedinUrl: string;
+  locales: PortfolioLocalesDto;
+  phone: string;
+  phoneHref: string;
+  portfolioUrl: string;
+}
+
 export interface EducationItemDto {
   degree: string;
   details: string[];
@@ -328,40 +357,12 @@ export interface SkillGroupDto {
   skills: string[];
 }
 
-export interface UpdatePortfolioDto {
+export interface PortfolioContentDto {
   about: string[];
-  cvUrl: string;
   education: EducationItemDto[];
-  email: string;
-  emailHref: string;
   experiences: ExperienceItemDto[];
   initials: string;
-  linkedinUrl: string;
   name: string;
-  phone: string;
-  phoneHref: string;
-  portfolioUrl: string;
-  projects: PortfolioProjectDto[];
-  role: string;
-  skillGroups: SkillGroupDto[];
-  softSkills: string;
-  tagline: string;
-}
-
-export interface PortfolioResponseDto {
-  about: string[];
-  cvUrl: string;
-  education: EducationItemDto[];
-  email: string;
-  emailHref: string;
-  experiences: ExperienceItemDto[];
-  id: string;
-  initials: string;
-  linkedinUrl: string;
-  name: string;
-  phone: string;
-  phoneHref: string;
-  portfolioUrl: string;
   projects: PortfolioProjectDto[];
   role: string;
   skillGroups: SkillGroupDto[];

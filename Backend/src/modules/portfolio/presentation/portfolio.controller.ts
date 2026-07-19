@@ -1,4 +1,4 @@
-import { Body, Controller, Get, Patch } from '@nestjs/common';
+import { Body, Controller, Get, Patch, NotFoundException } from '@nestjs/common';
 import { ApiBearerAuth, ApiOkResponse, ApiOperation, ApiTags } from '@nestjs/swagger';
 import { Public } from '../../../common/decorators/public.decorator';
 import { CurrentUser } from '../../../common/decorators/current-user.decorator';
@@ -6,7 +6,7 @@ import { AuthenticatedUser } from '../../../common/types/authenticated-user.type
 import { PortfolioService } from '../application/portfolio.service';
 import { UpdatePortfolioDto, PortfolioResponseDto } from './dto/portfolio.dto';
 import { InjectModel } from '@nestjs/mongoose';
-import { Model, Types } from 'mongoose';
+import { Model } from 'mongoose';
 import { Portfolio, PortfolioDocument } from '../infrastructure/schemas/portfolio.schema';
 
 @ApiTags('portfolio')
@@ -27,10 +27,7 @@ export class PortfolioController {
     if (port) {
       return this.portfolioService.toResponse(port);
     }
-    // If not found, use a fallback ID or create default.
-    // We can assume a default owner ID or seed one using a dummy object ID.
-    const fallbackUserId = new Types.ObjectId().toString();
-    return this.portfolioService.getPortfolio(fallbackUserId);
+    throw new NotFoundException('Portfolio not found');
   }
 
   @ApiBearerAuth('access-token')

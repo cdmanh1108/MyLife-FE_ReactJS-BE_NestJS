@@ -98,63 +98,7 @@ export class EducationItemDto {
   details: string[];
 }
 
-export class PortfolioResponseDto {
-  @ApiProperty()
-  id: string;
-
-  @ApiProperty()
-  name: string;
-
-  @ApiProperty()
-  initials: string;
-
-  @ApiProperty()
-  role: string;
-
-  @ApiProperty()
-  phone: string;
-
-  @ApiProperty()
-  phoneHref: string;
-
-  @ApiProperty()
-  email: string;
-
-  @ApiProperty()
-  emailHref: string;
-
-  @ApiProperty()
-  portfolioUrl: string;
-
-  @ApiProperty()
-  linkedinUrl: string;
-
-  @ApiProperty()
-  cvUrl: string;
-
-  @ApiProperty()
-  tagline: string;
-
-  @ApiProperty({ type: [String] })
-  about: string[];
-
-  @ApiProperty()
-  softSkills: string;
-
-  @ApiProperty({ type: [SkillGroupDto] })
-  skillGroups: SkillGroupDto[];
-
-  @ApiProperty({ type: [ExperienceItemDto] })
-  experiences: ExperienceItemDto[];
-
-  @ApiProperty({ type: [PortfolioProjectDto] })
-  projects: PortfolioProjectDto[];
-
-  @ApiProperty({ type: [EducationItemDto] })
-  education: EducationItemDto[];
-}
-
-export class UpdatePortfolioDto {
+export class PortfolioContentDto {
   @ApiProperty({ example: 'Chau Duc Manh' })
   @IsString()
   name: string;
@@ -166,34 +110,6 @@ export class UpdatePortfolioDto {
   @ApiProperty({ example: 'Fullstack Developer' })
   @IsString()
   role: string;
-
-  @ApiProperty({ example: '+84 367 485 383' })
-  @IsString()
-  phone: string;
-
-  @ApiProperty({ example: 'tel:+84367485383' })
-  @IsString()
-  phoneHref: string;
-
-  @ApiProperty({ example: 'cdmanh1108@gmail.com' })
-  @IsString()
-  email: string;
-
-  @ApiProperty({ example: 'mailto:cdmanh1108@gmail.com' })
-  @IsString()
-  emailHref: string;
-
-  @ApiProperty({ example: 'https://portfolio.chaumanh.site' })
-  @IsString()
-  portfolioUrl: string;
-
-  @ApiProperty({ example: 'https://linkedin.com/in/chaumanh1108' })
-  @IsString()
-  linkedinUrl: string;
-
-  @ApiProperty({ example: '/cv/ChauDucManh_FullstackDeveloper.pdf' })
-  @IsString()
-  cvUrl: string;
 
   @ApiProperty({ example: 'I build web apps.' })
   @IsString()
@@ -231,4 +147,87 @@ export class UpdatePortfolioDto {
   @ValidateNested({ each: true })
   @Type(() => EducationItemDto)
   education: EducationItemDto[];
+}
+
+export class PortfolioLocalesDto {
+  @ApiProperty({ type: PortfolioContentDto })
+  @ValidateNested()
+  @Type(() => PortfolioContentDto)
+  en: PortfolioContentDto;
+
+  @ApiProperty({ type: PortfolioContentDto })
+  @ValidateNested()
+  @Type(() => PortfolioContentDto)
+  vi: PortfolioContentDto;
+
+  @ApiProperty({ type: PortfolioContentDto })
+  @ValidateNested()
+  @Type(() => PortfolioContentDto)
+  ko: PortfolioContentDto;
+}
+
+export class PortfolioResponseDto {
+  @ApiProperty()
+  id: string;
+
+  @ApiProperty()
+  phone: string;
+
+  @ApiProperty()
+  phoneHref: string;
+
+  @ApiProperty()
+  email: string;
+
+  @ApiProperty()
+  emailHref: string;
+
+  @ApiProperty()
+  portfolioUrl: string;
+
+  @ApiProperty()
+  linkedinUrl: string;
+
+  @ApiProperty()
+  cvUrl: string;
+
+  @ApiProperty({ type: PortfolioLocalesDto })
+  @ValidateNested()
+  @Type(() => PortfolioLocalesDto)
+  locales: PortfolioLocalesDto;
+}
+
+export class UpdatePortfolioDto {
+  @ApiProperty({ example: '+84 367 485 383' })
+  @IsString()
+  phone: string;
+
+  @ApiProperty({ example: 'tel:+84367485383' })
+  @IsString()
+  phoneHref: string;
+
+  @ApiProperty({ example: 'cdmanh1108@gmail.com' })
+  @IsString()
+  email: string;
+
+  @ApiProperty({ example: 'mailto:cdmanh1108@gmail.com' })
+  @IsString()
+  emailHref: string;
+
+  @ApiProperty({ example: 'https://portfolio.chaumanh.site' })
+  @IsString()
+  portfolioUrl: string;
+
+  @ApiProperty({ example: 'https://linkedin.com/in/chaumanh1108' })
+  @IsString()
+  linkedinUrl: string;
+
+  @ApiProperty({ example: '/cv/ChauDucManh_FullstackDeveloper.pdf' })
+  @IsString()
+  cvUrl: string;
+
+  @ApiProperty({ type: PortfolioLocalesDto })
+  @ValidateNested()
+  @Type(() => PortfolioLocalesDto)
+  locales: PortfolioLocalesDto;
 }

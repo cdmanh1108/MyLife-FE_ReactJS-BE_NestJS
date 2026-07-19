@@ -21,6 +21,7 @@ import {
 import { ROUTES } from '@/shared/constants/routes';
 import { Badge } from '@/shared/ui/Badge';
 import { ThemeToggle } from '@/shared/ui/ThemeToggle';
+import { LanguageSwitcher } from '@/shared/ui/LanguageSwitcher';
 import * as mockData from './portfolio.data';
 import { ExperienceTimeline } from './components/ExperienceTimeline';
 import { PortfolioSection } from './components/PortfolioSection';
@@ -29,7 +30,7 @@ import { usePortfolio } from '@/features/portfolio/api/usePortfolio';
 import { LoadingState } from '@/shared/ui/LoadingState';
 
 export default function PortfolioPage() {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
 
   const { data: portfolio, isLoading } = usePortfolio();
 
@@ -38,9 +39,12 @@ export default function PortfolioPage() {
     const description = document.querySelector<HTMLMetaElement>('meta[name="description"]');
     const previousDescription = description?.content;
 
-    const name = portfolio?.name || mockData.profile.name;
-    const role = portfolio?.role || mockData.profile.role;
-    const tagline = portfolio?.tagline || mockData.profile.tagline;
+    const currentLang = i18n.language || 'en';
+    const content = portfolio?.locales?.[currentLang as 'en' | 'vi' | 'ko'] || portfolio?.locales?.en;
+
+    const name = content?.name || mockData.profile.name;
+    const role = content?.role || mockData.profile.role;
+    const tagline = content?.tagline || mockData.profile.tagline;
 
     document.title = `${name} | ${role}`;
     if (description) {
@@ -51,7 +55,7 @@ export default function PortfolioPage() {
       document.title = previousTitle;
       if (description && previousDescription) description.content = previousDescription;
     };
-  }, [portfolio]);
+  }, [portfolio, i18n.language]);
 
   const handleScroll = (e: React.MouseEvent<HTMLAnchorElement>, href: string) => {
     e.preventDefault();
@@ -67,10 +71,13 @@ export default function PortfolioPage() {
     return <LoadingState />;
   }
 
+  const currentLang = i18n.language || 'en';
+  const content = portfolio?.locales?.[currentLang as 'en' | 'vi' | 'ko'] || portfolio?.locales?.en;
+
   const profile = {
-    name: portfolio?.name || mockData.profile.name,
-    initials: portfolio?.initials || mockData.profile.initials,
-    role: portfolio?.role || mockData.profile.role,
+    name: content?.name || mockData.profile.name,
+    initials: content?.initials || mockData.profile.initials,
+    role: content?.role || mockData.profile.role,
     phone: portfolio?.phone || mockData.profile.phone,
     phoneHref: portfolio?.phoneHref || mockData.profile.phoneHref,
     email: portfolio?.email || mockData.profile.email,
@@ -78,15 +85,15 @@ export default function PortfolioPage() {
     portfolioUrl: portfolio?.portfolioUrl || mockData.profile.portfolioUrl,
     linkedinUrl: portfolio?.linkedinUrl || mockData.profile.linkedinUrl,
     cvUrl: portfolio?.cvUrl || mockData.profile.cvUrl,
-    tagline: portfolio?.tagline || mockData.profile.tagline,
-    about: portfolio?.about || mockData.profile.about,
-    softSkills: portfolio?.softSkills || mockData.profile.softSkills,
+    tagline: content?.tagline || mockData.profile.tagline,
+    about: content?.about || mockData.profile.about,
+    softSkills: content?.softSkills || mockData.profile.softSkills,
   };
 
-  const skillGroups = portfolio?.skillGroups?.length ? portfolio.skillGroups : mockData.skillGroups;
-  const experiences = portfolio?.experiences?.length ? portfolio.experiences : mockData.experiences;
-  const projects = portfolio?.projects?.length ? portfolio.projects : mockData.projects;
-  const education = portfolio?.education?.length ? portfolio.education : mockData.education;
+  const skillGroups = content?.skillGroups?.length ? content.skillGroups : mockData.skillGroups;
+  const experiences = content?.experiences?.length ? content.experiences : mockData.experiences;
+  const projects = content?.projects?.length ? content.projects : mockData.projects;
+  const education = content?.education?.length ? content.education : mockData.education;
 
   const navigation = [
     { label: t('portfolio.about'), href: '#about' },
@@ -124,6 +131,7 @@ export default function PortfolioPage() {
           </nav>
 
           <div className="flex items-center gap-2">
+            <LanguageSwitcher />
             <ThemeToggle />
             <a
               href={profile.emailHref}
@@ -247,7 +255,7 @@ export default function PortfolioPage() {
                         Based in
                       </p>
                       <p className="mt-1 inline-flex items-center gap-1.5 text-sm font-semibold">
-                        <MapPin size={13} className="text-primary" aria-hidden="true" /> Vietnam
+                        <MapPin size={13} className="text-primary" aria-hidden="true" /> {t('portfolio.location')}
                       </p>
                     </div>
                   </div>
@@ -271,7 +279,7 @@ export default function PortfolioPage() {
             eyebrow={t('portfolio.about')}
             title={`${t('portfolio.about')} & ${t('portfolio.skillsTitle')}`}
             icon={<UserRound size={18} aria-hidden="true" />}
-            description="A practical full-stack toolkit built through real products, integrations, and cloud deployments."
+            description={t('portfolio.aboutDesc')}
           >
             <div className="grid overflow-hidden rounded-2xl border border-border bg-card/75 lg:grid-cols-[0.85fr_1.15fr]">
               <div className="border-b border-border p-6 sm:p-8 lg:border-b-0 lg:border-r">
@@ -317,7 +325,7 @@ export default function PortfolioPage() {
             eyebrow={t('portfolio.experience')}
             title={t('portfolio.experience')}
             icon={<BriefcaseBusiness size={18} aria-hidden="true" />}
-            description="Professional experience presented as a read-only timeline inspired by the MyLife timeline page."
+            description={t('portfolio.experienceDesc')}
           >
             <ExperienceTimeline items={experiences} />
           </PortfolioSection>
@@ -327,7 +335,7 @@ export default function PortfolioPage() {
             eyebrow={t('portfolio.projects')}
             title={t('portfolio.projects')}
             icon={<Rocket size={18} aria-hidden="true" />}
-            description="Products where I owned architecture, backend systems, integrations, deployment, or the full stack."
+            description={t('portfolio.projectsDesc')}
           >
             <div className="grid gap-5 lg:grid-cols-3">
               {projects.map((project, index) => (

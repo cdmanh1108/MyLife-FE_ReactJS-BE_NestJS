@@ -35,11 +35,8 @@ export interface EducationItem {
 
 export type PortfolioDocument = HydratedDocument<Portfolio>;
 
-@Schema({ timestamps: true, collection: 'portfolios' })
-export class Portfolio {
-  @Prop({ type: Types.ObjectId, required: true, index: true, unique: true })
-  userId: Types.ObjectId;
-
+@Schema({ _id: false })
+export class PortfolioContent {
   @Prop({ required: true })
   name: string;
 
@@ -48,6 +45,35 @@ export class Portfolio {
 
   @Prop({ required: true })
   role: string;
+
+  @Prop({ required: true })
+  tagline: string;
+
+  @Prop({ type: [String], default: [] })
+  about: string[];
+
+  @Prop({ required: true })
+  softSkills: string;
+
+  @Prop({ type: [MongooseSchema.Types.Mixed], default: [] })
+  skillGroups: SkillGroup[];
+
+  @Prop({ type: [MongooseSchema.Types.Mixed], default: [] })
+  experiences: ExperienceItem[];
+
+  @Prop({ type: [MongooseSchema.Types.Mixed], default: [] })
+  projects: PortfolioProject[];
+
+  @Prop({ type: [MongooseSchema.Types.Mixed], default: [] })
+  education: EducationItem[];
+}
+
+export const PortfolioContentSchema = SchemaFactory.createForClass(PortfolioContent);
+
+@Schema({ timestamps: true, collection: 'portfolios' })
+export class Portfolio {
+  @Prop({ type: Types.ObjectId, required: true, index: true, unique: true })
+  userId: Types.ObjectId;
 
   @Prop({ required: true })
   phone: string;
@@ -70,26 +96,19 @@ export class Portfolio {
   @Prop({ required: true })
   cvUrl: string;
 
-  @Prop({ required: true })
-  tagline: string;
-
-  @Prop({ type: [String], default: [] })
-  about: string[];
-
-  @Prop({ required: true })
-  softSkills: string;
-
-  @Prop({ type: [MongooseSchema.Types.Mixed], default: [] })
-  skillGroups: SkillGroup[];
-
-  @Prop({ type: [MongooseSchema.Types.Mixed], default: [] })
-  experiences: ExperienceItem[];
-
-  @Prop({ type: [MongooseSchema.Types.Mixed], default: [] })
-  projects: PortfolioProject[];
-
-  @Prop({ type: [MongooseSchema.Types.Mixed], default: [] })
-  education: EducationItem[];
+  @Prop({
+    type: {
+      en: { type: PortfolioContentSchema, required: true },
+      vi: { type: PortfolioContentSchema, required: true },
+      ko: { type: PortfolioContentSchema, required: true },
+    },
+    required: true,
+  })
+  locales: {
+    en: PortfolioContent;
+    vi: PortfolioContent;
+    ko: PortfolioContent;
+  };
 }
 
 export const PortfolioSchema = SchemaFactory.createForClass(Portfolio);
