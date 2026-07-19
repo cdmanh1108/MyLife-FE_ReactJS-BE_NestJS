@@ -25,25 +25,33 @@ import * as mockData from './portfolio.data';
 import { ExperienceTimeline } from './components/ExperienceTimeline';
 import { PortfolioSection } from './components/PortfolioSection';
 import { ProjectCard } from './components/ProjectCard';
+import { usePortfolio } from '@/features/portfolio/api/usePortfolio';
+import { LoadingState } from '@/shared/ui/LoadingState';
 
 export default function PortfolioPage() {
   const { t } = useTranslation();
+
+  const { data: portfolio, isLoading } = usePortfolio();
 
   useEffect(() => {
     const previousTitle = document.title;
     const description = document.querySelector<HTMLMetaElement>('meta[name="description"]');
     const previousDescription = description?.content;
 
-    document.title = `${mockData.profile.name} | ${mockData.profile.role}`;
+    const name = portfolio?.name || mockData.profile.name;
+    const role = portfolio?.role || mockData.profile.role;
+    const tagline = portfolio?.tagline || mockData.profile.tagline;
+
+    document.title = `${name} | ${role}`;
     if (description) {
-      description.content = mockData.profile.tagline;
+      description.content = tagline;
     }
 
     return () => {
       document.title = previousTitle;
       if (description && previousDescription) description.content = previousDescription;
     };
-  }, []);
+  }, [portfolio]);
 
   const handleScroll = (e: React.MouseEvent<HTMLAnchorElement>, href: string) => {
     e.preventDefault();
@@ -55,27 +63,30 @@ export default function PortfolioPage() {
     }
   };
 
-  // Use static mock data directly
+  if (isLoading) {
+    return <LoadingState />;
+  }
+
   const profile = {
-    name: mockData.profile.name,
-    initials: mockData.profile.initials,
-    role: mockData.profile.role,
-    phone: mockData.profile.phone,
-    phoneHref: mockData.profile.phoneHref,
-    email: mockData.profile.email,
-    emailHref: mockData.profile.emailHref,
-    portfolioUrl: mockData.profile.portfolioUrl,
-    linkedinUrl: mockData.profile.linkedinUrl,
-    cvUrl: mockData.profile.cvUrl,
-    tagline: mockData.profile.tagline,
-    about: mockData.profile.about,
-    softSkills: mockData.profile.softSkills,
+    name: portfolio?.name || mockData.profile.name,
+    initials: portfolio?.initials || mockData.profile.initials,
+    role: portfolio?.role || mockData.profile.role,
+    phone: portfolio?.phone || mockData.profile.phone,
+    phoneHref: portfolio?.phoneHref || mockData.profile.phoneHref,
+    email: portfolio?.email || mockData.profile.email,
+    emailHref: portfolio?.emailHref || mockData.profile.emailHref,
+    portfolioUrl: portfolio?.portfolioUrl || mockData.profile.portfolioUrl,
+    linkedinUrl: portfolio?.linkedinUrl || mockData.profile.linkedinUrl,
+    cvUrl: portfolio?.cvUrl || mockData.profile.cvUrl,
+    tagline: portfolio?.tagline || mockData.profile.tagline,
+    about: portfolio?.about || mockData.profile.about,
+    softSkills: portfolio?.softSkills || mockData.profile.softSkills,
   };
 
-  const skillGroups = mockData.skillGroups;
-  const experiences = mockData.experiences;
-  const projects = mockData.projects;
-  const education = mockData.education;
+  const skillGroups = portfolio?.skillGroups?.length ? portfolio.skillGroups : mockData.skillGroups;
+  const experiences = portfolio?.experiences?.length ? portfolio.experiences : mockData.experiences;
+  const projects = portfolio?.projects?.length ? portfolio.projects : mockData.projects;
+  const education = portfolio?.education?.length ? portfolio.education : mockData.education;
 
   const navigation = [
     { label: t('portfolio.about'), href: '#about' },

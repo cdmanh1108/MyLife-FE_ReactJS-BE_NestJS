@@ -6,7 +6,7 @@ import { AuthenticatedUser } from '../../../common/types/authenticated-user.type
 import { PortfolioService } from '../application/portfolio.service';
 import { UpdatePortfolioDto, PortfolioResponseDto } from './dto/portfolio.dto';
 import { InjectModel } from '@nestjs/mongoose';
-import { Model } from 'mongoose';
+import { Model, Types } from 'mongoose';
 import { Portfolio, PortfolioDocument } from '../infrastructure/schemas/portfolio.schema';
 
 @ApiTags('portfolio')
@@ -29,7 +29,7 @@ export class PortfolioController {
     }
     // If not found, use a fallback ID or create default.
     // We can assume a default owner ID or seed one using a dummy object ID.
-    const fallbackUserId = new Model()._id.toString();
+    const fallbackUserId = new Types.ObjectId().toString();
     return this.portfolioService.getPortfolio(fallbackUserId);
   }
 

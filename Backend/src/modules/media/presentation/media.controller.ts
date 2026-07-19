@@ -15,7 +15,7 @@ import { ApiBearerAuth, ApiBody, ApiConsumes, ApiOkResponse, ApiTags } from '@ne
 import { CurrentUser } from '../../../common/decorators/current-user.decorator';
 import { AuthenticatedUser } from '../../../common/types/authenticated-user.type';
 import { MediaService } from '../application/media.service';
-import { CreateAlbumDto, MediaQueryDto, UpdateAlbumDto, UploadMediaDto, PaginatedMediaAssetDto, MediaAssetDto } from './dto/media.dto';
+import { CreateAlbumDto, MediaQueryDto, UpdateAlbumDto, UploadMediaDto, MediaAssetDto } from './dto/media.dto';
 @ApiTags('media')
 @ApiBearerAuth('access-token')
 @Controller('media')

@@ -1,4 +1,5 @@
-import { Schema, Types, Document } from 'mongoose';
+import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
+import { HydratedDocument, Schema as MongooseSchema, Types } from 'mongoose';
 
 export interface SkillGroup {
   label: string;
@@ -32,53 +33,64 @@ export interface EducationItem {
   details: string[];
 }
 
-export interface Portfolio extends Document {
+export type PortfolioDocument = HydratedDocument<Portfolio>;
+
+@Schema({ timestamps: true, collection: 'portfolios' })
+export class Portfolio {
+  @Prop({ type: Types.ObjectId, required: true, index: true, unique: true })
   userId: Types.ObjectId;
+
+  @Prop({ required: true })
   name: string;
+
+  @Prop({ required: true })
   initials: string;
+
+  @Prop({ required: true })
   role: string;
+
+  @Prop({ required: true })
   phone: string;
+
+  @Prop({ required: true })
   phoneHref: string;
+
+  @Prop({ required: true })
   email: string;
+
+  @Prop({ required: true })
   emailHref: string;
+
+  @Prop({ required: true })
   portfolioUrl: string;
+
+  @Prop({ required: true })
   linkedinUrl: string;
+
+  @Prop({ required: true })
   cvUrl: string;
+
+  @Prop({ required: true })
   tagline: string;
+
+  @Prop({ type: [String], default: [] })
   about: string[];
+
+  @Prop({ required: true })
   softSkills: string;
+
+  @Prop({ type: [MongooseSchema.Types.Mixed], default: [] })
   skillGroups: SkillGroup[];
+
+  @Prop({ type: [MongooseSchema.Types.Mixed], default: [] })
   experiences: ExperienceItem[];
+
+  @Prop({ type: [MongooseSchema.Types.Mixed], default: [] })
   projects: PortfolioProject[];
+
+  @Prop({ type: [MongooseSchema.Types.Mixed], default: [] })
   education: EducationItem[];
 }
 
-export type PortfolioDocument = Portfolio;
-
-export const PortfolioSchema = new Schema<Portfolio>({
-  userId: { type: Schema.Types.ObjectId, required: true, index: true, unique: true },
-  name: { type: String, required: true },
-  initials: { type: String, required: true },
-  role: { type: String, required: true },
-  phone: { type: String, required: true },
-  phoneHref: { type: String, required: true },
-  email: { type: String, required: true },
-  emailHref: { type: String, required: true },
-  portfolioUrl: { type: String, required: true },
-  linkedinUrl: { type: String, required: true },
-  cvUrl: { type: String, required: true },
-  tagline: { type: String, required: true },
-  about: { type: [String], default: [] },
-  softSkills: { type: String, required: true },
-  skillGroups: { type: [Schema.Types.Mixed] as any, default: [] },
-  experiences: { type: [Schema.Types.Mixed] as any, default: [] },
-  projects: { type: [Schema.Types.Mixed] as any, default: [] },
-  education: { type: [Schema.Types.Mixed] as any, default: [] },
-}, {
-  timestamps: true,
-  collection: 'portfolios'
-});
-
-// For NestJS injection token compilation
-export class Portfolio {}
+export const PortfolioSchema = SchemaFactory.createForClass(Portfolio);
 export const PortfolioName = 'Portfolio';

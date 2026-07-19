@@ -1,7 +1,7 @@
 import axios, { type AxiosInstance } from 'axios';
 import { storage } from '@/shared/lib/storage';
 
-const BASE_URL = import.meta.env.VITE_API_BASE_URL ?? 'http://localhost:3000/api/v1';
+const BASE_URL = (globalThis as any).VITE_API_BASE_URL || 'http://localhost:3010/api/v1';
 console.log('--- MyLife API Base URL loaded is:', BASE_URL);
 
 export const apiClient: AxiosInstance = axios.create({

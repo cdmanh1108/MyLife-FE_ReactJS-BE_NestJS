@@ -2,7 +2,7 @@ import { ApiProperty, ApiPropertyOptional, IntersectionType } from '@nestjs/swag
 import { IsDateString, IsEnum, IsMongoId, IsNumber, IsOptional, IsString, MaxLength, Min } from 'class-validator';
 import { Type } from 'class-transformer';
 import { Currency } from '../../../../common/enums/currency.enum';
-import { PaginationQueryDto, PaginationMetaDto } from '../../../../common/dto/pagination.dto';
+import { PaginationQueryDto } from '../../../../common/dto/pagination.dto';
 import { DateRangeQueryDto } from '../../../../common/dto/date-range-query.dto';
 import { TransactionType } from '../../domain/enums/finance.enum';
 
